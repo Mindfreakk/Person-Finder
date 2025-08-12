@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy - PersonFinder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <style>
+    /* Gradient animated title */
+    .gradient-text {
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
+      background-size: 800% 800%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    /* Accordion transitions */
+    .accordion-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.4s ease;
+    }
+    .accordion-content.open {
+      max-height: 500px;
+      opacity: 1;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+    }
+    /* Bounce arrow animation */
+    .accordion-icon {
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    .accordion-icon.rotate {
+      transform: rotate(180deg);
+    }
+    /* Consistent heading */
+    .policy-heading {
+      font-size: 1.75rem; /* Matches TOS heading */
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    /* Consistent accordion title */
+    .accordion-header {
+      font-size: 1.125rem; /* text-lg */
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    .accordion-item:hover .accordion-header {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 to-blue-700 text-white min-h-screen flex flex-col">
+
+<!-- Header -->
+<header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-3" data-aos="fade-down">
+      <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="Logo" 
+           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" />
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide cursor-pointer gradient-text">PersonFinder</h1>
+        <p class="text-sm text-gray-200">Reunite Loved Ones</p>
+      </div>
+    </a>
+    <nav class="hidden md:flex gap-6 text-lg">
+      <a href="{{ url_for('home') }}" class="hover:underline">Home</a>
+      <a href="{{ url_for('register') }}" class="hover:underline">Register</a>
+      <a href="{{ url_for('search') }}" class="hover:underline">Search</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Main Policy Section -->
+<main class="flex-grow container mx-auto px-4 py-10">
+  <section class="policy" data-aos="fade-up" data-aos-delay="100">
+    <h1 class="policy-heading text-center">Privacy Policy</h1>
+
+    <div class="accordion">
+      {% for section in [
+        {'title': '1. Information We Collect', 'content': '<p>When you use PersonFinder, we collect the following types of information:</p><ul class="list-disc ml-6 mt-2"><li><strong>Uploaded Photos:</strong> Images you submit to search for missing persons.</li><li><strong>Personal Data:</strong> Information such as names, contact details, and addresses of registered users.</li><li><strong>Usage Data:</strong> Data about how you interact with our app, including search queries and timestamps.</li></ul>'},
+        {'title': '2. How We Use Your Information', 'content': '<p>Your information is used for the following purposes:</p><ul class="list-disc ml-6 mt-2"><li>To perform AI-powered face recognition and match uploaded photos with registered persons.</li><li>To improve and personalize your experience on the platform.</li><li>To communicate important updates, support, or security notifications.</li><li>To comply with legal obligations and prevent fraudulent activity.</li></ul>'},
+        {'title': '3. Data Security', 'content': '<p>We implement appropriate technical and organizational measures to protect your data from unauthorized access, alteration, disclosure, or destruction. This includes encryption of uploaded photos, secure server environments, and restricted access controls.</p>'},
+        {'title': '4. Sharing Your Information', 'content': '<p>PersonFinder does not sell or rent your personal data to third parties. We may share your information with trusted service providers who assist us in operating the platform under strict confidentiality agreements. Additionally, we may disclose information to comply with legal requests or to protect rights and safety.</p>'},
+        {'title': '5. Your Rights & Choices', 'content': '<p>You have certain rights regarding your personal data, including:</p><ul class="list-disc ml-6 mt-2"><li>The right to access and update your information.</li><li>The right to request deletion of your data.</li><li>The right to restrict or object to processing under applicable laws.</li></ul>'},
+        {'title': '6. Cookies & Tracking Technologies', 'content': '<p>We use cookies and similar technologies to enhance your experience, analyze usage, and deliver personalized content. You can control cookies through your browser settings; however, disabling cookies may affect the functionality of the app.</p>'},
+        {'title': '7. Changes to This Privacy Policy', 'content': '<p>We may update this Privacy Policy from time to time. We will notify you of any significant changes by posting the new policy here and updating the "Last updated" date. We encourage you to review this policy periodically to stay informed about how we protect your information.</p>'}
+      ] %}
+      <div class="accordion-item border-b border-gray-600">
+        <button class="accordion-header w-full text-left focus:outline-none flex justify-between items-center transition-colors duration-200">
+          <span>{{ section.title|safe }}</span>
+          <svg class="accordion-icon w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="accordion-content">
+          <div class="py-2">{{ section.content|safe }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
+    <div class="container mx-auto px-4">
+        <p class="text-sm">&copy; {{ current_year }} PersonFinder. All rights reserved.</p>
+        <p class="text-xs mt-1">Developed by AMIR &bull; Powered by AI & Machine Learning</p>
+        <div class="mt-3 flex justify-center gap-4 text-sm">
+            <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
+            <span>|</span>
+            <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+  AOS.init();
+
+  const headers = document.querySelectorAll('.accordion-header');
+
+  headers.forEach(header => {
+    header.addEventListener('click', () => {
+      const openItem = document.querySelector('.accordion-content.open');
+      const openIcon = document.querySelector('.accordion-icon.rotate');
+
+      if (openItem && openItem !== header.nextElementSibling) {
+        openItem.classList.remove('open');
+        if (openIcon) openIcon.classList.remove('rotate');
+      }
+
+      const content = header.nextElementSibling;
+      const icon = header.querySelector('.accordion-icon');
+      content.classList.toggle('open');
+      icon.classList.toggle('rotate');
+    });
+  });
+</script>
+</body>
+</html>

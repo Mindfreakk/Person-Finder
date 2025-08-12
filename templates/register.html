@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PeopleFinder - Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"
+  />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+    }
+    /* Smooth zoom on hover for preview image */
+    #photo_preview {
+      transition: transform 0.5s ease;
+    }
+    #photo_preview:hover {
+      transform: scale(1.1);
+    }
+    /* Gradient animated title */
+    .gradient-text {
+        background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
+        background-size: 800% 800%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    /* Button common styles */
+    .btn {
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2) inset;
+    }
+    /* Choose File input */
+    .file-input {
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(90deg, #6366f1, #4ade80);
+      border-radius: 0.75rem;
+      font-weight: 600;
+      color: white;
+      box-shadow: 0 6px 12px -4px #4ade80;
+      display: inline-block;
+      position: relative;
+      overflow: hidden;
+      border: none;
+      outline: none;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .file-input:hover {
+      background: linear-gradient(90deg, #4ade80, #6366f1);
+      box-shadow: 0 8px 16px -4px #6366f1;
+    }
+    .file-input input[type="file"] {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    /* Submit button */
+    .submit-btn {
+      background: linear-gradient(to right, #22c55e, #3b82f6);
+      box-shadow: 0 8px 15px -5px #22c55e;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 1rem 2rem;
+      color: white;
+      width: 100%;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .submit-btn:hover {
+      background: linear-gradient(to right, #3b82f6, #22c55e);
+      box-shadow: 0 10px 25px -5px #3b82f6;
+    }
+    /* Clear photo button */
+    .clear-btn {
+      background: #ef4444;
+      box-shadow: 0 6px 15px -5px #ef4444;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      padding: 0.5rem 1.5rem;
+      color: white;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .clear-btn:hover {
+      background: #b91c1c;
+      box-shadow: 0 8px 20px -5px #b91c1c;
+    }
+
+    /* === New: required star + label-error (pulse + shake) === */
+    .required-star {
+      color: #ef4444; /* red-500 */
+      animation: pulseStar 1.5s infinite ease-in-out;
+      margin-left: 4px;
+    }
+    @keyframes pulseStar {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.25); opacity: 0.85; }
+    }
+
+    .label-error {
+      animation: labelPulse 0.6s ease-in-out, shake 0.45s ease-in-out;
+      display: inline-block; /* keep transforms isolated */
+    }
+    @keyframes labelPulse {
+      0%   { color: #ef4444; transform: scale(1); }
+      50%  { color: #b91c1c; transform: scale(1.05); }
+      100% { color: inherit; transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+    }
+
+    /* optional: subtle invalid input highlight while label shakes */
+    .input-error {
+      animation: inputFlash 0.6s ease-in-out;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.12);
+      border-color: #ef4444;
+    }
+    @keyframes inputFlash {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.01); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+  <!-- Header -->
+<header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-3" data-aos="fade-down">
+      <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="Logo" 
+           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" />
+      <!-- TEXT GROUP: title (large) with smaller subtitle below -->
+      <div class="flex flex-col">
+        <h1 class="text-2xl font-bold tracking-wide cursor-pointer gradient-text leading-tight">
+          PersonFinder
+        </h1>
+        <p class="text-sm text-gray-200">Reunite Loved Ones</p>
+      </div>
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex gap-6 text-lg">
+      <a href="{{ url_for('home') }}" class="hover:underline">Home</a>
+      <a href="{{ url_for('register') }}" class="hover:underline">Register</a>
+      <a href="{{ url_for('search') }}" class="hover:underline">Search</a>
+    </nav>
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-btn" aria-label="Toggle menu" class="md:hidden text-white focus:outline-none">
+      <!-- Hamburger icon -->
+      <svg id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 block" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 6h16M4 12h16m-7 6h7" />
+      </svg>
+      <!-- Close icon, hidden by default -->
+      <svg id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Dropdown -->
+  <nav id="mobile-menu" class="hidden md:hidden flex flex-col gap-4 mt-4 px-4 text-lg">
+    <a href="{{ url_for('home') }}" class="hover:underline">Home</a>
+    <a href="{{ url_for('register') }}" class="hover:underline">Register</a>
+    <a href="{{ url_for('search') }}" class="hover:underline">Search</a>
+  </nav>
+</header>
+
+  <!-- Flash Messages -->
+  <div id="flash-messages" class="container mx-auto max-w-lg px-4 py-4 mt-6">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div
+            class="mb-4 p-4 rounded text-white
+            {% if category == 'success' %}bg-green-600{% else %}bg-red-600{% endif %}"
+          >
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Main Content -->
+  <main class="flex-grow container mx-auto flex flex-col items-center justify-center px-4 py-10 text-center">
+    <h2 class="text-4xl font-bold mb-2" data-aos="fade-up">Register a Missing Person</h2>
+    <span class="text-lg max-w-xl mb-6 text-gray-200 block" data-aos="fade-up" data-aos-delay="80">
+    </span>
+    <p class="text-lg max-w-xl mb-10 text-gray-200" data-aos="fade-up" data-aos-delay="100">
+      Please fill out the details below to register a missing person.
+    </p>
+
+    <!-- Register Form -->
+    <form
+      id="register-form"
+      class="bg-white/10 p-6 rounded-xl shadow-xl w-full max-w-lg space-y-6"
+      data-aos="fade-up"
+      data-aos-delay="200"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <!-- Full Name -->
+      <div>
+        <label for="full_name" class="block mb-1 font-semibold">
+          Full Name <span class="required-star">*</span>
+        </label>
+        <input
+          id="full_name"
+          type="text"
+          name="full_name"
+          placeholder="Full Name"
+          class="w-full p-3 rounded-lg text-black"
+          required
+          data-aos="fade-left"
+        />
+      </div>
+
+      <!-- Guardian Name -->
+      <div>
+        <label for="guardian_name" class="block mb-1 font-semibold">
+          Guardian Name <span class="required-star">*</span>
+        </label>
+        <input
+          id="guardian_name"
+          type="text"
+          name="guardian_name"
+          placeholder="Guardian Name"
+          class="w-full p-3 rounded-lg text-black"
+          required
+          data-aos="fade-left"
+          data-aos-delay="50"
+        />
+      </div>
+
+      <!-- Age -->
+      <div>
+        <label for="age" class="block mb-1 font-semibold">
+          Age <span class="required-star">*</span>
+        </label>
+        <input
+          id="age"
+          type="number"
+          name="age"
+          placeholder="Age"
+          class="w-full p-3 rounded-lg text-black"
+          min="0"
+          required
+          data-aos="fade-left"
+          data-aos-delay="100"
+        />
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label for="phone" class="block mb-1 font-semibold">
+          Phone Number (e.g., +91 9876543210) <span class="required-star">*</span>
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          name="phone"
+          placeholder="Phone Number (e.g., +91 9876543210)"
+          class="w-full p-3 rounded-lg text-black"
+          pattern="^\+?[0-9]{1,4}?\s?[0-9]{6,15}$"
+          title="Please enter a valid phone number. Example: +91 9876543210"
+          required
+          data-aos="fade-left"
+          data-aos-delay="200"
+        />
+      </div>
+
+      <!-- Address -->
+      <div>
+        <label for="address" class="block mb-1 font-semibold">
+          Address <span class="required-star">*</span>
+        </label>
+        <input
+          id="address"
+          type="text"
+          name="address"
+          placeholder="Address"
+          class="w-full p-3 rounded-lg text-black"
+          required
+          data-aos="fade-left"
+          data-aos-delay="300"
+        />
+      </div>
+
+      <!-- Pin Code -->
+      <div>
+        <label for="pincode" class="block mb-1 font-semibold">
+          Pin Code <span class="required-star">*</span>
+        </label>
+        <input
+          id="pincode"
+          type="text"
+          name="pincode"
+          placeholder="Pin Code"
+          class="w-full p-3 rounded-lg text-black"
+          pattern="^\d{6}$"
+          title="Please enter a valid 6-digit Pin Code"
+          required
+          data-aos="fade-left"
+          data-aos-delay="350"
+        />
+      </div>
+
+      <!-- Choose File Button (Photo) -->
+      <div>
+        <label for="upload_photo" class="block mb-1 font-semibold">
+        
+        </label>
+
+        <label class="file-input btn" for="upload_photo" data-aos="fade-up" data-aos-delay="400">
+          Choose File
+          <input
+            type="file"
+            id="upload_photo"
+            name="upload_photo"
+            accept="image/*"
+            required
+          />
+        </label>
+      </div>
+
+      <!-- Image Preview -->
+      <img
+        id="photo_preview"
+        class="mt-3 max-w-xs rounded-lg shadow-lg mx-auto hidden"
+        alt="Photo Preview"
+        data-aos="zoom-in"
+      />
+
+      <!-- Clear Photo Button -->
+      <button
+        type="button"
+        id="clear-photo-btn"
+        class="clear-btn btn mx-auto block mt-4 hidden"
+        data-aos="fade-up"
+        data-aos-delay="450"
+      >
+        Clear Photo
+      </button>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="submit-btn btn"
+        data-aos="fade-up"
+        data-aos-delay="500"
+      >
+        Submit Registration
+      </button>
+    </form>
+  </main>
+
+  <!-- Footer -->
+<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
+    <div class="container mx-auto px-4">
+        <p class="text-sm">&copy; {{ current_year }} PersonFinder. All rights reserved.</p>
+        <p class="text-xs mt-1">Developed by AMIR &bull; Powered by AI & Machine Learning</p>
+        <div class="mt-3 flex justify-center gap-4 text-sm">
+            <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
+            <span>|</span>
+            <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+
+  <script>
+    AOS.init();
+
+    // Mobile menu toggle (keeps original behavior)
+    document.getElementById("menu-btn").addEventListener("click", () => {
+      document.getElementById("mobile-menu").classList.toggle("hidden");
+      // toggle icons (optional)
+      document.getElementById("menu-open-icon").classList.toggle("hidden");
+      document.getElementById("menu-close-icon").classList.toggle("hidden");
+    });
+
+    /* ---------- Image preview & clear ---------- */
+    const uploadPhotoInput = document.getElementById('upload_photo');
+    const photoPreview = document.getElementById('photo_preview');
+    const clearPhotoBtn = document.getElementById('clear-photo-btn');
+
+    uploadPhotoInput.addEventListener('change', () => {
+      const file = uploadPhotoInput.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file.');
+        uploadPhotoInput.value = '';
+        photoPreview.src = '';
+        photoPreview.classList.add('hidden');
+        clearPhotoBtn.classList.add('hidden');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        photoPreview.src = e.target.result;
+        photoPreview.classList.remove('hidden');
+        clearPhotoBtn.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    clearPhotoBtn.addEventListener('click', () => {
+      uploadPhotoInput.value = '';
+      photoPreview.src = '';
+      photoPreview.classList.add('hidden');
+      clearPhotoBtn.classList.add('hidden');
+    });
+
+    /* ---------- Form validation UX: label pulse+shake, scroll, focus ---------- */
+    const form = document.getElementById('register-form');
+
+    form.addEventListener('submit', function (e) {
+      const invalidFields = [];
+
+      // collect all required elements inside the form
+      const requiredEls = Array.from(form.querySelectorAll('[required]'));
+
+      requiredEls.forEach(el => {
+        let isEmpty = false;
+
+        if (el.type === 'file') {
+          if (!el.files || el.files.length === 0) isEmpty = true;
+        } else if (el.tagName.toLowerCase() === 'select') {
+          if (!el.value) isEmpty = true;
+        } else {
+          // text, tel, number, etc.
+          if (String(el.value).trim() === '') isEmpty = true;
+        }
+
+        if (isEmpty) invalidFields.push(el);
+      });
+
+      if (invalidFields.length > 0) {
+        e.preventDefault(); // stop submit
+
+        invalidFields.forEach(input => {
+          // add label animation
+          const label = form.querySelector(`label[for="${input.id}"]`);
+          if (label) {
+            label.classList.add('label-error');
+            setTimeout(() => label.classList.remove('label-error'), 700);
+          }
+
+          // add subtle input highlight (optional)
+          input.classList.add('input-error');
+          setTimeout(() => input.classList.remove('input-error'), 700);
+        });
+
+        // scroll to first invalid and focus it
+        const first = invalidFields[0];
+        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          // focusable: for file inputs, focus() will highlight the control; OK
+          try { first.focus(); } catch (err) {/* ignore */}
+        }, 500);
+      }
+    });
+
+    /* ---------- Enter key on last non-file field submits the form ---------- */
+    (function enableEnterSubmitOnLastField() {
+      const candidates = Array.from(form.querySelectorAll('input, select, textarea'))
+        .filter(el => el.type !== 'file' && el.type !== 'hidden' && el.tagName.toLowerCase() !== 'button');
+
+      if (candidates.length === 0) return;
+      const lastField = candidates[candidates.length - 1];
+
+      lastField.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          form.requestSubmit(); // modern, triggers form submit
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

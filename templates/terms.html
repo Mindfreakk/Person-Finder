@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terms of Service - PersonFinder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <style>
+    .gradient-text {
+      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
+      background-size: 800% 800%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .accordion-content {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.4s ease;
+    }
+    .accordion-content.open {
+      max-height: 500px;
+      opacity: 1;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      padding: 1rem;
+    }
+    .accordion-icon {
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+    .accordion-icon.rotate {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 to-blue-700 text-white min-h-screen flex flex-col">
+
+<header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
+  <div class="container mx-auto flex items-center justify-between px-4">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-3" data-aos="fade-down">
+      <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="Logo" 
+           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" />
+      <div>
+        <h1 class="text-2xl font-bold tracking-wide cursor-pointer gradient-text">PersonFinder</h1>
+        <p class="text-sm text-gray-200">Reunite Loved Ones</p>
+      </div>
+    </a>
+    <nav class="hidden md:flex gap-6 text-lg">
+      <a href="{{ url_for('home') }}" class="hover:underline">Home</a>
+      <a href="{{ url_for('register') }}" class="hover:underline">Register</a>
+      <a href="{{ url_for('search') }}" class="hover:underline">Search</a>
+    </nav>
+  </div>
+</header>
+
+<main class="flex-grow container mx-auto px-4 py-10">
+  <section class="policy" data-aos="fade-up" data-aos-delay="100">
+    <!-- Smaller heading for Terms of Service -->
+    <h1 class="text-xl md:text-2xl font-bold mb-6 cursor-default text-center">Terms of Service</h1>
+
+    <div class="accordion">
+      {% for section in [
+        {'title': '1. Acceptance of Terms', 'content': '<p>By accessing and using PersonFinder, you agree to comply with and be bound by these Terms of Service. If you do not agree, please discontinue use.</p>'},
+        {'title': '2. Use of the Service', 'content': '<p>You agree to use PersonFinder only for lawful purposes and in accordance with applicable laws. Misuse, including fraudulent reports or harassment, is strictly prohibited.</p>'},
+        {'title': '3. User Accounts', 'content': '<p>You are responsible for maintaining the confidentiality of your account and for all activities under your account.</p>'},
+        {'title': '4. Intellectual Property', 'content': '<p>All content, trademarks, and data on PersonFinder are the property of their respective owners and are protected by applicable intellectual property laws.</p>'},
+        {'title': '5. Limitation of Liability', 'content': '<p>PersonFinder is provided "as is" without warranties of any kind. We are not liable for any damages resulting from your use of the service.</p>'},
+        {'title': '6. Changes to Terms', 'content': '<p>We may update these Terms of Service from time to time. Continued use of the platform constitutes acceptance of the new terms.</p>'}
+      ] %}
+      <div class="accordion-item border-b border-gray-600">
+        <!-- Smaller font for accordion headers -->
+        <button class="accordion-header text-base md:text-lg font-semibold w-full text-left py-3 focus:outline-none flex justify-between items-center">
+          <span>{{ section.title|safe }}</span>
+          <svg class="accordion-icon w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="accordion-content">
+          <!-- Smaller text for accordion content -->
+          <div class="py-2 text-sm md:text-base">{{ section.content|safe }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</main>
+
+<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
+    <div class="container mx-auto px-4">
+        <p class="text-sm">&copy; {{ current_year }} PersonFinder. All rights reserved.</p>
+        <p class="text-xs mt-1">Developed by AMIR &bull; Powered by AI & Machine Learning</p>
+        <div class="mt-3 flex justify-center gap-4 text-sm">
+            <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
+            <span>|</span>
+            <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+  AOS.init();
+  const headers = document.querySelectorAll('.accordion-header');
+  headers.forEach(header => {
+    header.addEventListener('click', () => {
+      const openItem = document.querySelector('.accordion-content.open');
+      const openIcon = document.querySelector('.accordion-icon.rotate');
+      if (openItem && openItem !== header.nextElementSibling) {
+        openItem.classList.remove('open');
+        if (openIcon) openIcon.classList.remove('rotate');
+      }
+      const content = header.nextElementSibling;
+      const icon = header.querySelector('.accordion-icon');
+      content.classList.toggle('open');
+      icon.classList.toggle('rotate');
+    });
+  });
+</script>
+
+</body>
+</html>
