@@ -1,0 +1,373 @@
+<!-- ---------- Header (with animated dropdown + staggered items) ---------- -->
+<header class="relative py-4 bg-white/6 backdrop-blur-sm shadow-sm" style="z-index:1200;">
+  <div class="max-w-6xl mx-auto grid grid-cols-3 items-center gap-4 px-4">
+    <!-- Logo (left) -->
+    <a href="{{ url_for('home') }}" 
+       class="flex items-center gap-3 justify-start" 
+       aria-label="Go to homepage">
+      <img alt="Logo" 
+           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110 self-center" 
+           src="{{ url_for('static', filename='images/elderly.jpeg') }}"/>
+      <div class="flex flex-col justify-center">
+        <h1 class="text-2xl md:text-3xl font-bold 
+                   bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+                   bg-clip-text text-transparent animate-gradient leading-tight">
+          PersonFinder
+        </h1>
+        <p class="text-xs md:text-sm text-gray-200">Reunite Loved Ones</p>
+      </div>
+    </a>
+
+    <div class="hidden md:block"></div>
+
+    <!-- desktop nav (right inside the centered container) -->
+    <nav class="hidden md:flex gap-8 items-center justify-end" aria-label="Primary">
+      <a href="{{ url_for('home') }}" class="nav-link text-white text-lg {% if request.endpoint == 'home' %}active{% endif %}" {% if request.endpoint == 'home' %}aria-current="page"{% endif %}>Home</a>
+      <a href="{{ url_for('register') }}" class="nav-link text-white text-lg {% if request.endpoint == 'register' %}active{% endif %}" {% if request.endpoint == 'register' %}aria-current="page"{% endif %}>Register</a>
+      <a href="{{ url_for('search') }}" class="nav-link text-white text-lg {% if request.endpoint == 'search' %}active{% endif %}" {% if request.endpoint == 'search' %}aria-current="page"{% endif %}>Search</a>
+    </nav>
+  </div>
+
+  <!-- Hamburger button pinned visually to header's right edge -->
+  <button id="pf-geo-menu-btn"
+          aria-expanded="false"
+          aria-controls="pf-mobile-dropdown"
+          class="md:hidden absolute right-4 top-1/2 transform -translate-y-1/2 p-0 focus:outline-none"
+          type="button"
+          aria-label="Open menu"
+          title="Toggle menu"
+          style="z-index:1220;">
+    <!-- Liquid glass look -->
+    <span style="display:inline-grid; place-items:center; width:44px; height:44px; border-radius:12px;
+                 background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+                 backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+                 box-shadow: 0 10px 30px rgba(2,6,23,0.25);">
+      <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style="color:#fff;">
+        <g stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path class="pf-geo-line l1" d="M6 9H22"></path>
+          <path class="pf-geo-line l2" d="M6 14H22"></path>
+          <path class="pf-geo-line l3" d="M6 19H22"></path>
+        </g>
+      </svg>
+    </span>
+  </button>
+</header>
+
+<!-- Optional static fallback dropdown (script will move it to body for reliable stacking) -->
+<!-- IMPORTANT: Title/logo removed here intentionally — only nav labels remain -->
+<div id="pf-mobile-dropdown" class="pf-mobile-dropdown md:hidden" role="menu" aria-hidden="true" style="display:none;">
+  <nav class="pf-mobile-nav" aria-label="Mobile Primary">
+    <a href="{{ url_for('home') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Home</a>
+    <a href="{{ url_for('register') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Register</a>
+    <a href="{{ url_for('search') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Search</a>
+  </nav>
+</div>
+
+<!-- transparent closer overlay (script will show/hide or create if missing) -->
+<div id="pf-dropdown-closer" aria-hidden="true" class="dropdown-closer"></div>
+
+<!-- Small animation CSS additions for dropdown + staggered items -->
+<style>
+  /* -------------------------
+       Desktop nav: hover underline & ACTIVE styling
+       ------------------------- */
+  .nav-link {
+    position: relative;
+    padding-bottom: 8px;
+    transition: transform .18s ease, color .18s ease;
+    color: rgba(255,255,255,0.92);
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 3px;
+    border-radius: 99px;
+    background: linear-gradient(90deg,#3b82f6 0%,#7c3aed 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .28s cubic-bezier(.2,.9,.2,1);
+    will-change: transform;
+    opacity: 0.98;
+  }
+  .nav-link:hover::after, .nav-link:focus::after { transform: scaleX(1); }
+  .nav-link.active { color: #fff; transform: translateY(-4px); font-weight: 700; }
+  .nav-link.active::after {
+    transform: scaleX(1); height: 6px; bottom: -8px;
+    filter: drop-shadow(0 6px 18px rgba(124,58,237,0.18));
+    background: linear-gradient(90deg, #3b82f6 0%, #7c3aed 50%, #ec4899 100%);
+    transition: transform .32s cubic-bezier(.16,.9,.22,1), height .18s ease;
+  }
+
+  /* ensure both class names work (your existing CSS uses .mobile-dropdown) */
+  .pf-mobile-dropdown, .mobile-dropdown {
+    transform: translateY(-8px) scale(.985);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .28s cubic-bezier(.2,.9,.2,1), opacity .22s ease;
+  }
+  .pf-mobile-dropdown.open, .mobile-dropdown.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Items: start slightly left & invisible, then slide to place */
+  .pf-mobile-item, .mobile-item {
+    transform: translateX(-10px);
+    opacity: 0;
+    transition: transform .36s cubic-bezier(.2,.9,.2,1), opacity .28s ease;
+    will-change: transform, opacity;
+  }
+  /* When .show is added they slide in */
+  .pf-mobile-item.show, .mobile-item.show {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .pf-mobile-dropdown, .mobile-dropdown, .pf-mobile-item, .mobile-item { transition: none !important; transform: none !important; opacity: 1 !important; }
+  }
+
+  /* -------------------------
+       Animated gradient title
+       ------------------------- */
+  @keyframes gradient-flow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .animate-gradient {
+    background-size: 300% 300%;
+    animation: gradient-flow 6s ease infinite;
+  }
+</style>
+
+<!-- Script: robust behavior + animated/staggered item entrance -->
+<script>
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    // Use the pf- ids (consistent with header)
+    const BTN_ID = 'pf-geo-menu-btn';
+    const DROPDOWN_ID = 'pf-mobile-dropdown';
+    const CLOSER_ID = 'pf-dropdown-closer';
+    const STAGGER = 80; // ms gap between item animations (tweakable)
+
+    const btn = document.getElementById(BTN_ID);
+    if (!btn) { console.error('[pf-menu] button not found:', BTN_ID); return; }
+
+    // find or create dropdown element (script will use existing fallback or create one)
+    let dropdown = document.getElementById(DROPDOWN_ID);
+    if (!dropdown) {
+      dropdown = document.createElement('div');
+      dropdown.id = DROPDOWN_ID;
+      dropdown.className = 'pf-mobile-dropdown md:hidden';
+      dropdown.setAttribute('role', 'menu');
+      dropdown.setAttribute('aria-hidden', 'true');
+      dropdown.innerHTML = `
+        <nav class="pf-mobile-nav" aria-label="Mobile Primary">
+          <a href="{{ url_for('home') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Home</a>
+          <a href="{{ url_for('register') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Register</a>
+          <a href="{{ url_for('search') }}" class="pf-mobile-item block rounded px-3 py-2 text-white" role="menuitem">Search</a>
+        </nav>
+      `;
+    }
+
+    // Move dropdown to body to avoid overflow/stacking issues
+    if (dropdown.parentElement !== document.body) {
+      document.body.appendChild(dropdown);
+      console.log('[pf-menu] dropdown appended to body');
+    }
+
+    // find or create closer overlay
+    let closer = document.getElementById(CLOSER_ID);
+    if (!closer) {
+      closer = document.createElement('div');
+      closer.id = CLOSER_ID;
+      closer.className = 'dropdown-closer';
+      closer.style.position = 'fixed';
+      closer.style.inset = '0';
+      closer.style.display = 'none';
+      closer.style.zIndex = '1199';
+      closer.style.background = 'transparent';
+      document.body.appendChild(closer);
+      console.log('[pf-menu] created closer');
+    }
+
+    // style dropdown (only once)
+    Object.assign(dropdown.style, {
+      position: 'fixed',
+      width: '20rem',
+      maxWidth: '94vw',
+      background: 'linear-gradient(180deg, rgba(10,12,30,0.86), rgba(22,28,60,0.82))',
+      borderRadius: '12px',
+      padding: '6px',
+      boxShadow: '0 18px 50px rgba(2,6,23,0.6)',
+      transformOrigin: 'top right',
+      transform: 'translateY(-8px) scale(.985)',
+      opacity: '0',
+      pointerEvents: 'none',
+      transition: 'transform .26s cubic-bezier(.2,.9,.2,1), opacity .22s ease',
+      zIndex: '1205',
+      color: 'white',
+      border: '1px solid rgba(255,255,255,0.04)'
+    });
+
+    // Active link detection
+    function normalizePath(href) {
+      try { const url = new URL(href, location.origin); return (url.pathname || '/').replace(/\/+$/, '') || '/'; }
+      catch (e) { return (href || '').replace(/\/+$/, '') || '/'; }
+    }
+    function markActiveLink() {
+      const currentPath = normalizePath(location.pathname || '/');
+      let best = null, bestLen = -1;
+      const candidates = Array.from(document.querySelectorAll('a[href]')).filter(a => {
+        const href = a.getAttribute('href'); return href && (href.startsWith('/') || href.indexOf(location.origin) === 0);
+      });
+      candidates.forEach(a => {
+        const linkPath = normalizePath(a.getAttribute('href'));
+        if (linkPath === currentPath) { if (linkPath.length > bestLen) { best = a; bestLen = linkPath.length; } }
+        else if (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) { if (linkPath.length > bestLen) { best = a; bestLen = linkPath.length; } }
+        else if (linkPath === '/' && currentPath === '/') { if (1 > bestLen) { best = a; bestLen = 1; } }
+      });
+      candidates.forEach(a => { a.classList.remove('active'); a.removeAttribute('aria-current'); });
+      dropdown.querySelectorAll('.pf-mobile-item').forEach(mi => mi.classList.remove('active'));
+
+      if (best) {
+        best.classList.add('active'); best.setAttribute('aria-current', 'page');
+        const href = best.getAttribute('href');
+        const mobileMatch = dropdown.querySelector(`a[href="${href}"]`);
+        if (mobileMatch) mobileMatch.classList.add('active');
+        console.log('[pf-menu] active link:', href);
+        return best;
+      } else {
+        const first = candidates.find(a => a.getAttribute('href'));
+        if (first) { first.classList.add('active'); first.setAttribute('aria-current', 'page'); return first; }
+      }
+      return null;
+    }
+    markActiveLink();
+
+    // position dropdown
+    function positionDropdown() {
+      const b = btn.getBoundingClientRect();
+      dropdown.style.visibility = 'hidden';
+      dropdown.style.display = 'block';
+      dropdown.style.pointerEvents = 'none';
+      dropdown.style.opacity = '0';
+      dropdown.classList.remove('open');
+
+      const d = dropdown.getBoundingClientRect();
+      let left = Math.round(b.right - d.width);
+      left = Math.max(8, Math.min(left, window.innerWidth - d.width - 8));
+      const top = Math.round(b.bottom + 8);
+
+      dropdown.style.left = left + 'px';
+      dropdown.style.top = top + 'px';
+
+      dropdown.style.visibility = '';
+      dropdown.style.pointerEvents = '';
+      dropdown.style.display = '';
+    }
+
+    // stagger helpers
+    let staggerTimers = [];
+    function clearStaggerTimers() {
+      staggerTimers.forEach(t => clearTimeout(t)); staggerTimers = [];
+    }
+    function showItemsStaggered() {
+      clearStaggerTimers();
+      const items = Array.from(dropdown.querySelectorAll('.pf-mobile-item, .mobile-item'));
+      items.forEach((it, idx) => {
+        it.classList.remove('show');
+        it.style.transitionDelay = (idx * (STAGGER / 1000)) + 's';
+        const t = setTimeout(() => {
+          it.classList.add('show');
+          it.style.transitionDelay = '';
+        }, idx * STAGGER);
+        staggerTimers.push(t);
+      });
+      return items.length * STAGGER + 40;
+    }
+    function hideItemsImmediate() {
+      clearStaggerTimers();
+      dropdown.querySelectorAll('.pf-mobile-item, .mobile-item').forEach(it => { it.classList.remove('show'); it.style.transitionDelay = ''; });
+    }
+
+    // open / close
+    function openMenu() {
+      positionDropdown();
+      btn.classList.add('open');
+      btn.setAttribute('aria-expanded', 'true');
+      dropdown.classList.add('open');
+      dropdown.setAttribute('aria-hidden', 'false');
+      dropdown.style.opacity = '1';
+      dropdown.style.pointerEvents = 'auto';
+      closer.style.display = 'block';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+
+      const total = showItemsStaggered();
+      setTimeout(() => {
+        const activeInDropdown = dropdown.querySelector('[aria-current="page"], .active') || dropdown.querySelector('a');
+        if (activeInDropdown) activeInDropdown.focus({ preventScroll: true });
+      }, total + 10);
+    }
+
+    function closeMenu() {
+      btn.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      dropdown.classList.remove('open');
+      dropdown.setAttribute('aria-hidden', 'true');
+      dropdown.style.opacity = '0';
+      dropdown.style.pointerEvents = 'none';
+      closer.style.display = 'none';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      hideItemsImmediate();
+      clearStaggerTimers();
+      try { btn.focus(); } catch(e) {}
+    }
+
+    function toggleHandler(ev) {
+      ev.stopPropagation();
+      const isOpen = btn.getAttribute('aria-expanded') === 'true';
+      if (isOpen) closeMenu(); else openMenu();
+    }
+    btn.removeEventListener('click', toggleHandler);
+    btn.addEventListener('click', toggleHandler);
+
+    closer.removeEventListener('click', closeMenu);
+    closer.addEventListener('click', function (ev) { ev.stopPropagation(); closeMenu(); });
+
+    document.addEventListener('click', function (ev) {
+      if (!dropdown.contains(ev.target) && !btn.contains(ev.target)) closeMenu();
+    });
+
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') closeMenu();
+    });
+
+    dropdown.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', function () {
+        setTimeout(closeMenu, 60);
+      });
+    });
+
+    let rTO = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(rTO);
+      rTO = setTimeout(() => {
+        if (btn.getAttribute('aria-expanded') === 'true') positionDropdown();
+        if (window.innerWidth >= 768 && btn.getAttribute('aria-expanded') === 'true') closeMenu();
+      }, 80);
+    });
+
+    setTimeout(() => positionDropdown(), 300);
+  });
+})();
+</script>
+<!-- ---------- End header block ---------- -->

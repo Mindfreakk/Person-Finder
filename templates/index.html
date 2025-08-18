@@ -1,180 +1,128 @@
-<!DOCTYPE html> 
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>PersonFinder - Reunite Loved Ones</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            color: white;
-        }
-        .gradient-text {
-            background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
-            background-size: 800% 800%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 8s ease infinite;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .mobile-menu-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease;
-        }
-        .mobile-menu-container.open {
-            max-height: 300px;
-        }
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .menu-link {
-            opacity: 0;
-        }
-        .menu-link.show {
-            animation: slideIn 0.4s forwards;
-        }
-    </style>
-</head>
-<body class="flex flex-col min-h-screen">
+{% extends "base.html" %}
 
-<!-- Header -->
-<header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
-  <div class="container mx-auto flex items-center justify-between px-4">
-    <a href="{{ url_for('home') }}" class="flex items-center gap-3" data-aos="fade-down">
-      <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="Logo" 
-           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" />
-      <div>
-        <h1 class="text-2xl font-bold tracking-wide cursor-pointer gradient-text">PersonFinder</h1>
-        <p class="text-sm text-gray-200 -mt-1">Reunite Loved Ones</p>
-      </div>
-    </a>
+{% block title %}Home - PersonFinder{% endblock %}
 
-    <!-- Desktop Nav -->
-    <nav class="hidden md:flex gap-6 text-lg">
-      <a href="{{ url_for('home') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="100">Home</a>
-      <a href="{{ url_for('register') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="200">Register</a>
-      <a href="{{ url_for('search') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="300">Search</a>
-    </nav>
+{% block content %}
+<div class="min-h-screen flex flex-col justify-start items-center px-4 sm:px-6 lg:px-8 pt-10" data-aos="fade-up">
+  <div class="text-center max-w-5xl w-full">
 
-    <!-- Mobile Menu Button -->
-    <button id="menu-btn" aria-label="Toggle menu" class="md:hidden text-white focus:outline-none">
-      <svg id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 block" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6h16M4 12h16m-7 6h7" />
-      </svg>
-      <svg id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-  </div>
+    <!-- Floating Face Image -->
+    <img src="{{ url_for('static', filename='Images/face_index.png') }}" 
+         alt="Face Index" 
+         class="mx-auto mb-6 opacity-0 animate-slide-up-delay-img w-24 sm:w-32 md:w-40 lg:w-44 float-animation">
 
-  <!-- Mobile Dropdown -->
-  <div id="mobile-menu-container" class="mobile-menu-container md:hidden">
-    <nav id="mobile-menu" class="flex flex-col gap-4 mt-4 px-4 text-lg">
-      <a href="{{ url_for('home') }}" class="menu-link hover:underline transition transform hover:scale-105">Home</a>
-      <a href="{{ url_for('register') }}" class="menu-link hover:underline transition transform hover:scale-105">Register</a>
-      <a href="{{ url_for('search') }}" class="menu-link hover:underline transition transform hover:scale-105">Search</a>
-    </nav>
-  </div>
-</header>
+    <!-- Main Heading -->
+    <h1 class="opacity-0 animate-slide-up-scale text-3xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight text-white">
+      Welcome to <span class="text-purple-400">PersonFinder</span>
+    </h1>
 
-<!-- Flash Messages -->
-<div class="container mx-auto max-w-lg px-4 py-4 mt-6">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="mb-4 p-4 rounded text-white
-                    {% if category == 'success' %}bg-green-600{% else %}bg-red-600{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
-
-<!-- Main Content -->
-<main class="flex-grow container mx-auto flex flex-col items-center justify-center px-4 py-10 text-center">
-
-    <img src="{{ url_for('static', filename='images/face_index.png') }}" 
-        alt="PersonFinder Logo" 
-        class="w-40 h-40 rounded-full shadow-xl mb-6 transform transition-all duration-700 hover:scale-110" 
-        data-aos="zoom-in" />
-
-    <h2 class="text-4xl font-bold mb-1" data-aos="fade-up">Welcome to PersonFinder</h2>
-    <p class="text-lg text-gray-300 mb-8" data-aos="fade-up" data-aos-delay="50">Reunite Loved Ones</p>
-
-    <p class="text-lg max-w-xl mb-10 text-gray-200" data-aos="fade-up" data-aos-delay="100">
-        PersonFinder helps reunite families and communities by using AI-powered face recognition technology to quickly identify missing persons.
-        Upload or search for a photo, and let our system match it against registered profiles — fast, accurate, and secure.
+    <!-- Sub Heading / Tagline -->
+    <p class="mx-auto text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl opacity-0 animate-slide-up-delay-1">
+      AI-powered platform to help <span class="text-green-400">locate missing persons</span> 
+      using <span class="text-pink-400">facial recognition</span> and predictive analytics.  
+      Together, we can bring loved ones home.
     </p>
 
-    <div class="flex flex-col sm:flex-row gap-6" data-aos="fade-up" data-aos-delay="200">
-        <a href="{{ url_for('register') }}" 
-            class="px-8 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-            Register a Person
-        </a>
-        <a href="{{ url_for('search') }}" 
-            class="px-8 py-4 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-            Search for a Person
-        </a>
-    </div>
-</main>
+    <!-- CTA Buttons -->
+    <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4 opacity-0 animate-slide-up-delay-2">
+      <a href="{{ url_for('register') }}"
+         class="w-full sm:w-auto text-center px-6 py-3 rounded-xl text-white font-semibold transition-transform duration-300 transform hover:scale-105 animate-gradient-move-delayed pulse-glow-purple focus:outline-none focus-visible:ring-4 focus-visible:ring-purple-500/40"
+         style="background: linear-gradient(90deg, #6366f1, #ec4899, #6366f1); background-size: 200% 200%;">
+        Register a Person
+      </a>
 
-<!-- Footer -->
-<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
-    <div class="container mx-auto px-4">
-        <p class="text-sm">&copy; {{ current_year }} PersonFinder. All rights reserved.</p>
-        <p class="text-xs mt-1">Developed by AMIR &bull; Powered by AI & Machine Learning</p>
-        <div class="mt-3 flex justify-center gap-4 text-sm">
-            <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
-            <span>|</span>
-            <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
+      <a href="{{ url_for('search') }}"
+         class="w-full sm:w-auto text-center px-6 py-3 rounded-xl text-white font-semibold transition-transform duration-300 transform hover:scale-105 animate-gradient-move-delayed pulse-glow-green focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400/30"
+         style="background: linear-gradient(90deg, #10b981, #3b82f6, #10b981); background-size: 200% 200%;">
+        Search for a Person
+      </a>
+    </div>
+
+    <!-- Features Section -->
+    <div class="mt-14 sm:mt-20 max-w-5xl mx-auto text-center opacity-0 animate-slide-up-delay-3">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+        <!-- Card 1 -->
+        <div class="group card-hover p-6 bg-gray-800 rounded-2xl border border-gray-700 hover:border-transparent hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 shadow-lg hover:shadow-2xl cursor-pointer">
+          <div class="flex justify-center mb-4">
+            <svg class="w-10 h-10 text-blue-400 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.65 6.65a7.5 7.5 0 016.0 10.0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2 text-white">Fast Search</h3>
+          <p class="text-sm text-gray-300">Locate missing persons quickly with AI-powered tools.</p>
         </div>
+
+        <!-- Card 2 -->
+        <div class="group card-hover p-6 bg-gray-800 rounded-2xl border border-gray-700 hover:border-transparent hover:bg-gradient-to-r hover:from-green-500 hover:to-teal-500 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 shadow-lg hover:shadow-2xl cursor-pointer" style="animation-delay: 0.3s;">
+          <div class="flex justify-center mb-4">
+            <svg class="w-10 h-10 text-green-400 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0-1.104-.896-2-2-2s-2 .896-2 2 .896 2 2 2 2-.896 2-2zm6-5v12c0 1.104-.896 2-2 2H8c-1.104 0-2-.896-2-2V6c0-1.104.896-2 2-2h8c1.104 0 2 .896 2 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2 text-white">Safe & Secure</h3>
+          <p class="text-sm text-gray-300">Your data is always encrypted and securely stored.</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="group card-hover p-6 bg-gray-800 rounded-2xl border border-gray-700 hover:border-transparent hover:bg-gradient-to-r hover:from-pink-500 hover:to-red-500 transition-all duration-500 transform hover:-translate-y-2 hover:scale-105 shadow-lg hover:shadow-2xl cursor-pointer" style="animation-delay: 0.6s;">
+          <div class="flex justify-center mb-4">
+            <svg class="w-10 h-10 text-pink-400 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m16 0a9 9 0 11-18 0m18 0H2" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2 text-white">Community Support</h3>
+          <p class="text-sm text-gray-300">Join a community dedicated to reuniting families.</p>
+        </div>
+
+      </div>
     </div>
-</footer>
 
-<script>
-    AOS.init();
+  </div>
+</div>
 
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenuContainer = document.getElementById('mobile-menu-container');
-    const openIcon = document.getElementById('menu-open-icon');
-    const closeIcon = document.getElementById('menu-close-icon');
-    const menuLinks = document.querySelectorAll('.menu-link');
+<style>
+/* Animations */
+@keyframes slideUpScale {
+  0% { opacity: 0; transform: translateY(15px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-slide-up-scale { animation: slideUpScale 0.8s ease forwards; }
 
-    menuBtn.addEventListener('click', () => {
-        const isOpen = mobileMenuContainer.classList.toggle('open');
-        openIcon.classList.toggle('hidden');
-        closeIcon.classList.toggle('hidden');
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up-delay-img { animation: slideUp 0.8s ease forwards; animation-delay: 0.2s; }
+.animate-slide-up-delay-1   { animation: slideUp 0.8s ease forwards; animation-delay: 0.4s; }
+.animate-slide-up-delay-2   { animation: slideUp 0.8s ease forwards; animation-delay: 0.6s; }
+.animate-slide-up-delay-3   { animation: slideUp 0.8s ease forwards; animation-delay: 0.9s; }
 
-        if (isOpen) {
-            menuLinks.forEach((link, index) => {
-                link.classList.remove('show');
-                setTimeout(() => {
-                    link.classList.add('show');
-                }, index * 150);
-            });
-        } else {
-            menuLinks.forEach(link => link.classList.remove('show'));
-        }
-    });
-</script>
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-move-delayed { animation: gradientMove 6s linear infinite; }
 
-</body>
-</html>
+/* Glow Animations */
+@keyframes pulseGlowPurple {
+  0%,100% { box-shadow: 0 0 10px rgba(99,102,241,0.25), 0 0 20px rgba(236,72,153,0.2); }
+  50% { box-shadow: 0 0 20px rgba(99,102,241,0.45), 0 0 40px rgba(236,72,153,0.35); }
+}
+@keyframes pulseGlowGreen {
+  0%,100% { box-shadow: 0 0 10px rgba(16,185,129,0.25), 0 0 20px rgba(59,130,246,0.2); }
+  50% { box-shadow: 0 0 20px rgba(16,185,129,0.45), 0 0 40px rgba(59,130,246,0.35); }
+}
+.pulse-glow-purple { animation: pulseGlowPurple 2.5s ease-in-out infinite; }
+.pulse-glow-green  { animation: pulseGlowGreen 2.5s ease-in-out infinite; }
+
+/* Floating image */
+@keyframes float { 
+  0% { transform: translateY(0); } 
+  50% { transform: translateY(-6px); } 
+  100% { transform: translateY(0); } 
+}
+.float-animation { animation: float 4s ease-in-out infinite; }
+</style>
+{% endblock %}

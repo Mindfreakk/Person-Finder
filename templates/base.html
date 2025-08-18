@@ -1,118 +1,92 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}PersonFinder{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <style>
-        /* Gradient animated title */
-        .gradient-text {
-            background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ADEDE, #ff6ec4);
-            background-size: 800% 800%;
-            background-clip: text;            /* Standard property for compatibility */
-            -webkit-background-clip: text;    /* WebKit-specific for Safari/Chrome */
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 8s ease infinite;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        /* Mobile menu container animation */
-        .mobile-menu-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease;
-        }
-        .mobile-menu-container.open {
-            max-height: 300px;
-        }
-        /* Mobile menu link animation */
-        @keyframes slideIn {
-            from { transform: translateX(-20px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .menu-link {
-            opacity: 0;
-        }
-        .menu-link.show {
-            animation: slideIn 0.4s forwards;
-        }
-    </style>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}PersonFinder{% endblock %}</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS Animation Library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+  <style>
+    /* 🔹 Gradient underline for active nav links site-wide */
+    nav a.active-link {
+      position: relative;
+    }
+
+    nav a.active-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -4px;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(to right, #ec4899, #a855f7);
+      border-radius: 2px;
+      opacity: 0;
+      transform: translateY(4px);
+      animation: underlineFadeSlideIn 0.4s ease forwards;
+    }
+
+    @keyframes underlineFadeSlideIn {
+      0% {
+        width: 0;
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      60% {
+        width: 100%;
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        width: 100%;
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
-<body class="flex flex-col min-h-screen bg-gradient-to-br from-indigo-900 to-blue-700 text-white">
+<body class="bg-gradient-to-br from-indigo-900 to-blue-700 text-white min-h-screen flex flex-col">
 
-<!-- Header -->
-<header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
-  <div class="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 gap-2 md:gap-0">
-    <a href="{{ url_for('home') }}" class="flex items-center gap-3" data-aos="fade-down">
-      <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="Logo" 
-           class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" />
-      <div>
-        <h1 class="text-2xl font-bold tracking-wide cursor-pointer gradient-text">PersonFinder</h1>
-        <p class="text-xs md:text-sm italic">Reuniting Loved Ones</p>
+  {% include 'partials/_header.html' %}
+
+  <!-- 🔹 Toast Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-container" class="fixed top-4 right-4 w-80 space-y-3 z-50">
+        {% for category, message in messages %}
+          {% set alert_classes = {
+            "success": "bg-green-100 border-green-400 text-green-700",
+            "error": "bg-red-100 border-red-400 text-red-700",
+            "warning": "bg-yellow-100 border-yellow-400 text-yellow-700",
+            "info": "bg-blue-100 border-blue-400 text-blue-700"
+          } %}
+          <div class="flash-message relative border-l-4 p-4 rounded shadow-lg transition-opacity duration-1000 {{ alert_classes.get(category, 'bg-gray-100 border-gray-400 text-gray-700') }}">
+            <p class="font-medium">{{ message }}</p>
+            <!-- Close button -->
+            <button onclick="this.parentElement.remove()" class="absolute top-2 right-3 text-lg font-bold text-gray-500 hover:text-gray-700">&times;</button>
+          </div>
+        {% endfor %}
       </div>
-    </a>
+    {% endif %}
+  {% endwith %}
 
-    <!-- Desktop Nav -->
-    <nav class="hidden md:flex gap-6 text-lg">
-      <a href="{{ url_for('home') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="100">Home</a>
-      <a href="{{ url_for('register') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="200">Register</a>
-      <a href="{{ url_for('search') }}" class="hover:underline hover:scale-105 transform transition-all"
-         data-aos="fade-down" data-aos-delay="300">Search</a>
-    </nav>
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
 
-    <!-- Mobile Menu Button -->
-    <button id="menu-btn" aria-label="Toggle menu" class="md:hidden text-white focus:outline-none">
-      <svg id="menu-open-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 block" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6h16M4 12h16m-7 6h7" />
-      </svg>
-      <svg id="menu-close-icon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-  </div>
+  {% include 'partials/_footer.html' %}
 
-  <!-- Mobile Dropdown -->
-  <div id="mobile-menu-container" class="mobile-menu-container md:hidden">
-    <nav id="mobile-menu" class="flex flex-col gap-4 mt-4 px-4 text-lg">
-      <a href="{{ url_for('home') }}" class="menu-link hover:underline transition transform hover:scale-105">Home</a>
-      <a href="{{ url_for('register') }}" class="menu-link hover:underline transition transform hover:scale-105">Register</a>
-      <a href="{{ url_for('search') }}" class="menu-link hover:underline transition transform hover:scale-105">Search</a>
-      <hr class="border-gray-400 my-2">
-      <a href="{{ url_for('privacy') }}" class="menu-link hover:underline text-sm">Privacy Policy</a>
-      <a href="{{ url_for('terms') }}" class="menu-link hover:underline text-sm">Terms of Service</a>
-    </nav>
-  </div>
-</header>
-
-<!-- Page Content -->
-{% block content %}{% endblock %}
-
-<!-- Footer -->
-<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
-    <div class="container mx-auto px-4">
-        <p class="text-sm">&copy; {{ current_year }} PersonFinder. All rights reserved.</p>
-        <p class="text-xs mt-1">Developed by AMIR &bull; Powered by AI & Machine Learning</p>
-        <div class="mt-3 flex justify-center gap-4 text-xs">
-            <a href="{{ url_for('privacy') }}" class="hover:underline">Privacy Policy</a>
-            <span>&bull;</span>
-            <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
-        </div>
-    </div>
-</footer>
-
-<script>
+  <script>
     AOS.init();
 
     const menuBtn = document.getElementById('menu-btn');
@@ -121,22 +95,43 @@
     const closeIcon = document.getElementById('menu-close-icon');
     const menuLinks = document.querySelectorAll('.menu-link');
 
-    menuBtn.addEventListener('click', () => {
+    if (menuBtn) {
+      menuBtn.addEventListener('click', () => {
         const isOpen = mobileMenuContainer.classList.toggle('open');
         openIcon.classList.toggle('hidden');
         closeIcon.classList.toggle('hidden');
 
         if (isOpen) {
-            menuLinks.forEach((link, index) => {
-                link.classList.remove('show');
-                setTimeout(() => {
-                    link.classList.add('show');
-                }, index * 150);
-            });
+          menuLinks.forEach((link, index) => {
+            link.classList.remove('show');
+            setTimeout(() => {
+              link.classList.add('show');
+            }, index * 150);
+          });
         } else {
-            menuLinks.forEach(link => link.classList.remove('show'));
+          menuLinks.forEach(link => link.classList.remove('show'));
         }
+      });
+    }
+
+    // 🔹 Auto-underline active nav link based on current page
+    document.addEventListener('DOMContentLoaded', () => {
+      const currentPath = window.location.pathname.replace(/\/$/, '');
+      document.querySelectorAll('nav a').forEach(link => {
+        const linkPath = link.getAttribute('href').replace(/\/$/, '');
+        if (linkPath && currentPath.endsWith(linkPath)) {
+          link.classList.add('active-link');
+        }
+      });
     });
-</script>
+
+    // 🔹 Auto-hide flash messages after 4 seconds
+    setTimeout(() => {
+      document.querySelectorAll(".flash-message").forEach(el => {
+        el.classList.add("opacity-0"); // fade out
+        setTimeout(() => el.remove(), 1000); // remove after fade
+      });
+    }, 4000);
+  </script>
 </body>
 </html>

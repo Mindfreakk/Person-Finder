@@ -1,128 +1,131 @@
 import sqlite3
-import pickle
+import json
 
-DB_NAME = 'database.db'
-
-EXPECTED_COLUMNS = [
-    'id', 'name', 'age', 'phone', 'address', 'face_encoding', 'photo_path'
-]
+DB_PATH = "people.db"
 
 def create_db():
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
 
-        # Check if table exists
-        c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='registered_people';")
-        table_exists = c.fetchone()
-
-        if not table_exists:
-            # Create fresh table
-            _create_table(c)
-            conn.commit()
-            return
-
-        # Table exists → check columns
+    # Get existing columns (if table exists)
+    c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='registered_people';")
+    if c.fetchone():
         c.execute("PRAGMA table_info(registered_people);")
         existing_cols = [row[1] for row in c.fetchall()]
+        _migrate_schema(conn, existing_cols)
+    else:
+        _create_fresh_table(conn)
 
-        if existing_cols != EXPECTED_COLUMNS:
-            print("⚠ Schema mismatch detected — fixing database table...")
-            _migrate_schema(conn, existing_cols)
-            print("✅ Database schema updated successfully.")
+    conn.commit()
+    conn.close()
 
-def _create_table(cursor):
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS registered_people (
+def _create_fresh_table(conn):
+    print("🆕 Creating fresh table: registered_people")
+    conn.execute("""
+        CREATE TABLE registered_people (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             age INTEGER,
             phone TEXT,
             address TEXT,
-            face_encoding BLOB,
+            guardian_name TEXT,
+            last_seen TEXT,
+            face_encoding TEXT,
             photo_path TEXT
-        )
-    ''')
-
-def _migrate_schema(conn, existing_cols):
-    c = conn.cursor()
-    # Rename old table
-    c.execute("ALTER TABLE registered_people RENAME TO registered_people_old;")
-    # Create new table
-    _create_table(c)
-
-    # Determine which columns to copy (intersection of expected and existing)
-    common_cols = [col for col in EXPECTED_COLUMNS if col in existing_cols]
-    cols_str = ", ".join(common_cols)
-
-    # Copy data from old table
-    c.execute(f"""
-        INSERT INTO registered_people ({cols_str})
-        SELECT {cols_str} FROM registered_people_old;
+        );
     """)
 
-    # Drop old table
-    c.execute("DROP TABLE registered_people_old;")
-    conn.commit()
+def _migrate_schema(conn, existing_cols):
+    """Ensure table has the required columns without breaking if old backup exists."""
+    required_cols = [
+        "id", "name", "age", "phone", "address",
+        "guardian_name", "last_seen", "face_encoding", "photo_path"
+    ]
 
-def register_person_to_db(name, age, phone, address, face_encoding, photo_path):
-    face_encoding_blob = pickle.dumps(face_encoding)
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute('''
-            INSERT INTO registered_people (name, age, phone, address, face_encoding, photo_path)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (name, age, phone, address, face_encoding_blob, photo_path))
-        conn.commit()
+    missing_cols = [col for col in required_cols if col not in existing_cols]
+    if not missing_cols:
+        print("✅ Database schema is up-to-date.")
+        return
+
+    print("⚠ Schema mismatch detected — fixing database table...")
+
+    c = conn.cursor()
+
+    # Drop leftover backup table if it exists
+    c.execute("DROP TABLE IF EXISTS registered_people_old;")
+
+    # Rename old table
+    c.execute("ALTER TABLE registered_people RENAME TO registered_people_old;")
+
+    # Create new table
+    _create_fresh_table(conn)
+
+    # Copy matching columns from old to new
+    common_cols = [col for col in required_cols if col in existing_cols]
+    col_list = ", ".join(common_cols)
+    c.execute(f"""
+        INSERT INTO registered_people ({col_list})
+        SELECT {col_list} FROM registered_people_old;
+    """)
+
+    print(f"✅ Migration complete. Added missing columns: {missing_cols}")
+
+def register_person_to_db(name, age, phone, address, guardian_name, last_seen, face_encoding, photo_path):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("""
+        INSERT INTO registered_people (name, age, phone, address, guardian_name, last_seen, face_encoding, photo_path)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (name, age, phone, address, guardian_name, last_seen, json.dumps(face_encoding), photo_path))
+    conn.commit()
+    conn.close()
 
 def get_all_registered_people():
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute('SELECT * FROM registered_people')
-        people = c.fetchall()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM registered_people")
+    rows = c.fetchall()
+    conn.close()
 
-    registered_people = []
-    for person in people:
-        try:
-            face_encoding = pickle.loads(person[5])
-        except Exception:
-            continue  # skip corrupted rows
-        registered_people.append({
-            'id': person[0],
-            'name': person[1],
-            'age': person[2],
-            'phone': person[3],
-            'address': person[4],
-            'face_encoding': face_encoding,
-            'photo_path': person[6]
+    # Convert rows to list of dicts
+    people = []
+    for row in rows:
+        people.append({
+            "id": row[0],
+            "name": row[1],
+            "age": row[2],
+            "phone": row[3],
+            "address": row[4],
+            "guardian_name": row[5],
+            "last_seen": row[6],
+            "face_encoding": json.loads(row[7]) if row[7] else None,
+            "photo_path": row[8]
         })
-
-    return registered_people
-
-def get_person_by_id(person_id):
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute('SELECT * FROM registered_people WHERE id = ?', (person_id,))
-        person = c.fetchone()
-
-    if person:
-        try:
-            face_encoding = pickle.loads(person[5])
-        except Exception:
-            face_encoding = None
-        return {
-            'id': person[0],
-            'name': person[1],
-            'age': person[2],
-            'phone': person[3],
-            'address': person[4],
-            'face_encoding': face_encoding,
-            'photo_path': person[6]
-        }
-
-    return None
+    return people
 
 def delete_person_by_id(person_id):
-    with sqlite3.connect(DB_NAME) as conn:
-        c = conn.cursor()
-        c.execute('DELETE FROM registered_people WHERE id = ?', (person_id,))
-        conn.commit()
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM registered_people WHERE id = ?", (person_id,))
+    conn.commit()
+    conn.close()
+
+def get_person_by_id(person_id):
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("SELECT * FROM registered_people WHERE id = ?", (person_id,))
+    row = c.fetchone()
+    conn.close()
+    if row:
+        return {
+            "id": row[0],
+            "name": row[1],
+            "age": row[2],
+            "phone": row[3],
+            "address": row[4],
+            "guardian_name": row[5],
+            "last_seen": row[6],
+            "face_encoding": json.loads(row[7]) if row[7] else None,
+            "photo_path": row[8]
+        }
+    return None
