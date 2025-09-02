@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - PersonFinder{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-28">
+
+  <!-- Header -->
+  <header class="bg-blue-900 text-white p-6 shadow-md flex flex-col sm:flex-row justify-between items-center gap-4">
+    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+    <div class="flex items-center gap-4">
+      <span>Hello, {{ current_user.username }}</span>
+      <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition-colors">Logout</a>
+    </div>
+  </header>
+
+  <!-- Stats Cards -->
+  <section class="p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Total Users -->
+      <div class="bg-white rounded-2xl shadow p-6 flex items-center justify-between transition-transform transform hover:-translate-y-1 hover:shadow-lg animate-bounce-slow">
+        <div>
+          <p class="text-gray-500">Total Users</p>
+          <p class="text-2xl font-bold">{{ users|length }}</p>
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.94 0 5.657.955 7.879 2.804M12 3v12m0 0l-3-3m3 3l3-3" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Registered People -->
+      <div class="bg-white rounded-2xl shadow p-6 flex items-center justify-between transition-transform transform hover:-translate-y-1 hover:shadow-lg animate-bounce-slow">
+        <div>
+          <p class="text-gray-500">Registered People</p>
+          <p class="text-2xl font-bold">{{ stats.get('registrations', 0) }}</p>
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Searches -->
+      <div class="bg-white rounded-2xl shadow p-6 flex items-center justify-between transition-transform transform hover:-translate-y-1 hover:shadow-lg animate-bounce-slow">
+        <div>
+          <p class="text-gray-500">Searches</p>
+          <p class="text-2xl font-bold">{{ stats.get('searches', 0) }}</p>
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Recent Logs -->
+      <div class="bg-white rounded-2xl shadow p-6 flex items-center justify-between transition-transform transform hover:-translate-y-1 hover:shadow-lg animate-bounce-slow">
+        <div>
+          <p class="text-gray-500">Recent Logs</p>
+          <p class="text-2xl font-bold">{{ search_logs|length }}</p>
+        </div>
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 3C7.029 3 3 7.029 3 12s4.029 9 9 9 9-4.029 9-9-4.029-9-9-9z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Registered People -->
+  <section class="p-6">
+    <h2 class="text-xl font-semibold mb-4">Recent Registered People</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-2xl shadow overflow-hidden">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+          <tr>
+            <th class="py-3 px-6 text-left">#</th>
+            <th class="py-3 px-6 text-left">Photo</th>
+            <th class="py-3 px-6 text-left">Full Name</th>
+            <th class="py-3 px-6 text-left">Age</th>
+            <th class="py-3 px-6 text-left">Gender</th>
+            <th class="py-3 px-6 text-left">Guardian</th>
+            <th class="py-3 px-6 text-left">Phone</th>
+            <th class="py-3 px-6 text-left">Last Seen</th>
+            <th class="py-3 px-6 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700 text-sm">
+          {% for person in people %}
+          <tr class="border-b border-gray-200 {% if person.is_recent %}bg-green-50{% endif %}">
+            <td class="py-3 px-6">{{ loop.index + (page-1)*10 }}</td>
+            <td class="py-3 px-6">
+              <img src="{{ url_for('static', filename=person.photo_path) }}" class="h-12 w-12 object-cover rounded-full" alt="Photo">
+            </td>
+            <td class="py-3 px-6">{{ person.full_name }}</td>
+            <td class="py-3 px-6">{{ person.age }}</td>
+            <td class="py-3 px-6">{{ person.gender }}</td>
+            <td class="py-3 px-6">{{ person.guardian_name }}</td>
+            <td class="py-3 px-6">{{ person.phone_number }}</td>
+            <td class="py-3 px-6">{{ person.last_seen }}</td>
+            <td class="py-3 px-6">
+              <form method="POST" action="{{ url_for('delete_person', person_id=person.id) }}" onsubmit="return confirm('Delete this person?');">
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center py-4 text-gray-500">No records found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4 flex justify-center space-x-2 flex-wrap">
+      {% for p in range(1, total_pages + 1) %}
+        {% if p == page %}
+        <span class="px-3 py-1 bg-blue-500 text-white rounded">{{ p }}</span>
+        {% else %}
+        <a href="{{ url_for('admin_dashboard', page=p) }}" class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded transition-colors">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Recent Search Logs -->
+  <section class="p-6 mt-6">
+    <h2 class="text-xl font-semibold mb-4">Recent Search Logs</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-2xl shadow overflow-hidden">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+          <tr>
+            <th class="py-3 px-6 text-left">#</th>
+            <th class="py-3 px-6 text-left">Timestamp</th>
+            <th class="py-3 px-6 text-left">Searched Name</th>
+            <th class="py-3 px-6 text-left">Matches Found</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700 text-sm">
+          {% for log in search_logs %}
+          <tr class="border-b border-gray-200">
+            <td class="py-3 px-6">{{ loop.index }}</td>
+            <td class="py-3 px-6">{{ log.ts.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td class="py-3 px-6">{{ log.uploaded_name }}</td>
+            <td class="py-3 px-6">{{ log.matches }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="text-center py-4 text-gray-500">No logs available.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Users List -->
+  <section class="p-6 mt-6">
+    <h2 class="text-xl font-semibold mb-4">Registered Users</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white rounded-2xl shadow overflow-hidden">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+          <tr>
+            <th class="py-3 px-6 text-left">#</th>
+            <th class="py-3 px-6 text-left">Username</th>
+            <th class="py-3 px-6 text-left">Email</th>
+            <th class="py-3 px-6 text-left">Phone</th>
+            <th class="py-3 px-6 text-left">Role</th>
+          </tr>
+        </thead>
+        <tbody class="text-gray-700 text-sm">
+          {% for user in users %}
+          <tr class="border-b border-gray-200">
+            <td class="py-3 px-6">{{ loop.index }}</td>
+            <td class="py-3 px-6">{{ user.username }}</td>
+            <td class="py-3 px-6">{{ user.email }}</td>
+            <td class="py-3 px-6">{{ user.phone }}</td>
+            <td class="py-3 px-6">{{ user.role }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" class="text-center py-4 text-gray-500">No users found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</div>
+
+<!-- Styles and Animations -->
+<style>
+@keyframes slide-down {
+  0% { transform: translateY(-50px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.animate-slide-down { animation: slide-down 0.5s ease-out; }
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+</style>
+{% endblock %}

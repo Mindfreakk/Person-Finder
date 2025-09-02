@@ -3,136 +3,363 @@
 {% block title %}Register - PersonFinder{% endblock %}
 
 {% block content %}
-<main class="min-h-screen flex justify-center px-4 sm:px-6 lg:px-8 pt-10 bg-blue-600 text-white">
 
-  <div class="w-full max-w-2xl bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 shadow-xl space-y-6 animate-fade-in">
+<div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-page-enter mt-20">
 
-    <!-- Heading -->
-    <h2 class="text-3xl font-bold text-center mb-2 opacity-0 animate-slide-up-delay-head">
+  <!-- Heading -->
+  <div class="text-center w-full">
+    <h2 class="text-3xl md:text-4xl font-bold mb-3">
       Register a Missing Person
     </h2>
-
-    <!-- Description -->
-    <p class="text-center text-gray-200 text-lg opacity-0 animate-slide-up-delay-desc mb-4">
-      Please fill in the details to help trace the missing person.
+    <p class="mx-auto text-base sm:text-lg md:text-xl mb-[2cm] text-center">
+      Fill in the details
+      <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">
+        below to help
+      </span>
+      <span class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 bg-clip-text text-transparent font-semibold">
+        trace your loved one.
+      </span>
     </p>
+  </div>
 
-    <!-- Form -->
-    <form method="POST" enctype="multipart/form-data" class="space-y-6">
-      {{ form.hidden_tag() }}
+  <!-- Modern Divider -->
+<div class="relative w-full flex justify-center mb-[1cm]">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+    Register Now
+  </span>
+</div>
 
-      <!-- Full Name -->
-      <div class="fade-slide" style="animation-delay:0.2s">
-        <label class="block font-semibold mb-2">Full Name <span class="text-red-400">*</span></label>
-        {{ form.full_name(class="w-full px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300", placeholder="e.g., John Doe") }}
-        {% for error in form.full_name.errors %}
-          <span class="text-red-400 text-sm">{{ error }}</span>
-        {% endfor %}
-      </div>
+  <!-- ✅ Form starts -->
+  <form id="register_form" method="POST" enctype="multipart/form-data" class="w-full space-y-6">
 
-      <!-- Guardian Name -->
-      <div class="fade-slide" style="animation-delay:0.3s">
-        <label class="block font-semibold mb-2">Guardian Name <span class="text-red-400">*</span></label>
-        {{ form.guardian_name(class="w-full px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300", placeholder="e.g., Jane Doe") }}
-        {% for error in form.guardian_name.errors %}
-          <span class="text-red-400 text-sm">{{ error }}</span>
-        {% endfor %}
-      </div>
+    <!-- Person Details Card -->
+    <div class="bg-transparent rounded-2xl shadow-lg hover:shadow-2xl transition p-6 sm:p-8 w-full animate-card">
+      <h3 class="text-xl font-bold mb-4 flex items-center justify-center gap-2">👤 Person Details</h3>
+      <div class="border-t border-gray-300/70 my-4"></div>
 
-      <!-- Age -->
-      <div class="fade-slide" style="animation-delay:0.4s">
-        <label class="block font-semibold mb-2">Age <span class="text-red-400">*</span></label>
-        {{ form.age(class="w-full px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300", placeholder="e.g., 25") }}
-        {% for error in form.age.errors %}
-          <span class="text-red-400 text-sm">{{ error }}</span>
-        {% endfor %}
-      </div>
+      <div class="space-y-4">
 
-      <!-- Phone Number -->
-      <div class="fade-slide" style="animation-delay:0.5s">
-        <label class="block font-semibold mb-2">Phone Number <span class="text-red-400">*</span></label>
-        {{ form.phone_number(class="w-full px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300", placeholder="e.g., 9876543210") }}
-        {% for error in form.phone_number.errors %}
-          <span class="text-red-400 text-sm">{{ error }}</span>
-        {% endfor %}
-      </div>
+        <!-- Full Name -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Full Name <span class="text-red-500">*</span>
+          </label>
+          <input id="full_name" type="text" name="full_name" required placeholder="John Doe"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition pr-10">
+          <span id="full_name_check" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="full_name_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
 
-      <!-- Address -->
-      <div class="fade-slide" style="animation-delay:0.6s">
-        <label class="block font-semibold mb-2">Address <span class="text-red-400">*</span></label>
-        {{ form.address(class="w-full px-4 py-3 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300", placeholder="e.g., 123 Main St, City") }}
-        {% for error in form.address.errors %}
-          <span class="text-red-400 text-sm">{{ error }}</span>
-        {% endfor %}
-      </div>
+        <!-- Age -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Age <span class="text-red-500">*</span>
+          </label>
+          <input id="age" type="number" name="age" required placeholder="25" min="0" max="120"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition pr-10">
+          <span id="age_check" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="age_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
 
-      <!-- Last Seen (Place + Date) -->
-      <div class="fade-slide" style="animation-delay:0.7s">
-        <label class="block font-semibold mb-2">Last Seen <span class="text-red-400">*</span></label>
-        <input type="text" name="last_seen" placeholder="e.g., City, YYYY-MM-DD"
-               class="w-full px-4 py-2 rounded-xl bg-white/20 text-white placeholder-gray-300 focus:ring-2 focus:ring-indigo-400 transition duration-300"/>
-      </div>
+        <!-- Gender -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Gender <span class="text-red-500">*</span>
+          </label>
+          <select id="gender" name="gender" required
+            class="w-full appearance-none px-4 py-2.5 rounded-xl bg-transparent border border-gray-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/60 focus:outline-none transition duration-300 cursor-pointer shadow-sm pr-10">
+            <option value="" disabled selected>Select Gender</option>
+            <option value="Male" class="text-black">Male</option>
+            <option value="Female" class="text-black">Female</option>
+            <option value="Other" class="text-black">Other</option>
+          </select>
+          <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 pointer-events-none opacity-70"
+               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+          <span id="gender_check" class="hidden absolute right-8 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="gender_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
 
-      <!-- Choose File Button & Preview -->
-      <div class="fade-slide flex flex-col items-center mt-4" style="animation-delay:0.8s">
-        <input type="file" id="photo" name="photo" accept="image/*" onchange="previewPhoto(event)"
-          class="hidden"/>
-        <label for="photo"
-               class="cursor-pointer px-6 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-indigo-600 hover:to-blue-500 text-white font-semibold shadow-lg transition transform hover:scale-105">
-          Choose File *
-        </label>
+        <!-- Guardian Name -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Guardian Name <span class="text-red-500">*</span>
+          </label>
+          <input id="guardian_name" type="text" name="guardian_name" required placeholder="Jane Doe"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition pr-10">
+          <span id="guardian_name_check" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="guardian_name_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
 
-        <div id="photo_preview_container" class="mt-4 hidden relative">
-          <img id="photo_preview" src="#" alt="Photo Preview" class="max-h-56 rounded-xl shadow-lg border border-gray-500"/>
-          <button type="button" onclick="clearPhoto()" 
-                  class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-xl shadow-md transition transform hover:scale-105">
-            ✕
-          </button>
+        <!-- Phone Number -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Guardian Phone Number <span class="text-red-500">*</span>
+          </label>
+          <input id="phone_number" type="text" name="phone_number" required placeholder="9876543210" pattern="[0-9]{10,15}"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition pr-10">
+          <span id="phone_number_check" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="phone_number_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
+
+        <!-- Address -->
+        <div class="relative">
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Address <span class="text-red-500">*</span>
+          </label>
+          <textarea id="address" name="address" rows="3" required placeholder="123 Main St, Springfield, near City Mall"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition pr-10"></textarea>
+          <span id="address_check" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">✔</span>
+          <p id="address_error" class="text-red-500 text-sm mt-1 hidden">Required</p>
+        </div>
+
+        <!-- Last Seen (optional) -->
+        <div>
+          <label class="block font-medium mb-1 text-sm sm:text-base text-left">
+            Last Seen <span class="opacity-70 italic">(optional)</span>
+          </label>
+          <input type="text" name="last_seen" placeholder="City, DD-MM-YYYY"
+            class="w-full px-4 py-2.5 rounded-xl bg-transparent text-current placeholder-gray-500 border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition">
         </div>
       </div>
+    </div>
 
-      <!-- Submit Button -->
-      <div class="mt-6">
-        {{ form.submit(class="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-pink-600 hover:to-purple-600 text-white font-semibold text-lg shadow-lg transform transition hover:scale-105 duration-300") }}
+    <!-- Photo Upload + Register Card -->
+    <div class="bg-transparent rounded-2xl shadow-lg hover:shadow-2xl transition p-6 sm:p-8 space-y-6 text-center w-full animate-card">
+      <h3 class="text-lg font-semibold">📸 Upload Photo <span class="text-red-500">*</span></h3>
+
+      <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-3 items-center">
+        <label class="cursor-pointer px-4 py-2 bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
+              text-white rounded-lg shadow hover:scale-105 transition text-sm sm:text-base">
+          <input id="photo_file" type="file" name="photo_file" accept="image/*" class="hidden" onchange="previewPhoto(event)">
+          📁 Choose file
+        </label>
+
+        <!-- Webcam (hidden on mobile) -->
+        <button type="button" onclick="toggleWebcam()" 
+          class="hidden sm:inline-flex px-4 py-2 bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 
+                 text-white rounded-lg shadow hover:scale-105 transition text-sm sm:text-base">
+          🎥 Use Webcam
+        </button>
       </div>
 
-    </form>
-  </div>
-</main>
+      <!-- Webcam Preview -->
+      <div id="webcam_container" class="hidden mt-4 relative w-full aspect-square">
+        <video id="webcam" autoplay playsinline class="w-full h-full rounded-xl shadow-md border border-gray-300 object-cover"></video>
+        <button type="button" onclick="capturePhoto()" class="absolute bottom-2 left-2 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md shadow text-sm">✅ Capture</button>
+        <button type="button" onclick="closeWebcam()" class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md shadow text-sm">✕ Close</button>
+      </div>
 
-<!-- Animations -->
+      <!-- Photo Preview -->
+      <div id="photo_preview_container" class="hidden mt-4 relative inline-block">
+        <img id="photo_preview" src="" alt="Preview" class="w-32 h-32 object-cover rounded-xl shadow-lg border border-gray-300 mx-auto">
+        <span id="photo_check" class="hidden absolute top-1 left-1 text-green-500 text-lg">✔</span>
+        <button type="button" onclick="clearPhoto()" class="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center shadow text-xs">✕</button>
+      </div>
+
+      <p id="photo_error" class="text-red-500 text-sm mt-1 hidden">Photo is required</p>
+      <input type="hidden" id="photo_input" name="photo_input">
+
+      <div class="flex flex-col items-center">
+        <button type="submit" class="relative w-full sm:w-3/4 px-10 py-2.5 rounded-2xl 
+                bg-gradient-to-r from-pink-500 via-red-500 to-purple-600 
+                text-white font-semibold shadow-xl hover:shadow-2xl hover:scale-105 
+                transition text-lg tracking-wide flex items-center justify-center gap-2 overflow-hidden">
+          Register
+          <span class="absolute inset-0 rounded-2xl shimmer"></span>
+        </button>
+        <p class="text-sm flex items-center justify-center gap-2 mt-2 opacity-90">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+          </svg>
+          Please review details before submitting.
+        </p>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+let webcamStream = null;
+
+function toggleWebcam() {
+  const container = document.getElementById("webcam_container");
+  if (container.classList.contains("hidden")) openWebcam();
+  else closeWebcam();
+}
+
+function openWebcam() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      webcamStream = stream;
+      document.getElementById("webcam").srcObject = stream;
+      document.getElementById("webcam_container").classList.remove("hidden");
+    })
+    .catch(err => { alert("Webcam access denied."); console.error(err); });
+}
+
+function closeWebcam() {
+  if (webcamStream) {
+    webcamStream.getTracks().forEach(track => track.stop());
+    webcamStream = null;
+  }
+  document.getElementById("webcam_container").classList.add("hidden");
+}
+
+function capturePhoto() {
+  const video = document.getElementById("webcam");
+  const canvas = document.createElement("canvas");
+  canvas.width = video.videoWidth || 640;
+  canvas.height = video.videoHeight || 480;
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL("image/png");
+  document.getElementById("photo_preview").src = dataUrl;
+  document.getElementById("photo_preview_container").classList.remove("hidden");
+  document.getElementById("photo_input").value = dataUrl;
+  document.getElementById("photo_file").value = "";
+  updatePhotoValidity();
+  closeWebcam();
+}
+
+function previewPhoto(event) {
+  const file = event.target.files[0];
+  const previewContainer = document.getElementById("photo_preview_container");
+  const previewImg = document.getElementById("photo_preview");
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewImg.src = e.target.result;
+      previewContainer.classList.remove("hidden");
+      document.getElementById("photo_input").value = "";
+      updatePhotoValidity();
+    };
+    reader.readAsDataURL(file);
+  } else { clearPhoto(); }
+}
+
+function clearPhoto() {
+  document.getElementById("photo_preview_container").classList.add("hidden");
+  document.getElementById("photo_preview").src = "";
+  document.getElementById("photo_input").value = "";
+  document.getElementById("photo_file").value = "";
+  updatePhotoValidity();
+}
+
+const fields = [
+  {id: "full_name", errorId: "full_name_error", checkId: "full_name_check"},
+  {id: "age", errorId: "age_error", checkId: "age_check"},
+  {id: "gender", errorId: "gender_error", checkId: "gender_check"},
+  {id: "guardian_name", errorId: "guardian_name_error", checkId: "guardian_name_check"},
+  {id: "phone_number", errorId: "phone_number_error", checkId: "phone_number_check"},
+  {id: "address", errorId: "address_error", checkId: "address_check"}
+];
+
+function validateField(fieldId, errorId, checkId) {
+  const input = document.getElementById(fieldId);
+  const err = document.getElementById(errorId);
+  const check = document.getElementById(checkId);
+  if (!input.value.trim() || (input.tagName === "SELECT" && input.value === "")) {
+    err.classList.remove("hidden");
+    check.classList.add("hidden");
+    return false;
+  } else {
+    err.classList.add("hidden");
+    check.classList.remove("hidden");
+    return true;
+  }
+}
+
+fields.forEach(f => {
+  const input = document.getElementById(f.id);
+  if (!input) return;
+  if (input.tagName === "SELECT") input.addEventListener("change", () => validateField(f.id, f.errorId, f.checkId));
+  else input.addEventListener("input", () => validateField(f.id, f.errorId, f.checkId));
+});
+
+const photoInput = document.getElementById("photo_input");
+const fileInput = document.getElementById("photo_file");
+
+function updatePhotoValidity() {
+  const photoErr = document.getElementById("photo_error");
+  const photoCheck = document.getElementById("photo_check");
+  const hasWebcam = !!photoInput.value;
+  const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+  const ok = hasWebcam || hasFile;
+  if (!ok) { photoErr.classList.remove("hidden"); photoCheck.classList.add("hidden"); }
+  else { photoErr.classList.add("hidden"); photoCheck.classList.remove("hidden"); }
+  return ok;
+}
+
+if (fileInput) fileInput.addEventListener("change", updatePhotoValidity);
+if (photoInput) photoInput.addEventListener("input", updatePhotoValidity);
+
+document.getElementById("register_form").addEventListener("submit", function(e){
+  let valid = true;
+  let firstInvalid = null;
+  fields.forEach(f => { 
+    if (!validateField(f.id, f.errorId, f.checkId)) {
+      valid = false;
+      if (!firstInvalid) firstInvalid = document.getElementById(f.id);
+    }
+  });
+  if (!updatePhotoValidity()) {
+    valid = false;
+    if (!firstInvalid) firstInvalid = document.getElementById("photo_file");
+  }
+  if (!valid) {
+    e.preventDefault();
+    if (firstInvalid) firstInvalid.scrollIntoView({behavior: "smooth", block: "center"});
+    if (firstInvalid) firstInvalid.focus({preventScroll: true});
+  } else {
+    // Subscribe to push notifications
+    subscribeToPush();
+  }
+});
+
+// ================= Push Notifications =================
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  return Uint8Array.from([...rawData].map(c => c.charCodeAt(0)));
+}
+
+function subscribeToPush() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    reg.pushManager.getSubscription().then(sub => {
+      if (sub) return sub;
+      return reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array('<YOUR_PUBLIC_VAPID_KEY>')
+      });
+    }).then(subscription => {
+      console.log('Push subscription:', subscription);
+      // Send subscription to backend to save
+      fetch('/subscribe', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(subscription)
+      });
+    }).catch(err => console.error('Push subscription failed', err));
+  });
+}
+</script>
+
+<!-- ================= CSS ================= -->
 <style>
-  .fade-slide { opacity: 0; transform: translateY(20px); animation: fadeSlide 0.6s forwards; }
-  @keyframes fadeSlide { to { opacity: 1; transform: translateY(0); } }
-  .animate-fade-in { animation: fadeIn 1s ease-in-out; }
-  @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-
-  .animate-slide-up-delay-head { animation: slideUpHead 0.8s ease forwards; animation-delay:0.2s; }
-  @keyframes slideUpHead { 0% { opacity:0; transform:translateY(15px); } 100% { opacity:1; transform:translateY(0); } }
-
-  .animate-slide-up-delay-desc { animation: slideUpDesc 0.8s ease forwards; animation-delay:0.3s; }
-  @keyframes slideUpDesc { 0% { opacity:0; transform:translateY(15px); } 100% { opacity:1; transform:translateY(0); } }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.shimmer { background: linear-gradient(120deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 40%, transparent 100%); animation: shimmer 2.5s infinite linear; }
+@keyframes pageFadeSlide { 0% { opacity:0; transform:translateY(14px) scale(0.98); filter:blur(2px); } 100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } }
+.animate-page-enter { animation: pageFadeSlide .7s cubic-bezier(.22,.61,.36,1) both; will-change: opacity, transform, filter; }
+@keyframes cardRise { 0% { opacity:0; transform:translateY(10px); } 100% { opacity:1; transform:translateY(0); } }
+.animate-card { animation: cardRise .55s cubic-bezier(.22,.61,.36,1) both; will-change: opacity, transform; }
+.animate-card:nth-of-type(1) { animation-delay: .08s; }
+.animate-card:nth-of-type(2) { animation-delay: .18s; }
+@media (prefers-reduced-motion: reduce) { .animate-page-enter, .animate-card, .shimmer { animation: none !important; } }
 </style>
 
-<script>
-  function previewPhoto(event) {
-    const previewContainer = document.getElementById('photo_preview_container');
-    const preview = document.getElementById('photo_preview');
-    const file = event.target.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        preview.src = e.target.result;
-        previewContainer.classList.remove('hidden');
-      }
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function clearPhoto() {
-    document.getElementById('photo').value = "";
-    document.getElementById('photo_preview_container').classList.add('hidden');
-  }
-</script>
 {% endblock %}

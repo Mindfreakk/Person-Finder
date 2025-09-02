@@ -1,5 +1,12 @@
 {
     "Codegeex.Chat.LanguagePreference": "English",
     "Codegeex.Comment.LanguagePreference": "English",
-    "Codegeex.SidebarUI.LanguagePreference": "English"
+    "Codegeex.SidebarUI.LanguagePreference": "English",
+    "editor.fontSize": 14,
+    "files.associations": {
+        "*.html": "jinja-html",
+        "*.htm": "jinja-html",
+        "*.jinja": "jinja-html",
+        "*.jinja2": "jinja-html"
+    }
 }

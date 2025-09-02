@@ -1,8 +1,15 @@
 <!-- Footer -->
-<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
+<footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white relative">
   <div class="container mx-auto px-4">
-    <p class="text-sm">© {{ current_year }} PersonFinder. All rights reserved.</p>
-    <p class="text-xs mt-1">Developed by AMIR • Powered by AI & Machine Learning</p>
+   <p class="text-sm">
+  © {{ current_year }} 
+  <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold animate-gradient">
+    PersonFinder
+  </span>. All rights reserved.
+</p>
+    <p class="text-xs mt-1">
+      <a href="{{ url_for('developers') }}" class="hover:underline text-white">Know About Developers</a> • Powered by AI & Machine Learning
+    </p>
     <div class="mt-3 flex justify-center gap-4 text-sm">
       <a class="hover:underline" href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
       <span>|</span>
@@ -10,3 +17,34 @@
     </div>
   </div>
 </footer>
+
+<!-- Scroll to Top Button -->
+<button id="scrollToTopBtn"
+        class="hidden fixed bottom-5 right-5 sm:bottom-6 sm:right-6
+               bg-transparent border border-white/40
+               text-white p-3 rounded-full 
+               hover:border-white hover:scale-110
+               transition-all duration-300 z-50">
+  <i data-lucide="arrow-up" class="w-5 h-5"></i>
+</button>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+
+  // Show/Hide button on scroll
+  const scrollBtn = document.getElementById("scrollToTopBtn");
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 200) {
+      scrollBtn.classList.remove("hidden");
+    } else {
+      scrollBtn.classList.add("hidden");
+    }
+  });
+
+  // Smooth scroll to top
+  scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+</script>

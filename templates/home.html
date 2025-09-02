@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% block title %}Home - PersonFinder{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="flex flex-col items-center justify-center min-h-screen min-h-[100svh] px-4 sm:px-6 lg:px-8 text-center hero-fit pt-[4cm]">
+  
+  <!-- Hero Image -->
+  <div class="flex justify-center -mt-4 mb-[0.5cm] lg:mb-16 sm:mt-0 opacity-0 animate-slide-up-delay-img">
+    <img src="{{ url_for('static', filename='Images/face_index.png') }}" 
+         alt="Face Index"
+         class="hero-img mx-auto h-auto">
+  </div>
+
+  <!-- Heading -->
+  <h1 class="opacity-0 animate-slide-up-scale -mt-4 text-[clamp(1.5rem,5vw,2.5rem)] font-extrabold mb-2 leading-tight text-white lg:-mt-2">
+    Welcome to 
+    <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+      PersonFinder
+    </span>
+  </h1>
+
+  <!-- Subheading -->
+  <p class="mx-auto text-[clamp(0.9rem,2.8vw,1.15rem)] leading-relaxed text-gray-300 max-w-2xl opacity-0 animate-slide-up-delay-1 -mt-2 mb-5 px-2 lg:-mt-1">
+    AI-powered platform to help 
+    <span class="text-green-400">locate missing persons</span> 
+    using <span class="text-pink-400">facial recognition</span> 
+    and predictive analytics.
+  </p>
+
+  <!-- Divider Above Buttons -->
+  <div class="relative w-full flex justify-center my-6 sm:my-8">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Get Started
+    </span>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center opacity-0 animate-slide-up-delay-2 mt-4 sm:mt-6 lg:mt-6">
+    <a href="{{ url_for('register') }}" 
+       class="px-5 py-3 sm:px-6 sm:py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform">
+      Register a Person
+    </a>
+    <a href="{{ url_for('search') }}" 
+       class="px-5 py-3 sm:px-6 sm:py-3 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform">
+      Search for a Person
+    </a>
+  </div>
+</div>
+
+<!-- ===== Push everything below hero down by 4cm ===== -->
+<div class="mt-[4cm]">
+
+  <!-- ===== Stats Divider ===== -->
+  <div class="relative w-full flex justify-center my-12 sm:my-16">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Live Stats
+    </span>
+  </div>
+
+  <!-- Futuristic Stats Section -->
+  <div id="stats-section" class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
+
+    <!-- Registrations -->
+    <div class="stat-card shimmer shimmer-pink relative group p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 
+                shadow-lg overflow-hidden transform scale-90 opacity-0 transition duration-700 ease-out
+                hover:from-pink-500 hover:via-pink-600 hover:to-pink-700">
+      <div class="relative z-10 flex flex-col items-center text-center">
+        <span id="registrations-count" class="text-4xl sm:text-5xl font-bold text-white" data-target="{{ registrations_count|default(0) }}">0</span>
+        <p class="text-gray-300 mt-2 font-medium">Registrations Completed</p>
+      </div>
+    </div>
+
+    <!-- Searches -->
+    <div class="stat-card shimmer shimmer-green relative group p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 
+                shadow-lg overflow-hidden transform scale-90 opacity-0 transition duration-700 ease-out
+                delay-200 hover:from-green-400 hover:via-green-500 hover:to-green-600">
+      <div class="relative z-10 flex flex-col items-center text-center">
+        <span id="searches-count" class="text-4xl sm:text-5xl font-bold text-white" data-target="{{ searches_count|default(0) }}">0</span>
+        <p class="text-gray-300 mt-2 font-medium">Searches Traced</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modern Divider -->
+  <div class="relative w-full flex justify-center mt-[4cm]">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Explore Features
+    </span>
+  </div>
+
+  <!-- Feature Cards Section -->
+  <div class="mt-10 sm:mt-14 max-w-6xl mx-auto text-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+      <!-- Feature 1 -->
+      <div class="group shimmer shimmer-blue p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 animate-slide-up">
+        <i data-lucide="user-search" class="w-10 h-10 text-blue-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+        <h3 class="text-lg font-semibold text-white">Facial Recognition</h3>
+        <p class="text-gray-300 mt-2 text-sm">AI-powered matching system for locating missing persons quickly.</p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="group shimmer shimmer-green p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 animate-slide-up delay-100">
+        <i data-lucide="activity" class="w-10 h-10 text-green-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+        <h3 class="text-lg font-semibold text-white">Predictive Analytics</h3>
+        <p class="text-gray-300 mt-2 text-sm">Smart predictions to identify possible matches and trends.</p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="group shimmer shimmer-pink p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 animate-slide-up delay-200">
+        <i data-lucide="shield-check" class="w-10 h-10 text-purple-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+        <h3 class="text-lg font-semibold text-white">Secure Platform</h3>
+        <p class="text-gray-300 mt-2 text-sm">Your data is encrypted and privacy is ensured at all stages.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Why Choose PersonFinder Section -->
+  <div class="relative w-full flex justify-center mt-[4cm]">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Why Choose 
+      <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">
+        PersonFinder
+      </span>?
+    </span>
+  </div>
+
+  <!-- Feature Grid Cards 4–8 -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 px-4 sm:px-6 max-w-6xl mx-auto mb-12 mt-10">
+
+    <div class="group shimmer shimmer-yellow p-5 bg-gray-800 rounded-2xl shadow-lg text-center hover:scale-105 transition transform opacity-0 animate-slide-up">
+      <i data-lucide="zap" class="w-8 h-8 text-yellow-400 mx-auto mb-3 group-hover:text-white transition-colors duration-300"></i>
+      <h4 class="text-white font-semibold">Fast Processing</h4>
+      <p class="text-gray-300 text-sm mt-2">Get instant results powered by AI models.</p>
+    </div>
+
+    <div class="group shimmer shimmer-blue p-5 bg-gray-800 rounded-2xl shadow-lg text-center hover:scale-105 transition transform opacity-0 animate-slide-up delay-100">
+      <i data-lucide="globe" class="w-8 h-8 text-blue-400 mx-auto mb-3 group-hover:text-white transition-colors duration-300"></i>
+      <h4 class="text-white font-semibold">Global Reach</h4>
+      <p class="text-gray-300 text-sm mt-2">Connects databases across multiple regions.</p>
+    </div>
+
+    <div class="group shimmer shimmer-pink p-5 bg-gray-800 rounded-2xl shadow-lg text-center hover:scale-105 transition transform opacity-0 animate-slide-up delay-200">
+      <i data-lucide="users" class="w-8 h-8 text-pink-400 mx-auto mb-3 group-hover:text-white transition-colors duration-300"></i>
+      <h4 class="text-white font-semibold">Community Support</h4>
+      <p class="text-gray-300 text-sm mt-2">Empowering communities to report and help.</p>
+    </div>
+
+    <div class="group shimmer shimmer-green p-5 bg-gray-800 rounded-2xl shadow-lg text-center hover:scale-105 transition transform opacity-0 animate-slide-up delay-300">
+      <i data-lucide="lock" class="w-8 h-8 text-green-400 mx-auto mb-3 group-hover:text-white transition-colors duration-300"></i>
+      <h4 class="text-white font-semibold">Data Privacy</h4>
+      <p class="text-gray-300 text-sm mt-2">Strict policies for safety and confidentiality.</p>
+    </div>
+
+    <div class="group shimmer shimmer-indigo p-5 bg-gray-800 rounded-2xl shadow-lg text-center hover:scale-105 transition transform opacity-0 animate-slide-up delay-400">
+      <i data-lucide="star" class="w-8 h-8 text-purple-400 mx-auto mb-3 group-hover:text-white transition-colors duration-300"></i>
+      <h4 class="text-white font-semibold">Trusted Platform</h4>
+      <p class="text-gray-300 text-sm mt-2">Relied upon by families and organizations worldwide.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Lucide icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script> lucide.createIcons(); </script>
+
+<!-- Scroll-triggered Count-Up JS -->
+<script>
+function animateCountEl(el, maxValue = null) {
+  const target = parseInt(el.dataset.target || 0, 10) || 0;
+  const finalTarget = (maxValue !== null && target > maxValue) ? maxValue : target;
+  let current = 0;
+  const steps = 80;
+  const increment = Math.max(1, Math.ceil(finalTarget / steps));
+  const delay = 30;
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= finalTarget) {
+      el.textContent = finalTarget.toLocaleString();
+      clearInterval(timer);
+    } else {
+      el.textContent = current.toLocaleString();
+    }
+  }, delay);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Stats Section
+  const statsSection = document.getElementById("stats-section");
+  const statCards = document.querySelectorAll(".stat-card");
+  const registrationsEl = document.getElementById("registrations-count");
+  const searchesEl = document.getElementById("searches-count");
+  let started = false;
+
+  const observerStats = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !started) {
+        statCards.forEach((card, i) => {
+          setTimeout(() => {
+            card.classList.remove("scale-90", "opacity-0");
+            card.classList.add("scale-100", "opacity-100");
+          }, i * 180);
+        });
+
+        setTimeout(() => { animateCountEl(registrationsEl); }, 300);
+        setTimeout(() => { 
+          const maxSearches = parseInt(registrationsEl.textContent.replace(/,/g, ''), 10);
+          animateCountEl(searchesEl, maxSearches); 
+        }, 480);
+
+        started = true;
+      }
+    });
+  }, { threshold: 0.3 });
+
+  if (statsSection) observerStats.observe(statsSection);
+
+  // Feature Cards Section
+  const featureCards = document.querySelectorAll(".animate-slide-up, .animate-slide-up-delay-3");
+  const observerFeatures = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.remove("opacity-0");
+        entry.target.classList.add("opacity-100");
+        observerFeatures.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  featureCards.forEach(el => observerFeatures.observe(el));
+});
+</script>
+
+<!-- Keep hero within first screen below sticky/fixed header -->
+<script>
+(function() {
+  function setHeaderVars(){
+    const header = document.querySelector('header');
+    const h = header ? header.offsetHeight : 0;
+    document.documentElement.style.setProperty('--pf-header-h', h + 'px');
+  }
+  document.addEventListener('DOMContentLoaded', setHeaderVars);
+  window.addEventListener('resize', setHeaderVars);
+})();
+</script>
+
+<!-- Custom CSS -->
+<style>
+:root { --pf-header-h: 0px; }
+.hero-fit { min-height: calc(100svh - var(--pf-header-h, 0px)) !important; }
+.hero-img { display:block; width:7.5rem; transform: translateY(-1rem); transition: transform .25s ease, width .25s ease; }
+@media (min-width: 640px) { .hero-img { width:5rem; transform: translateY(0); } }
+@media (min-width: 768px) { .hero-img { width:6rem; } }
+@media (min-width: 1024px) { .hero-img { width:7rem; } }
+
+/* Shimmer Effect */
+.shimmer { position: relative; overflow: hidden; }
+.shimmer::before {
+  content: ""; position: absolute; top:-100%; left:-150%; width:250%; height:250%; transform: rotate(25deg);
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+  animation: shimmer-diagonal 3s infinite; pointer-events: none;
+}
+@keyframes shimmer-diagonal { 0% { transform: translateX(-150%) rotate(25deg); } 100% { transform: translateX(150%) rotate(25deg); } }
+.shimmer-yellow::before { background: linear-gradient(120deg, transparent 0%, rgba(250,204,21,0.35) 50%, transparent 100%); animation-duration: 3.5s; }
+.shimmer-pink::before   { background: linear-gradient(120deg, transparent 0%, rgba(236,72,153,0.35) 50%, transparent 100%); animation-duration: 4s; }
+.shimmer-indigo::before { background: linear-gradient(120deg, transparent 0%, rgba(99,102,241,0.35) 50%, transparent 100%); animation-duration: 5s; }
+.shimmer-cyan::before   { background: linear-gradient(120deg, transparent 0%, rgba(34,211,238,0.35) 50%, transparent 100%); animation-duration: 4.5s; }
+.shimmer-red::before    { background: linear-gradient(120deg, transparent 0%, rgba(248,113,113,0.35) 50%, transparent 100%); animation-duration: 3.8s; }
+.shimmer-blue::before   { background: linear-gradient(120deg, transparent 0%, rgba(59,130,246,0.35) 50%, transparent 100%); animation-duration: 4s; }
+.shimmer-green::before  { background: linear-gradient(120deg, transparent 0%, rgba(34,197,94,0.35) 50%, transparent 100%); animation-duration: 3.5s; }
+
+/* Slide-up animations */
+@keyframes slideUpScale {0%{opacity:0; transform:translateY(15px) scale(0.95);}100%{opacity:1;transform:translateY(0) scale(1);} }
+.animate-slide-up-scale{animation:slideUpScale 0.8s ease forwards;}
+@keyframes slideUp {0%{opacity:0; transform:translateY(15px);}100%{opacity:1;transform:translateY(0);} }
+.animate-slide-up-delay-img{animation:slideUp 0.8s ease forwards; animation-delay:0.2s;}
+.animate-slide-up-delay-1{animation:slideUp 0.8s ease forwards; animation-delay:0.4s;}
+.animate-slide-up-delay-2{animation:slideUp 0.8s ease forwards; animation-delay:0.6s;}
+.animate-slide-up-delay-3{animation:slideUp 0.8s ease forwards; animation-delay:0.9s;}
+.opacity-100 { opacity: 1 !important; }
+</style>
+
+{% endblock %}

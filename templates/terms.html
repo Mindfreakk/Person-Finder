@@ -1,270 +1,165 @@
-<!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1" name="viewport"/>
-  <title>Terms of Service - PersonFinder</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
+{% extends "base.html" %}
 
-    .policy-heading {
-      font-weight: 900;
-      font-size: 2.75rem;
-      background: linear-gradient(90deg, #6366F1, #3B82F6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 2rem;
-      user-select: none;
-    }
+{% block title %}Terms of Service - PersonFinder{% endblock %}
 
-    /* Accordion */
-    .accordion-item {
-      border-bottom: 1px solid #4B5563; /* gray-600 */
-      margin-bottom: 0.5rem;
-      border-radius: 0.5rem;
-      overflow: hidden;
-      background-color: rgba(255 255 255 / 0.04);
-      transition: background-color 0.3s ease;
-    }
+{% block content %}
+<div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-page-enter mt-20">
 
-    .accordion-item:hover {
-      background-color: rgba(255 255 255 / 0.08);
-    }
+    <!-- Heading -->
+    <header class="mb-6 text-center">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">Terms of Service</h1>
+      <p class="mx-auto text-[clamp(0.8rem,2.2vw,1rem)] leading-relaxed max-w-2xl mt-3 sm:mt-4 px-2 text-center">
+        Please read these terms carefully. 
+        <span class="text-green-400 font-semibold">By using PersonFinder,</span> 
+        you agree to these rules and conditions.
+      </p>
+    </header>
 
-    .accordion-header {
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 1.125rem;
-      padding: 1rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      outline-offset: 3px;
-      outline-color: transparent;
-      border-radius: 0.5rem;
-    }
-
-    .accordion-header:focus {
-      outline-style: solid;
-      outline-color: #60A5FA; /* blue-400 */
-      background-color: rgba(255 255 255 / 0.12);
-    }
-
-    .accordion-icon {
-      transition: transform 0.3s ease, stroke 0.3s ease;
-      stroke: #93C5FD; /* light blue */
-      flex-shrink: 0;
-      width: 24px;
-      height: 24px;
-    }
-
-    .accordion-icon.rotate {
-      transform: rotate(180deg);
-      stroke: #60A5FA; /* blue-400 */
-    }
-
-    .accordion-content {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
-      padding: 0 1.5rem;
-      color: #D1D5DB; /* gray-300 */
-      font-size: 1rem;
-      line-height: 1.6;
-      user-select: text;
-    }
-
-    .accordion-content.open {
-      max-height: 1000px; /* sufficiently large for content */
-      opacity: 1;
-      padding-bottom: 1rem;
-    }
-
-    /* Slide + fade content animation */
-    .accordion-content.open > div {
-      animation: fadeSlideIn 0.35s ease forwards;
-    }
-
-    @keyframes fadeSlideIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    ul.list-disc {
-      margin-top: 0.5rem;
-      margin-left: 1.5rem;
-      list-style-type: disc;
-      color: #CBD5E1; /* lighter gray */
-    }
-
-    ul.list-disc li {
-      margin-bottom: 0.3rem;
-    }
-
-    /* Container */
-    main {
-      max-width: 768px;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 480px) {
-      .policy-heading {
-        font-size: 2rem;
-      }
-      .accordion-header {
-        font-size: 1rem;
-        padding: 0.8rem 1rem;
-      }
-      .accordion-content {
-        font-size: 0.95rem;
-      }
-    }
-  </style>
-</head>
-<body class="bg-gradient-to-br from-indigo-900 to-blue-700 text-white min-h-screen flex flex-col">
-
-  <!-- Header -->
-  <header class="bg-gradient-to-r from-indigo-800 to-blue-600 shadow-lg py-4">
-    <div class="container mx-auto flex items-center justify-between px-4">
-      <a class="flex items-center gap-3" data-aos="fade-down" href="{{ url_for('home') }}">
-        <img alt="Logo" class="w-12 h-12 rounded-full shadow-md transform transition-all duration-500 hover:scale-110" src="{{ url_for('static', filename='images/elderly.jpeg') }}"/>
-        <div class="flex flex-col">
-          <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-    PersonFinder
-</h1>
-          <p class="text-sm text-gray-200">Reunite Loved Ones</p>
-        </div>
-      </a>
-      <nav class="hidden md:flex gap-6 text-lg">
-        <a class="hover:underline" href="{{ url_for('home') }}">Home</a>
-        <a class="hover:underline" href="{{ url_for('register') }}">Register</a>
-        <a class="hover:underline" href="{{ url_for('search') }}">Search</a>
-      </nav>
-      <button aria-label="Toggle menu" class="md:hidden text-white focus:outline-none" id="menu-btn" type="button">
-        <svg class="h-8 w-8 block" fill="none" id="menu-open-icon" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-        <svg class="h-8 w-8 hidden" fill="none" id="menu-close-icon" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </button>
+    <!-- Divider -->
+    <div class="relative w-full flex justify-center my-12 sm:my-16">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Details
+      </span>
     </div>
-    <nav class="hidden md:hidden flex flex-col gap-4 mt-4 px-4 text-lg" id="mobile-menu" role="menu" aria-label="Mobile navigation menu">
-      <a class="hover:underline" href="{{ url_for('home') }}" role="menuitem" tabindex="0">Home</a>
-      <a class="hover:underline" href="{{ url_for('register') }}" role="menuitem" tabindex="0">Register</a>
-      <a class="hover:underline" href="{{ url_for('search') }}" role="menuitem" tabindex="0">Search</a>
-    </nav>
-  </header>
 
-  <!-- Main Terms Section -->
-  <main class="flex-grow container mx-auto px-4 py-10" data-aos="fade-up">
-    <h1 class="policy-heading text-center" data-aos="fade-down" data-aos-delay="100">Terms of Service</h1>
+    <!-- Accordion -->
+    <div id="tos-accordion" class="space-y-3">
 
-    <div class="accordion" role="region" aria-live="polite" aria-atomic="true" data-aos="fade-up" data-aos-delay="200">
-      {% for section in [
+      {% set sections = [
         {'title': '1. Acceptance of Terms', 'content': '<p>By accessing and using PersonFinder, you agree to comply with and be bound by these Terms of Service. If you do not agree, please discontinue use.</p>'},
         {'title': '2. Use of the Service', 'content': '<p>You agree to use PersonFinder only for lawful purposes and in accordance with applicable laws. Misuse, including fraudulent reports or harassment, is strictly prohibited.</p>'},
         {'title': '3. User Accounts', 'content': '<p>You are responsible for maintaining the confidentiality of your account and for all activities under your account.</p>'},
         {'title': '4. Intellectual Property', 'content': '<p>All content, trademarks, and data on PersonFinder are the property of their respective owners and are protected by applicable intellectual property laws.</p>'},
         {'title': '5. Limitation of Liability', 'content': '<p>PersonFinder is provided "as is" without warranties of any kind. We are not liable for any damages resulting from your use of the service.</p>'},
-        {'title': '6. Changes to Terms', 'content': '<p>We may update these Terms of Service from time to time. Continued use of the platform constitutes acceptance of the new terms.</p>'}
+        {'title': '6. Changes to Terms', 'content': '<p>We may update these Terms of Service from time to time to reflect improvements in our platform, legal requirements, or privacy practices. Your continued use of PersonFinder after updates constitutes acceptance of the revised terms. We recommend reviewing the Terms periodically to stay informed.</p>'}
       ] %}
-      <div class="accordion-item">
-        <button class="accordion-header" aria-expanded="false" aria-controls="section-{{ loop.index }}" id="accordion-header-{{ loop.index }}" type="button">
-          <span>{{ section.title|safe }}</span>
-          <svg class="accordion-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div class="accordion-content" id="section-{{ loop.index }}" role="region" aria-labelledby="accordion-header-{{ loop.index }}">
-          <div class="py-2">{{ section.content|safe }}</div>
+
+      {% for section in sections %}
+      <article class="accordion-item bg-transparent rounded-lg" id="section-{{ loop.index }}">
+        <header class="w-full">
+          <button
+            type="button"
+            id="accordion-header-{{ loop.index }}"
+            class="accordion-header group flex items-start justify-between w-full px-4 py-4 sm:px-5 sm:py-5 text-left rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            aria-expanded="false"
+            aria-controls="section-content-{{ loop.index }}">
+            <div class="flex-1 pr-4">
+              <h3 class="text-white font-semibold text-base sm:text-lg">{{ section.title|safe }}</h3>
+            </div>
+
+            <svg class="accordion-icon w-5 h-5 text-white/80 transform transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </header>
+
+        <div id="section-content-{{ loop.index }}" class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300" role="region" aria-labelledby="accordion-header-{{ loop.index }}">
+          <div class="accordion-inner px-4 pb-5 pt-3 sm:px-5 sm:pt-4 text-sm text-gray-400 leading-relaxed">
+            {{ section.content|safe }}
+          </div>
         </div>
-      </div>
+      </article>
       {% endfor %}
     </div>
-  </main>
+  </div>
+</div>
 
-  <!-- Footer -->
-  <footer class="bg-gradient-to-r from-indigo-800 to-blue-600 py-6 mt-auto text-center text-white">
-    <div class="container mx-auto px-4">
-      <p class="text-sm">© {{ current_year }} PersonFinder. All rights reserved.</p>
-      <p class="text-xs mt-1">Developed by AMIR • Powered by AI &amp; Machine Learning</p>
-      <div class="mt-3 flex justify-center gap-4 text-sm">
-        <a class="hover:underline" href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
-        <span>|</span>
-        <a class="hover:underline" href="{{ url_for('terms') }}">Terms of Service</a>
-      </div>
+<!-- ================= CONSENT POPUP ================= -->
+<div id="tos-consent" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
+  <div class="bg-white max-w-md w-full rounded-2xl shadow-xl p-6 text-center animate-fadeIn">
+    <h2 class="text-lg font-bold text-gray-800 mb-3">Accept Terms of Service</h2>
+    <p class="text-gray-600 text-sm mb-4">
+      To continue using PersonFinder, you must accept our 
+      <a href="/terms" class="text-blue-600 hover:underline">Terms of Service</a>.
+    </p>
+    <div class="flex gap-3 justify-center">
+      <button id="reject-btn" class="px-4 py-2 rounded-lg bg-red-300 hover:bg-red-400 text-gray-800 font-medium">Reject</button>
+      <button id="accept-btn" class="px-4 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium">Accept</button>
     </div>
-  </footer>
+  </div>
+</div>
 
-  <script>
-    AOS.init();
+<style>
+  /* Accordion styles */
+  .accordion-header:hover { background-color: rgba(255,255,255,0.02); }
+  .accordion-header:focus { box-shadow: 0 0 0 4px rgba(124,58,237,0.08); outline: none; border-radius: .5rem; }
+  .accordion-content { transition: max-height 340ms ease; }
+  .accordion-icon.rotate-180 { transform: rotate(180deg); }
 
-    const headers = document.querySelectorAll('.accordion-header');
+  /* Popup animation */
+  @keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+  .animate-fadeIn { animation: fadeIn 0.25s ease-out; }
+</style>
 
-    headers.forEach(header => {
-      // Toggle accordion on click or keyboard (Enter/Space)
-      function toggleAccordion() {
-        const isExpanded = header.getAttribute('aria-expanded') === 'true';
-        // Close any open accordion content except this one
-        document.querySelectorAll('.accordion-content.open').forEach(openContent => {
-          if (openContent !== header.nextElementSibling) {
-            openContent.classList.remove('open');
-            openContent.previousElementSibling.setAttribute('aria-expanded', 'false');
-            openContent.previousElementSibling.querySelector('.accordion-icon').classList.remove('rotate');
-          }
-        });
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // ----------------- ACCORDION -----------------
+  const headers = document.querySelectorAll('.accordion-header');
+  const contents = document.querySelectorAll('.accordion-content');
 
-        if (!isExpanded) {
-          const content = header.nextElementSibling;
-          content.classList.add('open');
-          header.setAttribute('aria-expanded', 'true');
-          header.querySelector('.accordion-icon').classList.add('rotate');
-        } else {
-          // close self if open
-          header.nextElementSibling.classList.remove('open');
-          header.setAttribute('aria-expanded', 'false');
-          header.querySelector('.accordion-icon').classList.remove('rotate');
+  contents.forEach(c => { c.style.maxHeight = '0px'; c.classList.remove('open'); });
+
+  function closePanel(header, content) {
+    content.style.maxHeight = '0px';
+    content.classList.remove('open');
+    header.setAttribute('aria-expanded', 'false');
+    header.querySelector('.accordion-icon')?.classList.remove('rotate-180');
+  }
+  function openPanel(header, content) {
+    const inner = content.querySelector('.accordion-inner') || content;
+    content.style.maxHeight = inner.scrollHeight + 'px';
+    content.classList.add('open');
+    header.setAttribute('aria-expanded', 'true');
+    header.querySelector('.accordion-icon')?.classList.add('rotate-180');
+  }
+  function closeAll() {
+    headers.forEach(h => closePanel(h, h.closest('.accordion-item').querySelector('.accordion-content')));
+  }
+
+  headers.forEach(header => {
+    header.addEventListener('click', function () {
+      const content = header.closest('.accordion-item').querySelector('.accordion-content');
+      if (content.classList.contains('open')) {
+        closePanel(header, content);
+      } else {
+        closeAll();
+        openPanel(header, content);
+        if (window.innerWidth < 640) {
+          setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140);
         }
       }
-
-      header.addEventListener('click', toggleAccordion);
-
-      header.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          toggleAccordion();
-        }
-      });
     });
+  });
 
-    // Mobile menu toggle
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const openIcon = document.getElementById('menu-open-icon');
-    const closeIcon = document.getElementById('menu-close-icon');
-
-    menuBtn.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.toggle('hidden');
-      openIcon.classList.toggle('hidden');
-      closeIcon.classList.toggle('hidden');
+  window.addEventListener('resize', () => {
+    contents.forEach(c => {
+      if (c.classList.contains('open')) {
+        const inner = c.querySelector('.accordion-inner') || c;
+        c.style.maxHeight = inner.scrollHeight + 'px';
+      }
     });
-  </script>
+  });
 
-</body>
-</html>
+  // ----------------- CONSENT POPUP -----------------
+  const popup = document.getElementById('tos-consent');
+  const acceptBtn = document.getElementById('accept-btn');
+  const rejectBtn = document.getElementById('reject-btn');
+
+  if (!localStorage.getItem('tosAccepted')) {
+    popup.classList.remove('hidden');
+  }
+
+  acceptBtn.addEventListener('click', () => {
+    localStorage.setItem('tosAccepted', 'true');
+    popup.classList.add('hidden');
+  });
+
+  rejectBtn.addEventListener('click', () => {
+    alert('You must accept the Terms of Service to continue using this service.');
+    // optionally redirect:
+    // window.location.href = "/";
+  });
+});
+</script>
+{% endblock %}

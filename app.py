@@ -1,295 +1,466 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-import face_recognition
-import os
-import numpy as np
+# app.py
+import os, io, uuid, base64, logging, json, random, secrets
+from math import ceil
+from datetime import datetime, timedelta
+from functools import wraps
 from PIL import Image
-from io import BytesIO
-import base64
+from dotenv import load_dotenv
+import face_recognition
+import qrcode
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    flash, send_file, jsonify, session
+)
 from werkzeug.utils import secure_filename
-import uuid
-import re
-import logging
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import (
+    LoginManager, UserMixin, login_user,
+    login_required, logout_user, current_user
+)
+from pywebpush import webpush, WebPushException
+from flask_mail import Mail, Message
 
-# ----------------- Import DB functions -----------------
+# ----------------- Import DB functions / ORM -----------------
 from database import (
-    register_person_to_db,
-    get_all_registered_people,
-    create_db,
-    delete_person_by_id,
-    get_person_by_id
+    db,
+    Person, SearchLog, PushSubscription, User,
+    register_person_to_db, get_all_registered_people,
+    get_person_by_id, delete_person_by_id,
+    find_person_by_face, log_best_match_search, get_stats,
+    authenticate_user
 )
 
-# Import Flask-WTF forms
-from forms import RegisterForm, SearchForm
+# ----------------- Env / Config -----------------
+load_dotenv()
+VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "<YOUR_PRIVATE_KEY>")
+VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "<YOUR_PUBLIC_KEY>")
+VAPID_CLAIMS = {"sub": "mailto:you@example.com"}
 
-# ----------------- Config -----------------
-UPLOAD_FOLDER = 'static/uploads'
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Amir@123")  # ⚠️ fallback for local testing
-
-# Flask setup
+# ----------------- App Config -----------------
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # ⚠️ replace with a secure random value in production
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB max
+app.secret_key = os.environ.get("FLASK_SECRET") or os.urandom(24)
+UPLOAD_DIR = os.path.join(app.root_path, "static", "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_DIR
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL", 'sqlite:///personfinder.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Enable logging
+app.config.update(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USE_TLS=True,
+    MAIL_USERNAME='Ammehz09@gmail.com',
+    MAIL_PASSWORD=os.getenv("EMAIL_APP_PASSWORD")
+)
+mail = Mail(app)
+
+# ----------------- Initialize DB -----------------
+db.init_app(app)
 logging.basicConfig(level=logging.INFO)
 
+# ----------------- Flask-Login -----------------
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+login_manager.login_message_category = "error"
+
+# ----------------- User Wrapper -----------------
+class UserLogin(UserMixin):
+    def __init__(self, user: User):
+        self.id = str(user.id)
+        self.username = user.username
+        self.role = getattr(user, "role", "user")
+
+    @property
+    def is_active(self):
+        return True
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.get(int(user_id))
+    return UserLogin(user) if user else None
+
+# ----------------- Ensure Admin Exists -----------------
+def ensure_admin_exists():
+    ADMIN_USERNAME = "admin"
+    ADMIN_PASSWORD = "Alhamdulillah@123"
+    admin = User.query.filter_by(username=ADMIN_USERNAME).first()
+    if not admin:
+        admin = User(username=ADMIN_USERNAME, role="admin")
+        admin.password_hash = generate_password_hash(ADMIN_PASSWORD)
+        db.session.add(admin)
+        db.session.commit()
+        logging.info(f"✅ Admin created: {ADMIN_USERNAME}/{ADMIN_PASSWORD}")
+    else:
+        logging.info(f"ℹ️ Admin already exists: {ADMIN_USERNAME}")
+
+# ----------------- Role Decorator -----------------
+def require_role(*roles):
+    def wrapper(fn):
+        @wraps(fn)
+        def inner(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for("login"))
+            if roles and getattr(current_user, "role", None) not in roles:
+                flash("Unauthorized access!", "error")
+                return redirect(url_for("home"))
+            return fn(*args, **kwargs)
+        return inner
+    return wrapper
 
 # ----------------- Helpers -----------------
-def fix_photo_path(person):
-    """Ensure the photo path points to an existing file or fallback placeholder."""
+def fix_photo_path(person: dict) -> dict:
     placeholder = "images/no-photo.png"
     raw = person.get("photo_path") or ""
     filename = os.path.basename(raw) if raw else ""
-    if filename:
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        if os.path.exists(file_path):
-            person["photo_path"] = f"uploads/{filename}"
-        else:
-            person["photo_path"] = placeholder
-    else:
-        person["photo_path"] = placeholder
+    person["photo_path"] = f"uploads/{filename}" if filename and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename)) else placeholder
     return person
 
+def save_uploaded_file(storage_file) -> str:
+    original = secure_filename(storage_file.filename or "upload")
+    ext = os.path.splitext(original)[1] or ".png"
+    unique = f"{uuid.uuid4().hex}{ext}"
+    abs_path = os.path.join(app.config["UPLOAD_FOLDER"], unique)
+    storage_file.save(abs_path)
+    return abs_path
 
-def extract_face_encoding(photo_path):
-    """Extract face encoding from an image file."""
-    image = face_recognition.load_image_file(photo_path)
-    face_encodings = face_recognition.face_encodings(image)
-    if not face_encodings:
-        raise ValueError("No face found in the image.")
-    return face_encodings[0]
+def save_base64_image(data_url: str) -> str:
+    if "," in data_url:
+        _, encoded = data_url.split(",", 1)
+    else:
+        encoded = data_url
+    img_bytes = io.BytesIO(base64.b64decode(encoded))
+    img = Image.open(img_bytes)
+    unique = f"{uuid.uuid4().hex}.png"
+    abs_path = os.path.join(app.config["UPLOAD_FOLDER"], unique)
+    img.save(abs_path)
+    return abs_path
 
+# ----------------- Push Notifications -----------------
+def save_subscription_to_db(person_id, subscription: dict):
+    existing = PushSubscription.query.filter_by(person_id=person_id, endpoint=subscription["endpoint"]).first()
+    if not existing:
+        new_sub = PushSubscription(
+            person_id=person_id,
+            endpoint=subscription["endpoint"],
+            p256dh=subscription["keys"]["p256dh"],
+            auth=subscription["keys"]["auth"]
+        )
+        db.session.add(new_sub)
+        db.session.commit()
 
-def compare_faces(search_encoding, registered_encoding):
-    """Compare two face encodings with tolerance."""
-    return face_recognition.compare_faces(
-        [registered_encoding], search_encoding, tolerance=0.6
-    )[0]
+def send_push_notification(person_id, title, message, url="/"):
+    subs = PushSubscription.query.filter_by(person_id=person_id).all()
+    for sub in subs:
+        try:
+            webpush(
+                subscription_info={"endpoint": sub.endpoint, "keys": {"p256dh": sub.p256dh, "auth": sub.auth}},
+                data=json.dumps({"title": title, "body": message, "url": url}),
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims=VAPID_CLAIMS
+            )
+        except WebPushException as ex:
+            logging.error(f"Push failed for {sub.id}: {ex}")
 
+# ----------------- OTP Utilities -----------------
+OTP_EXPIRY_MINUTES = 5
+RESEND_COOLDOWN_SECONDS = 30
 
-def _ensure_upload_folder():
-    """Make sure upload folder exists."""
-    folder = app.config.get('UPLOAD_FOLDER', '')
-    if folder and not os.path.exists(folder):
-        os.makedirs(folder, exist_ok=True)
+def _now(): return datetime.utcnow()
+def _generate_otp(): return f"{random.randint(100000, 999999)}"
+def _get_otp_dict(key):
+    if key not in session: session[key] = {}
+    return session[key]
 
+def store_email_otp(email, otp):
+    d = _get_otp_dict("email_otps")
+    d[email] = {"otp": otp, "expiry": (_now()+timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(), "last_sent": _now().isoformat()}
+    session.modified = True
+
+def store_phone_otp(phone, otp):
+    d = _get_otp_dict("phone_otps")
+    d[phone] = {"otp": otp, "expiry": (_now()+timedelta(minutes=OTP_EXPIRY_MINUTES)).isoformat(), "last_sent": _now().isoformat()}
+    session.modified = True
+
+def verify_otp(kind, key, otp_input):
+    d = _get_otp_dict(f"{kind}_otps")
+    record = d.get(key)
+    if not record: return False, "OTP not found"
+    if datetime.fromisoformat(record["expiry"]) <= _now(): d.pop(key, None); return False, "OTP expired"
+    if otp_input != record["otp"]: d.pop(key, None); return False, "Invalid OTP"
+    d.pop(key, None); session.modified = True
+    return True, None
 
 # ----------------- Routes -----------------
-@app.route('/')
+
+@app.route("/")
 def home():
-    all_people = get_all_registered_people()
-    recent_matches = all_people[-5:] if len(all_people) > 5 else all_people
-    recent = [fix_photo_path(p.copy()) for p in recent_matches]
-    return render_template('index.html', recent_matches=recent)
+    stats = get_stats()
+    return render_template("home.html", registrations_count=stats.get("registrations", 0), searches_count=stats.get("searches", 0))
 
+# --- Admin Dashboard ---
+@app.route("/admin/dashboard")
+@login_required
+@require_role("admin")
+def admin_dashboard():
+    page = int(request.args.get("page", 1))
+    per_page = 10
+    people_query = Person.query.order_by(Person.id.desc())
+    total_people = people_query.count()
+    people = people_query.offset((page-1)*per_page).limit(per_page).all()
+    recent_threshold = datetime.utcnow() - timedelta(hours=24)
+    for p in people:
+        p.is_recent = getattr(p, "created_at", None) and p.created_at > recent_threshold
+    total_pages = ceil(total_people / per_page)
+    stats = get_stats()
+    users = User.query.all()
+    search_logs = SearchLog.query.order_by(SearchLog.ts.desc()).limit(10).all()
+    return render_template("admin_dashboard.html", stats=stats, users=users, people=people, search_logs=search_logs, page=page, total_pages=total_pages)
 
-# ----------------- Register -----------------
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        full_name = form.full_name.data.strip()
-        guardian_name = form.guardian_name.data.strip()
-        age = form.age.data
-        phone = form.phone_number.data.strip()
-        address = form.address.data.strip()
-        last_seen_date = form.last_seen_date.data
-        last_seen_str = last_seen_date.isoformat() if last_seen_date else ""
+# --- Login / Logout ---
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "").strip()
+        admin_user = User.query.filter_by(username="admin").first()
+        if not admin_user:
+            flash("Admin account not found.", "error")
+            return redirect(url_for("login"))
+        if username.lower() != "admin":
+            flash("Only admin can log in here.", "error")
+            return redirect(url_for("login"))
+        if check_password_hash(admin_user.password_hash, password):
+            login_user(UserLogin(admin_user))
+            flash("Admin logged in successfully!", "success")
+            return redirect(url_for("admin_dashboard"))
+        else:
+            flash("Invalid password for admin.", "error")
+            return redirect(url_for("login"))
+    return render_template("login.html")
 
-        upload_photo = request.files.get('upload_photo')
-        webcam_image_b64 = (request.form.get('webcam_image') or "").strip()
-        has_upload = bool(upload_photo and upload_photo.filename.strip())
-        has_webcam = bool(webcam_image_b64)
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    flash("Logged out", "success")
+    return redirect(url_for("login"))
 
-        if not has_upload and not has_webcam:
-            flash('Please provide a photo using upload or webcam.', 'error')
-            return redirect(url_for('register'))
-        if has_upload and has_webcam:
-            flash('Choose only one photo method — either upload OR webcam.', 'error')
-            return redirect(url_for('register'))
+from datetime import datetime, timedelta
+import secrets
+from werkzeug.security import generate_password_hash
 
-        _ensure_upload_folder()
-        try:
-            if has_upload:
-                filename = secure_filename(upload_photo.filename)
-                unique_filename = f"{uuid.uuid4().hex}_{filename}"
-                photo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                upload_photo.save(photo_path)
-            else:
-                m = re.match(r'^data:image/(png|jpeg|jpg);base64,(.+)$', webcam_image_b64, flags=re.I)
-                if not m:
-                    flash('Invalid webcam image format.', 'error')
-                    return redirect(url_for('register'))
-                ext = 'jpeg' if m.group(1).lower() == 'jpg' else m.group(1).lower()
-                img_data = base64.b64decode(m.group(2))
-                unique_filename = f"{uuid.uuid4().hex}_webcam.{ext}"
-                photo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-                with open(photo_path, 'wb') as f:
-                    f.write(img_data)
-        except Exception as e:
-            logging.error(f"Error saving photo: {e}")
-            flash(f'Error saving photo: {e}', 'error')
-            return redirect(url_for('register'))
+# --- Forgot Password ---
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        ADMIN_EMAIL = "ammehz09@gmail.com"
+        user = User.query.filter_by(username="admin").first()
 
-        try:
-            face_encoding = extract_face_encoding(photo_path)
-        except ValueError as e:
-            flash(str(e), 'error')
-            if os.path.exists(photo_path):
-                os.remove(photo_path)
-            return redirect(url_for('register'))
+        if not user or email != ADMIN_EMAIL.lower():
+            flash("No admin account found with this email.", "error")
+            return redirect(url_for("forgot_password"))
 
-        register_person_to_db(
-            name=full_name,
-            age=age,
-            phone=phone,
-            address=address,
-            guardian_name=guardian_name,
-            last_seen=last_seen_str,
-            face_encoding=face_encoding.tolist(),
-            photo_path=unique_filename
+        # Generate a token and store in DB
+        token = secrets.token_urlsafe(32)
+        user.reset_token = token
+        user.reset_expiry = datetime.utcnow() + timedelta(minutes=15)
+        db.session.commit()
+
+        reset_link = url_for("reset_password", token=token, _external=True)
+
+        # Send email
+        msg = Message(
+            "PersonFinder Admin Password Reset",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[email]
         )
+        msg.body = f"Click the link below to reset your admin password (valid 15 min):\n\n{reset_link}"
+        mail.send(msg)
 
-        flash('Person registered successfully!', 'success')
-        return redirect(url_for('home'))
+        flash("Password reset link sent to your email.", "success")
+        return redirect(url_for("login"))
 
-    return render_template('register.html', form=form)
+    return render_template("forgot_password.html")
 
 
-# ----------------- Search -----------------
-@app.route('/search', methods=['GET', 'POST'])
-def search():
-    form = SearchForm()
-    matches = []
-    photo_rel_path = None
+# --- Reset Password ---
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    user = User.query.filter_by(reset_token=token).first()
+    if not user or datetime.utcnow() > user.reset_expiry:
+        flash("Invalid or expired reset link.", "error")
+        return redirect(url_for("forgot_password"))
 
-    if form.validate_on_submit():
-        photo = form.photo.data
-        last_seen = form.last_seen.data or ""
+    if request.method == "POST":
+        new_password = request.form.get("password", "").strip()
+        if len(new_password) < 6:
+            flash("Password must be at least 6 characters.", "error")
+            return redirect(request.url)
 
-        if not photo or not photo.filename.strip():
-            flash('Please upload a photo before searching.', 'error')
-            return redirect(url_for('search'))
+        user.password_hash = generate_password_hash(new_password)
+        user.reset_token = None
+        user.reset_expiry = None
+        db.session.commit()
 
-        _ensure_upload_folder()
-        unique_filename = f"{uuid.uuid4().hex}_{secure_filename(photo.filename)}"
-        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        photo_rel_path = f"uploads/{unique_filename}"
-        photo.save(photo_path)
+        flash("Password updated successfully! You can now login.", "success")
+        return redirect(url_for("login"))
 
+    return render_template("reset_password.html", token=token)
+
+
+
+# --- Register a Person ---
+@app.route("/register", methods=["GET","POST"])
+def register():
+    filename_for_preview = None
+    if request.method=="POST":
         try:
-            search_encoding = extract_face_encoding(photo_path)
-        except ValueError as e:
-            os.remove(photo_path)
-            flash(str(e), 'error')
-            return redirect(url_for('search'))
+            full_name = request.form.get("full_name","").strip()
+            age = request.form.get("age","").strip()
+            gender = request.form.get("gender","").strip()
+            guardian_name = request.form.get("guardian_name","").strip()
+            phone_number = request.form.get("phone_number","").strip()
+            address = request.form.get("address","").strip()
+            last_seen = request.form.get("last_seen","").strip()
+            photo_file = request.files.get("photo_file")
+            photo_base64 = request.form.get("photo_input")
+            photo_abs_path = None
+            if photo_file and photo_file.filename:
+                photo_abs_path = save_uploaded_file(photo_file)
+            elif photo_base64:
+                photo_abs_path = save_base64_image(photo_base64)
+            else:
+                flash("Photo is required", "error")
+                return render_template("register.html", filename=None)
+            filename_for_preview = "uploads/" + os.path.basename(photo_abs_path)
+            image = face_recognition.load_image_file(photo_abs_path)
+            encodings = face_recognition.face_encodings(image)
+            if not encodings:
+                flash("No face detected.", "error")
+                return render_template("register.html", filename=None)
+            face_encoding = encodings[0]
+            person = {
+                "full_name": full_name, "age": age, "gender": gender,
+                "guardian_name": guardian_name, "phone_number": phone_number,
+                "address": address, "last_seen": last_seen,
+                "photo_path": os.path.basename(photo_abs_path),
+                "face_encoding": face_encoding
+            }
+            register_person_to_db(person, user_id=None)
+            flash("Person registered successfully!", "success")
+            return redirect(url_for('home'))
+        except Exception as e:
+            logging.exception("Error during registration")
+            flash(f"Error: {e}", "error")
+            return render_template("register.html", filename=filename_for_preview)
+    return render_template("register.html", filename=filename_for_preview)
 
-        registered_people = get_all_registered_people()
-        for person in registered_people:
-            if compare_faces(search_encoding, np.array(person['face_encoding'])):
-                person_copy = fix_photo_path(person.copy())
-                if last_seen:
-                    person_copy['last_seen'] = last_seen
-                matches.append(person_copy)
+# --- Search ---
+@app.route("/search", methods=["GET","POST"])
+def search():
+    results, uploaded_photo_url, searched = [], None, False
+    if request.method=="POST":
+        searched = True
+        photo = request.files.get("photo")
+        if not photo or not photo.filename:
+            flash("Please upload a photo.", "error")
+            return redirect(request.url)
+        tmp_abs_path = save_uploaded_file(photo)
+        uploaded_photo_url = "uploads/" + os.path.basename(tmp_abs_path)
+        try:
+            image = face_recognition.load_image_file(tmp_abs_path)
+            encodings = face_recognition.face_encodings(image)
+            if not encodings:
+                flash("No face detected.", "error")
+            else:
+                search_encoding = encodings[0]
+                results = find_person_by_face(search_encoding, tolerance=0.6) or []
+                results = [fix_photo_path(p.copy()) for p in results]
+                log_best_match_search(uploaded_name=photo.filename, matches=results)
+        except Exception as e:
+            logging.exception("Error processing uploaded photo")
+            flash("Error processing uploaded photo.", "error")
+    return render_template("search.html", results=results, uploaded_photo=uploaded_photo_url, searched=searched)
 
-        flash(f'Found {len(matches)} matching person(s).' if matches else 'No matching person found.',
-              'success' if matches else 'error')
-
-        os.remove(photo_path)
-
-    return render_template('search.html', form=form, matches=matches, photo_path=photo_rel_path)
-
-
-# ----------------- Delete -----------------
-@app.route('/delete/<int:person_id>', methods=['POST'])
+# --- Delete Person (Admin only) ---
+@app.route("/delete/<int:person_id>", methods=["POST"])
+@login_required
+@require_role("admin")
 def delete(person_id):
-    password = request.form.get('password', '')
-    if password != ADMIN_PASSWORD:
-        flash('Invalid admin password.', 'error')
-        return redirect(url_for('search'))
     try:
-        delete_person_by_id(person_id)
-        flash('Person deleted successfully.', 'success')
+        ok = delete_person_by_id(person_id, current_user=current_user)
+        if ok:
+            person = get_person_by_id(person_id)
+            photo_name = os.path.basename((person or {}).get("photo_path") or "")
+            if photo_name:
+                try: os.remove(os.path.join(app.config["UPLOAD_FOLDER"], photo_name))
+                except: pass
+            flash("Person deleted successfully.", "success")
+        else:
+            flash("You don’t have permission.", "error")
     except Exception as e:
-        logging.error(f"Error deleting person: {e}")
-        flash(f'Error deleting person: {str(e)}', 'error')
-    return redirect(url_for('search'))
+        logging.exception("Error deleting person")
+        flash(f"Error: {e}", "error")
+    return redirect(url_for("search"))
 
-
-# ----------------- API Search Frame -----------------
-@app.route('/api/search_frame', methods=['POST'])
-def search_frame():
-    try:
-        data = request.get_json()
-        if not data or "image" not in data:
-            return jsonify({"error": "No image data provided"}), 400
-
-        image_data = data["image"]
-        if image_data.startswith("data:image"):
-            image_data = image_data.split(",")[1]
-
-        image_bytes = base64.b64decode(image_data)
-        image = Image.open(BytesIO(image_bytes))
-        face_encodings = face_recognition.face_encodings(np.array(image))
-        if not face_encodings:
-            return jsonify({"match": False})
-
-        search_encoding = face_encodings[0]
-        registered_people = get_all_registered_people()
-        for person in registered_people:
-            if compare_faces(search_encoding, np.array(person['face_encoding'])):
-                person_fixed = fix_photo_path(person.copy())
-                return jsonify({
-                    "match": True,
-                    "person": {
-                        "name": person_fixed["name"],
-                        "phone": person_fixed["phone"],
-                        "address": person_fixed["address"],
-                        "guardian_name": person_fixed.get("guardian_name"),
-                        "photo_path": person_fixed["photo_path"]
-                    }
-                })
-        return jsonify({"match": False})
-    except Exception as e:
-        logging.error(f"Error in /api/search_frame: {e}")
-        return jsonify({"error": "Server error", "details": str(e)}), 500
-
-
-# ----------------- Upload Photo -----------------
-@app.route('/upload_photo', methods=['POST'])
-def upload_photo():
-    try:
-        if 'upload_photo' in request.files:
-            upload_photo = request.files['upload_photo']
-            if not upload_photo.filename.strip():
-                return jsonify({"error": "Empty file"}), 400
-            filename = secure_filename(upload_photo.filename)
-            unique_filename = f"{uuid.uuid4().hex}_{filename}"
-            save_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-            upload_photo.save(save_path)
-            return jsonify({"success": True, "filename": unique_filename, "path": f"uploads/{unique_filename}"})
-        return jsonify({"error": "No valid image provided"}), 400
-    except Exception as e:
-        logging.error(f"Error in /upload_photo: {e}")
-        return jsonify({"error": "Server error", "details": str(e)}), 500
-
-
-# ----------------- Static Pages -----------------
+# --- Static Pages ---
 @app.route("/privacy-policy")
-def privacy_policy():
-    return render_template("privacy-policy.html")
-
-
+def privacy_policy(): return render_template("privacy-policy.html")
 @app.route("/terms")
-def terms():
-    return render_template("terms.html")
+def terms(): return render_template("terms.html")
+@app.route("/donate")
+def donate_page(): return render_template("donate.html")
+@app.route("/about")
+def about(): return render_template("about.html", title="About App - PersonFinder")
+@app.route("/developers")
+def developers(): return render_template("developers.html", current_year=datetime.now().year)
+
+@app.route("/donate-qr")
+def donate_qr():
+    payment_link = "upi://pay?pa=yourupiid@upi&pn=PersonFinder&am=500"
+    img = qrcode.make(payment_link)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return send_file(buf, mimetype="image/png")
+
+@app.route('/save-subscription', methods=['POST'])
+def save_subscription():
+    subscription_info = request.get_json()
+    person_id = request.args.get('person_id')
+    save_subscription_to_db(person_id, subscription_info)
+    return jsonify({"success": True})
+
+def migrate_database():
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(db.engine)
+
+    with db.engine.begin() as conn:  # use begin() to auto-commit
+        if 'users' in inspector.get_table_names():
+            columns = [c['name'] for c in inspector.get_columns('users')]
+
+            if 'email' not in columns:
+                conn.execute(text('ALTER TABLE users ADD COLUMN email VARCHAR;'))
+
+            if 'phone' not in columns:
+                conn.execute(text('ALTER TABLE users ADD COLUMN phone VARCHAR;'))
+
+            if 'reset_token' not in columns:
+                conn.execute(text('ALTER TABLE users ADD COLUMN reset_token VARCHAR;'))
+
+            if 'reset_expiry' not in columns:
+                conn.execute(text('ALTER TABLE users ADD COLUMN reset_expiry TIMESTAMP;'))
 
 
-# ----------------- Main -----------------
+# ----------------- Run -----------------
+with app.app_context():
+    db.create_all()
+    migrate_database()
+    ensure_admin_exists()
+
 if __name__ == "__main__":
-    with app.app_context():
-        create_db()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open PersonFinder App</title>
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to right, #4f46e5, #8b5cf6);
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+    .open-btn {
+      padding: 20px 40px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(to right, #10b981, #3b82f6);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .open-btn:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+    h1 {
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>PersonFinder App</h1>
+    <button class="open-btn" onclick="openApp()">Open App</button>
+  </div>
+
+  <script>
+    function openApp() {
+      // Replace with your Flask app URL
+      const appUrl = "http://192.168.1.100:5000"; 
+      window.location.href = appUrl;
+    }
+  </script>
+</body>
+</html>
