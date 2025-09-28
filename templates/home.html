@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+{% block title %}Home - PersonFinder{% endblock %}
+
+{% block content %}
+<!-- ================= Hero Section ================= -->
+<div class="hero-container min-h-[35vh] flex flex-col justify-center items-center text-center px-4 pt-[3cm] lg:pt-[2cm] lg:-mt-20">
+  <!-- Hero Image + Heading + Subheading -->
+  <div class="flex flex-col items-center gap-3 sm:gap-4 mb-6">
+    <div class="flex justify-center opacity-0 animate-slide-up-delay-img">
+      <img src="{{ url_for('static', filename='Images/face_index.png') }}"
+           alt="Face Index"
+           class="hero-img mx-auto h-auto max-h-[100px] sm:max-h-[130px] lg:max-h-[150px]">
+    </div>
+
+    <!-- Heading -->
+    <h1 class="opacity-0 animate-slide-up-scale font-extrabold leading-tight text-white
+               whitespace-nowrap overflow-hidden
+               text-[clamp(1.6rem,5vw,2.5rem)] sm:text-[clamp(1.8rem,5vw,3rem)] max-w-[95vw] mt-6">
+      Welcome to
+      <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+        PersonFinder
+      </span>
+    </h1>
+
+    <!-- Subheading -->
+<p class="mx-auto text-[clamp(0.95rem,2.2vw,1.3rem)] sm:text-[clamp(1rem,2.2vw,1.4rem)]
+   lg:text-[clamp(0.85rem,1.8vw,1.1rem)]
+   text-gray-300 max-w-[85vw]
+   opacity-0 animate-slide-up-delay-1 px-2 mt-0.5 leading-snug">
+  AI-powered platform to help
+  <span class="text-green-400">locate missing persons</span>
+  using <span class="text-pink-400">facial recognition</span>
+  and predictive analytics.
+</p>
+
+    <!-- Hero Divider -->
+<div class="relative w-full flex justify-center my-6 sm:my-8">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+    Get Started
+  </span>
+</div>
+
+<!-- Hero Buttons -->
+<div class="flex flex-col sm:flex-row gap-3 justify-center mt-2">
+  <a href="{{ url_for('register') }}"
+     class="px-6 py-3 sm:px-7 sm:py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform text-[clamp(1rem,2vw,1.2rem)]">
+    Register a Person
+  </a>
+  <a href="{{ url_for('search') }}"
+     class="px-6 py-3 sm:px-7 sm:py-3.5 bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform text-[clamp(1rem,2vw,1.2rem)]">
+    Search for a Person
+  </a>
+</div>
+
+<!-- ================= Hero Scaling CSS & Shimmer base ================= -->
+<style>
+.hero-container { transition: transform 0.3s ease; }
+
+@media (max-height: 650px), (max-width: 360px) {
+  .hero-container { transform: scale(0.92); }
+}
+
+@media (max-height: 550px), (max-width: 320px) {
+  .hero-container { transform: scale(0.88); }
+}
+
+.hero-img { max-height: clamp(120px, 18vh, 180px); }
+.hero-content h1 { font-size: clamp(1.8rem, 6vw, 3rem); }
+.hero-content p { font-size: clamp(1rem, 3vw, 1.25rem); }
+.hero-buttons a { font-size: clamp(1rem, 3.5vw, 1.15rem); padding: 0.9rem 1.25rem; }
+
+/* ================= Desktop-specific Hero offset ================= */
+@media (min-width: 1024px) {
+  .hero-container {
+    padding-top: calc(3cm + 1cm); /* add extra 1cm on desktop */
+  }
+}
+
+/* ================= Shimmer (shared) ================= */
+@keyframes shimmer { 0% { left: -150%; } 50% { left: 100%; } 100% { left: 100%; } }
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--shimmer-colors, rgba(255,255,255,0.18)),
+    transparent
+  );
+  background-size: 200% auto;
+  animation: shimmer var(--shimmer-speed, 1.8s) infinite;
+  pointer-events: none;
+}
+
+/* different shimmer presets (fallbacks if JS not setting variables) */
+.shimmer-pink::after   { --shimmer-colors: rgba(236,72,153,0.45), rgba(244,114,182,0.45), rgba(251,207,232,0.35); }
+.shimmer-blue::after   { --shimmer-colors: rgba(0,162,255,0.45), rgba(56,189,248,0.45), rgba(125,211,252,0.35); }
+.shimmer-green::after  { --shimmer-colors: rgba(34,197,94,0.45), rgba(132,204,22,0.45), rgba(187,247,208,0.35); }
+.shimmer-yellow::after { --shimmer-colors: rgba(249,115,22,0.45), rgba(251,146,60,0.45), rgba(254,215,170,0.35); }
+.shimmer-indigo::after { --shimmer-colors: rgba(139,92,246,0.45), rgba(167,139,250,0.45), rgba(221,214,254,0.35); }
+
+/* Slide-Up animations */
+@keyframes slideUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes slideUpDelay { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+.animate-slide-up-delay-img { animation: slideUpDelay 0.8s ease forwards; }
+.animate-slide-up-delay-1 { animation: slideUpDelay 1s ease forwards; }
+.animate-slide-up-scale { animation: slideUpDelay 0.8s ease forwards; }
+
+/* rotating gradient */
+@keyframes gradientShift { 0% { background-position: 0%; } 100% { background-position: 100%; } }
+.animate-gradient { background-size: 200% auto; animation: gradientShift 3s linear infinite; }
+
+/* slide-in/out text */
+.slide-in-text { display: inline-block; animation: slideIn 0.6s ease-in-out forwards; }
+.slide-out-text { display: inline-block; animation: slideOut 0.6s ease-in-out forwards; position: absolute; }
+@keyframes slideIn { from { transform: translateX(-120%); opacity: 0; } to { transform: translateX(0%); opacity: 1; } }
+@keyframes slideOut { from { transform: translateX(0%); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+/* icon bounce on update */
+@keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.icon-bounce { animation: bounce 0.8s ease; }
+
+/* 3D Zoom-in & Tilt effect on hover for all cards */
+.stat-card, .slide-up-card {
+  transition: transform 0.32s cubic-bezier(.2,.9,.2,1), box-shadow 0.32s ease;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+.stat-card:hover, .slide-up-card:hover {
+  transform: scale(1.05) rotateX(2deg) rotateY(2deg);
+  box-shadow: 0 18px 30px rgba(0,0,0,0.28);
+}
+</style>
+
+<!-- ================= Stats Section ================= -->
+<div class="mt-[1.5cm] sm:mt-[2cm] md:mt-[2.5cm] lg:mt-[3cm]">
+
+  <!-- Stats Divider -->
+  <div class="relative w-full flex justify-center my-12 sm:my-16">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Live Stats
+    </span>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-section p-6 sm:p-10 max-w-5xl mx-auto relative rounded-2xl">
+    <div class="stats-bg"></div>
+    <div id="stats-section" class="stats-content grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+
+      <!-- Registrations -->
+      <div class="stat-card shimmer shimmer-pink relative group p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900
+                  shadow-lg overflow-hidden transform opacity-0 slide-up-card hover:from-pink-500 hover:via-pink-600 hover:to-pink-700">
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <i data-lucide="user-plus" class="stat-icon w-10 h-10 text-pink-400 mb-2 group-hover:text-white transition-colors duration-300"></i>
+          <span id="registrations-count" class="text-4xl sm:text-5xl font-bold text-white"
+                data-target="{{ stats.registrations|default(0) }}">0</span>
+          <p class="text-gray-300 mt-2 font-medium">Registrations Completed</p>
+        </div>
+      </div>
+
+      <!-- All Searches Attempted -->
+      <div class="stat-card shimmer shimmer-blue relative group p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900
+                  shadow-lg overflow-hidden transform opacity-0 slide-up-card hover:from-blue-500 hover:via-indigo-500 hover:to-purple-600">
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <i data-lucide="search" class="stat-icon w-10 h-10 text-blue-400 mb-2 group-hover:text-white transition-colors duration-300"></i>
+          <span id="searches-attempted-count" class="text-4xl sm:text-5xl font-bold text-white"
+                data-target="{{ stats.searches|default(0) }}">0</span>
+          <p class="text-gray-300 mt-2 font-medium">All Searches Attempted</p>
+        </div>
+      </div>
+
+      <!-- Searches Traced ≥90% -->
+      <div class="stat-card shimmer shimmer-green relative group p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900
+                  shadow-lg overflow-hidden transform opacity-0 slide-up-card hover:from-green-400 hover:via-green-500 hover:to-green-600">
+        <div class="relative z-10 flex flex-col items-center text-center">
+          <i data-lucide="check-circle-2" class="stat-icon w-10 h-10 text-green-400 mb-2 group-hover:text-white transition-colors duration-300"></i>
+          <span id="traced-count" class="text-4xl sm:text-5xl font-bold text-white"
+                data-target="{{ stats.searches_traced|default(0) }}">0</span>
+          <p class="text-gray-300 mt-2 font-medium">Searches Traced</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= Features Section ================= -->
+<!-- First Divider: Explore Features -->
+<div class="relative w-full flex justify-center mt-16 sm:mt-20">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+    Explore Features
+  </span>
+</div>
+
+<!-- Features 1–4 -->
+<div class="mt-10 sm:mt-14 max-w-6xl mx-auto text-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+  <!-- Feature 1 -->
+  <div class="group shimmer shimmer-blue p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="user-search" class="w-10 h-10 text-blue-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Facial Recognition</h3>
+    <p class="text-gray-300 mt-2 text-sm">AI-powered matching system for locating missing persons quickly.</p>
+  </div>
+  <!-- Feature 2 -->
+  <div class="group shimmer shimmer-green p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="activity" class="w-10 h-10 text-green-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Predictive Analytics</h3>
+    <p class="text-gray-300 mt-2 text-sm">Smart predictions to identify possible matches and trends.</p>
+  </div>
+  <!-- Feature 3 -->
+  <div class="group shimmer shimmer-pink p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="shield-check" class="w-10 h-10 text-purple-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Secure Platform</h3>
+    <p class="text-gray-300 mt-2 text-sm">Your data is encrypted and privacy is ensured at all stages.</p>
+  </div>
+  <!-- Feature 4 -->
+  <div class="group shimmer shimmer-yellow p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="zap" class="w-10 h-10 text-yellow-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Fast Processing</h3>
+    <p class="text-gray-300 mt-2 text-sm">Get instant results powered by AI models.</p>
+  </div>
+</div>
+
+<!-- ================= Automation Section ================= -->
+<!-- Divider: Intelligent Automation -->
+<div class="relative w-full flex justify-center mt-16 sm:mt-20">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+    Intelligent Automation
+  </span>
+</div>
+
+<!-- Automation Cards -->
+<div class="mt-10 sm:mt-14 max-w-6xl mx-auto text-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
+  
+  <!-- AI Facial Recognition -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="scan-face" class="stat-icon w-12 h-12 text-pink-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">AI-Powered Recognition</h3>
+    <p class="text-gray-400 text-sm">
+      Automated image matching reduces manual effort and improves identification speed.
+    </p>
+  </div>
+
+  <!-- Search Monitoring -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="search" class="stat-icon w-12 h-12 text-blue-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">Search Monitoring</h3>
+    <p class="text-gray-400 text-sm">
+      Every search is automatically recorded to maintain traceability and transparency.
+    </p>
+  </div>
+
+  <!-- Real-Time Insights -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="activity" class="stat-icon w-12 h-12 text-green-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">Real-Time Insights</h3>
+    <p class="text-gray-400 text-sm">
+      Automated dashboards update continuously to reflect the latest activity.
+    </p>
+  </div>
+
+  <!-- Confidence-Based Tracing -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="check-circle-2" class="stat-icon w-12 h-12 text-yellow-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">Confidence-Based Tracing</h3>
+    <p class="text-gray-400 text-sm">
+      High-confidence matches are flagged automatically for faster resolution.
+    </p>
+  </div>
+
+  <!-- Simplified Registration -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="users" class="stat-icon w-12 h-12 text-purple-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">Simplified Registration</h3>
+    <p class="text-gray-400 text-sm">
+      The process is fully automated, enabling quick and user-friendly record creation.
+    </p>
+  </div>
+
+  <!-- Global Accessibility -->
+  <div class="stat-card shimmer slide-up-card p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 shadow-lg">
+    <i data-lucide="globe" class="stat-icon w-12 h-12 text-orange-400 mx-auto mb-4"></i>
+    <h3 class="text-xl font-semibold text-white mb-2">Global Accessibility</h3>
+    <p class="text-gray-400 text-sm">
+      Cloud-based infrastructure ensures availability and reliability worldwide.
+    </p>
+  </div>
+</div> <!-- END Automation Cards -->
+
+<!-- Divider: Trust & Reach -->
+<div class="relative w-full flex justify-center mt-16 sm:mt-20">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+    Trust & Reach
+  </span>
+</div>
+
+<!-- Features 5–8 -->
+<div class="mt-10 sm:mt-14 max-w-6xl mx-auto text-center grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+  <!-- Feature 5 -->
+  <div class="group shimmer shimmer-indigo p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="globe" class="w-10 h-10 text-blue-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Global Reach</h3>
+    <p class="text-gray-300 mt-2 text-sm">Connects databases across multiple regions.</p>
+  </div>
+  <!-- Feature 6 -->
+  <div class="group shimmer shimmer-pink p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="users" class="w-10 h-10 text-pink-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Community Support</h3>
+    <p class="text-gray-300 mt-2 text-sm">Empowering communities to report and help.</p>
+  </div>
+  <!-- Feature 7 -->
+  <div class="group shimmer shimmer-green p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="lock" class="w-10 h-10 text-green-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Data Privacy</h3>
+    <p class="text-gray-300 mt-2 text-sm">Strict policies for safety and confidentiality.</p>
+  </div>
+  <!-- Feature 8 -->
+  <div class="group shimmer shimmer-indigo p-6 bg-gray-800 rounded-2xl shadow-lg hover:scale-105 transition transform opacity-0 slide-up-card">
+    <i data-lucide="star" class="w-10 h-10 text-purple-400 mb-4 group-hover:text-white transition-colors duration-300"></i>
+    <h3 class="text-lg font-semibold text-white">Trusted Platform</h3>
+    <p class="text-gray-300 mt-2 text-sm">Relied upon by families and organizations worldwide.</p>
+  </div>
+</div>
+<!-- END Features 5–8 -->
+<!-- ================= Mission Section ================= -->
+
+  <!-- Mission / Tagline -->
+  <div class="relative w-full flex justify-center mt-16 sm:mt-20">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent rounded-full"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Our Mission
+    </span>
+  </div>
+
+  <div class="relative w-full py-14 sm:py-16 bg-gray-800 overflow-hidden mt-12 shimmer shimmer-indigo rounded-2xl transform transition hover:scale-105 opacity-0 slide-up-card">
+    <div class="relative z-10 max-w-4xl mx-auto text-center px-4">
+      <i data-lucide="sparkles" class="w-10 h-10 sm:w-12 sm:h-12 text-indigo-400 mx-auto mb-4 transition-colors duration-300 group-hover:text-white"></i>
+      <h2 class="text-[clamp(1.1rem,4vw,1.8rem)] sm:text-[clamp(1.3rem,3.5vw,2rem)] md:text-[clamp(1.5rem,3vw,2.25rem)] font-extrabold text-white relative">
+        Reuniting Families, Empowering Communities
+        <span class="absolute inset-0 bg-gradient-to-r from-white/40 via-white/15 to-white/40 opacity-0 glimmer-animation"></span>
+      </h2>
+      <p class="mt-4 text-[clamp(0.85rem,2.5vw,1.15rem)] sm:text-[clamp(1rem,2vw,1.25rem)] text-gray-300 font-semibold overflow-hidden relative h-7 sm:h-8 flex justify-center">
+        <span class="rotating-text inline-block"></span>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ================= Scripts ================= --> 
+<script src="https://unpkg.com/lucide@latest"></script>
+<script> lucide.createIcons(); </script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<!-- Animations & Stats JS -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // ========================
+  // Rotating tagline
+  // ========================
+  const phrases = [
+    "AI-Powered Facial Recognition",
+    "Fast & Secure Searches",
+    "Connecting Communities Worldwide",
+    "Empowering Families",
+    "Global Reach"
+  ];
+  const container = document.querySelector(".rotating-text");
+  let index = 0;
+  let currentSpan = null;
+
+  function showPhrase() {
+    if (!container) return;
+
+    if (currentSpan) {
+      currentSpan.classList.remove("slide-in-text");
+      currentSpan.classList.add("slide-out-text");
+      currentSpan.addEventListener("animationend", () => {
+        if (currentSpan?.parentNode) container.removeChild(currentSpan);
+      }, { once: true });
+    }
+
+    setTimeout(() => {
+      const span = document.createElement("span");
+      span.textContent = phrases[index];
+      span.className = "slide-in-text";
+      container.appendChild(span);
+      currentSpan = span;
+      index = (index + 1) % phrases.length;
+    }, 600);
+  }
+
+  showPhrase();
+  setInterval(showPhrase, 3400);
+
+  // ========================
+  // Slide-Up Cards Intersection Observer
+  // ========================
+  const allCards = document.querySelectorAll(".slide-up-card");
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        allCards.forEach((card, i) => {
+          card.style.animation = `slideUp 0.8s ease forwards ${i * 0.15}s`;
+        });
+        obs.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  if (allCards.length) observer.observe(allCards[0].parentElement);
+
+  // ========================
+  // Stats Observer & Animate Count Sequentially (Reset on scroll out)
+  // ========================
+  const statsGrid = document.getElementById("stats-section");
+  const statCards = document.querySelectorAll(".stat-card");
+  const countEls = [
+    document.getElementById("registrations-count"),
+    document.getElementById("searches-attempted-count"),
+    document.getElementById("traced-count")
+  ];
+
+  const observerStats = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Animate each card sequentially
+        statCards.forEach((card, i) => {
+          setTimeout(() => card.classList.add("opacity-100"), i * 150);
+          const el = countEls[i];
+          if (el) {
+            // Reset count to 0 before animating
+            el.textContent = "0";
+            setTimeout(() => animateCountEl(el), i * 500 + 100);
+          }
+        });
+      } else {
+        // Reset counts when scrolling out of view
+        statCards.forEach(card => card.classList.remove("opacity-100"));
+        countEls.forEach(el => el && (el.textContent = "0"));
+      }
+    });
+  }, { threshold: 0.3 });
+
+  if (statsGrid) observerStats.observe(statsGrid);
+
+  // ========================
+  // Socket.IO Live Stats
+  // ========================
+  let socket;
+  try {
+    socket = io();
+    socket.on("connect", () => console.log("✅ Connected to live stats"));
+    socket.on("stats_update", (data) => {
+      if (typeof data?.registrations === "number") animateCount("registrations-count", data.registrations);
+      if (typeof data?.searches === "number")      animateCount("searches-attempted-count", data.searches);
+      if (typeof data?.traced === "number")        animateCount("traced-count", data.traced);
+    });
+  } catch (err) {
+    console.warn("Socket.IO unavailable:", err);
+  }
+
+  // ========================
+  // Poll /api/stats every 5s (fallback + live refresh)
+  // ========================
+  async function updateStats() {
+    try {
+      const res = await fetch("/api/stats");
+      if (!res.ok) return;
+      const data = await res.json();
+      if (typeof data?.registrations === "number") animateCount("registrations-count", data.registrations);
+      if (typeof data?.searches === "number")      animateCount("searches-attempted-count", data.searches);
+      if (typeof data?.searches_traced === "number") animateCount("traced-count", data.searches_traced);
+    } catch (err) { console.error("Failed to update stats:", err); }
+  }
+  updateStats();
+  setInterval(updateStats, 5000);
+
+  // ========================
+  // Shimmer Gradients & Speeds
+  // ========================
+  const shimmerGradients = [
+    "rgba(0, 162, 255, 0.45), rgba(56, 189, 248, 0.35), rgba(125, 211, 252, 0.25)",
+    "rgba(34, 197, 94, 0.45), rgba(132, 204, 22, 0.35), rgba(187, 247, 208, 0.25)",
+    "rgba(236, 72, 153, 0.45), rgba(244, 114, 182, 0.35), rgba(251, 207, 232, 0.25)",
+    "rgba(139, 92, 246, 0.45), rgba(167, 139, 250, 0.35), rgba(221, 214, 254, 0.25)",
+    "rgba(249, 115, 22, 0.45), rgba(251, 146, 60, 0.35), rgba(254, 215, 170, 0.25)",
+    "rgba(250, 204, 21, 0.45), rgba(253, 224, 71, 0.35), rgba(254, 249, 195, 0.25)"
+  ];
+
+  document.querySelectorAll(".stat-card.shimmer").forEach((card, i) => {
+    const gradient = shimmerGradients[i % shimmerGradients.length];
+    card.style.setProperty("--shimmer-colors", gradient);
+    const randomSpeed = (Math.random() * 0.8 + 1.6).toFixed(2) + "s";
+    card.style.setProperty("--shimmer-speed", randomSpeed);
+  });
+
+  document.querySelectorAll(".shimmer").forEach((card, i) => {
+    if (!card.classList.contains("stat-card")) {
+      const randomSpeed = (Math.random() * 0.8 + 1.6).toFixed(2) + "s";
+      card.style.setProperty("--shimmer-speed", randomSpeed);
+    }
+  });
+}); // DOMContentLoaded end
+
+// ========================
+// Count Animations (Indian numbering system)
+// ========================
+function animateCountEl(el, maxValue = null) {
+  if (!el) return;
+
+  const target = parseInt(el.dataset.target || 0, 10) || 0;
+  const finalTarget = (maxValue !== null && target > maxValue) ? maxValue : target;
+
+  let current = parseInt((el.textContent || "0").replace(/,/g, ""), 10) || 0;
+
+  const steps = 80;
+  const increment = Math.max(1, Math.ceil(Math.abs(finalTarget - current) / steps));
+  const delay = 20;
+
+  if (el.countInterval) clearInterval(el.countInterval);
+
+  el.countInterval = setInterval(() => {
+    if (current < finalTarget) {
+      current += increment;
+      if (current > finalTarget) current = finalTarget;
+    } else if (current > finalTarget) {
+      current -= increment;
+      if (current < finalTarget) current = finalTarget;
+    }
+
+    el.textContent = current.toLocaleString("en-IN");
+
+    if (current === finalTarget) {
+      clearInterval(el.countInterval);
+      const card = el.closest(".stat-card");
+      if (card) {
+        card.classList.add("stat-update");
+        setTimeout(() => card.classList.remove("stat-update"), 900);
+        const icon = card.querySelector(".stat-icon");
+        if (icon) { icon.classList.add("icon-bounce"); setTimeout(() => icon.classList.remove("icon-bounce"), 800); }
+      }
+    }
+  }, delay);
+}
+
+function animateCount(elementId, target) {
+  const el = document.getElementById(elementId);
+  if (!el || typeof target !== "number" || isNaN(target)) return;
+
+  let current = parseInt((el.textContent || "0").replace(/,/g, ""), 10) || 0;
+  if (current === target) return;
+
+  const diff = target - current;
+  const steps = 50;
+  const step = Math[diff > 0 ? "ceil" : "floor"](diff / steps);
+
+  if (el.countInterval) clearInterval(el.countInterval);
+
+  el.countInterval = setInterval(() => {
+    current += step;
+    if ((step > 0 && current >= target) || (step < 0 && current <= target)) {
+      current = target;
+      clearInterval(el.countInterval);
+      const card = el.closest(".stat-card");
+      if (card) {
+        card.classList.add("stat-update");
+        setTimeout(() => card.classList.remove("stat-update"), 900);
+        const icon = card.querySelector(".stat-icon");
+        if (icon) { icon.classList.add("icon-bounce"); setTimeout(() => icon.classList.remove("icon-bounce"), 800); }
+      }
+    }
+    el.textContent = current.toLocaleString("en-IN");
+  }, 30);
+}
+</script>
+
+{% endblock %}
+

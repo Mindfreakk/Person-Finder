@@ -1,0 +1,172 @@
+<!-- ================= HEADER ================= -->
+<header class="fixed top-0 left-0 w-full py-2.5 md:py-4 bg-white/10 backdrop-blur-sm shadow-sm" style="z-index:1200;">
+  <div class="max-w-6xl mx-auto grid grid-cols-3 items-center gap-4 px-4">
+
+    <!-- Logo -->
+    <a href="{{ url_for('home') }}" class="flex items-center gap-3 justify-start" aria-label="Go to homepage">
+      <img alt="Logo" 
+           class="w-11 h-11 md:w-12 md:h-12 rounded-full shadow-md transition-transform duration-500 hover:scale-110" 
+           src="{{ url_for('static', filename='images/elderly.jpeg') }}"/>
+      <div class="flex flex-col justify-center">
+        <h1 class="text-xl md:text-3xl font-bold 
+                   bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+                   bg-clip-text text-transparent animate-gradient leading-tight">
+          PersonFinder
+        </h1>
+        <p class="text-xs md:text-sm text-gray-200">Reunite Loved Ones</p>
+      </div>
+    </a>
+
+    <!-- Spacer -->
+    <div class="hidden md:block"></div>
+
+    <!-- Desktop Nav + Auth -->
+    <nav class="hidden md:flex gap-4 items-center justify-end" aria-label="Primary">
+      <a href="{{ url_for('home') }}" class="nav-link text-white text-lg {% if request.endpoint == 'home' %}active{% endif %}">Home</a>
+      <a href="{{ url_for('register') }}" class="nav-link text-white text-lg {% if request.endpoint == 'register' %}active{% endif %}">Register</a>
+      <a href="{{ url_for('search') }}" class="nav-link text-white text-lg {% if request.endpoint == 'search' %}active{% endif %}">Search</a>
+      <a href="{{ url_for('donate_page') }}" class="nav-link text-white text-lg {% if request.endpoint == 'donate_page' %}active{% endif %}">Donate</a>
+      <a href="{{ url_for('about') }}" class="nav-link text-white text-lg {% if request.endpoint == 'about' %}active{% endif %}">About</a>
+      <a href="{{ url_for('developers') }}" class="nav-link text-white text-lg {% if request.endpoint == 'developers' %}active{% endif %}">Developers</a>
+
+      <!-- Only Login Button -->
+      <a href="{{ url_for('login') }}" class="auth-login">Login</a>
+    </nav>
+
+    <!-- Hamburger Button (mobile) -->
+    <button id="pf-geo-menu-btn"
+            aria-expanded="false"
+            aria-controls="pf-mobile-dropdown"
+            class="md:hidden absolute right-4 top-1/2 transform -translate-y-1/2"
+            type="button"
+            aria-label="Open menu">
+      <span class="inline-grid place-items-center w-10 h-10 md:w-11 md:h-11 rounded-xl 
+                   bg-white/10 border border-white/10 backdrop-blur-md shadow-lg">
+        <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
+          <g stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+            <path class="pf-geo-line l1" d="M6 9H22"></path>
+            <path class="pf-geo-line l2" d="M6 14H22"></path>
+            <path class="pf-geo-line l3" d="M6 19H22"></path>
+          </g>
+        </svg>
+      </span>
+    </button>
+  </div>
+</header>
+
+<!-- Glassy Overlay -->
+<div id="pf-overlay" class="fixed inset-0 bg-white/10 backdrop-blur-md hidden z-[1090]"></div>
+
+<!-- Mobile Dropdown with Glassy Background -->
+<div id="pf-mobile-dropdown" 
+     class="fixed inset-x-0 top-[56px] md:top-[64px] bg-white/10 backdrop-blur-md md:hidden max-h-0 overflow-hidden transition-all duration-300 ease-in-out z-[1100]">
+  <nav class="flex flex-col gap-2 px-4 py-4 mt-2" aria-label="Mobile Primary">
+    <a href="{{ url_for('home') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'home' %}bg-blue-700{% endif %}">Home</a>
+    <a href="{{ url_for('register') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'register' %}bg-blue-700{% endif %}">Register</a>
+    <a href="{{ url_for('search') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'search' %}bg-blue-700{% endif %}">Search</a>
+    <a href="{{ url_for('donate_page') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'donate_page' %}bg-blue-700{% endif %}">Donate</a>
+    <a href="{{ url_for('about') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'about' %}bg-blue-700{% endif %}">About</a>
+    <a href="{{ url_for('developers') }}" class="block rounded px-3 py-2 text-white text-lg {% if request.endpoint == 'developers' %}bg-blue-700{% endif %}">Developers</a>
+
+    <!-- Auth Links (Mobile) -->
+    <a href="{{ url_for('login') }}" class="auth-login block w-full text-center {% if request.endpoint == 'login' %}bg-blue-700{% endif %}">Admin Login</a>
+  </nav>
+</div>
+
+<!-- ============ SCRIPT ============ -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("pf-geo-menu-btn");
+  const dropdown = document.getElementById("pf-mobile-dropdown");
+  const overlay = document.getElementById("pf-overlay");
+
+  if (!btn || !dropdown || !overlay) return;
+
+  btn.addEventListener("click", () => {
+    const isOpen = dropdown.classList.contains("max-h-80");
+    if (isOpen) {
+      dropdown.classList.remove("max-h-80");
+      dropdown.classList.add("max-h-0");
+      overlay.classList.add("hidden");
+      btn.classList.remove("open");
+      btn.setAttribute("aria-expanded","false");
+    } else {
+      dropdown.classList.remove("max-h-0");
+      dropdown.classList.add("max-h-80");
+      overlay.classList.remove("hidden");
+      btn.classList.add("open");
+      btn.setAttribute("aria-expanded","true");
+    }
+  });
+
+  overlay.addEventListener("click", () => {
+    dropdown.classList.remove("max-h-80");
+    dropdown.classList.add("max-h-0");
+    overlay.classList.add("hidden");
+    btn.classList.remove("open");
+    btn.setAttribute("aria-expanded","false");
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && dropdown.classList.contains('max-h-80')) {
+      dropdown.classList.remove("max-h-80");
+      dropdown.classList.add("max-h-0");
+      overlay.classList.add("hidden");
+      btn.classList.remove("open");
+      btn.setAttribute("aria-expanded","false");
+    }
+  });
+});
+</script>
+
+<!-- ============ STYLES ============ -->
+<style>
+.nav-link {
+  color: rgba(255,255,255,0.92);
+  font-weight: 500;
+  transition: transform .18s ease, color .18s ease;
+}
+.nav-link.active {
+  color: #fff;
+  font-weight: 700;
+  transform: translateY(-2px);
+}
+
+/* Auth buttons - Login only */
+.auth-login {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 0.45rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.auth-login:hover { background: rgba(255,255,255,0.06); }
+
+/* Hamburger Animation */
+#pf-geo-menu-btn.open .l1 { transform: rotate(45deg) translate(4px, 4px); }
+#pf-geo-menu-btn.open .l2 { opacity: 0; }
+#pf-geo-menu-btn.open .l3 { transform: rotate(-45deg) translate(4px, -4px); }
+
+/* Animated Gradient for Title */
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-move 6s ease infinite;
+}
+
+/* Mobile dropdown max height helper */
+.max-h-0 { max-height: 0; }
+.max-h-80 { max-height: 28rem; }
+
+/* Gap at top of mobile dropdown for first link */
+#pf-mobile-dropdown nav { padding-top: 1rem; }
+</style>
+<!-- ================= END HEADER ================= -->

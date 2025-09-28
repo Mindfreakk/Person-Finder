@@ -1,0 +1,607 @@
+{% extends "base.html" %}
+
+{% block title %}Search - PersonFinder{% endblock %}
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="flash-container" class="fixed left-1/2 top-4 transform -translate-x-1/2 space-y-3 z-[1201] text-center w-[90%] max-w-xl">
+      {% for category, message in messages %}
+        {% set color = 
+          'bg-green-100 border-green-500 text-green-800' if category=='success' else
+          'bg-red-100 border-red-500 text-red-800' if category=='error' else
+          'bg-yellow-100 border-yellow-500 text-yellow-800'
+        %}
+        <div class="flash-message relative border-l-4 {{ color }} p-4 rounded-lg shadow-xl transition-opacity duration-1000 pointer-events-auto animate-slide-down" role="alert">
+          <p class="font-medium">{{ message }}</p>
+          <button onclick="this.parentElement.remove()" class="absolute top-2 right-3 text-lg font-bold hover:opacity-70">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+{% block content %}
+<div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 animate-page-enter mt-24">
+
+  <!-- Heading -->
+<div class="text-center w-full mb-6">
+  <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2">
+    Search for a Missing Person
+  </h2>
+  <p class="mx-auto text-[0.85rem] sm:text-sm md:text-base text-gray-300 max-w-2xl text-center leading-relaxed">
+  Find missing persons quickly — by 
+  <span class="bg-gradient-to-r from-blue-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
+    family
+  </span>, 
+  <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent font-semibold animate-gradient">
+    loved ones
+  </span>, or anyone who encounters them — using the 
+  <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold animate-gradient">
+    PersonFinder
+  </span> database.
+</p>
+</div>
+
+  <!-- Divider: Search Now -->
+  <div class="relative w-full flex justify-center mt-8 mb-8">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Search Now
+    </span>
+  </div>
+
+<!-- Search Form -->
+<form method="POST" enctype="multipart/form-data"
+      class="w-full max-w-md mb-16"
+      onsubmit="return validateAndStartSearch(event)">
+
+  <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl shadow-xl flex flex-col justify-between items-center relative min-h-[400px]">
+
+    <div class="w-full flex flex-col items-center space-y-6">
+
+      <!-- Upload + Tooltip + Webcam in one row -->
+<div class="flex flex-col sm:flex-row gap-4 w-full justify-center items-center relative">
+
+  <!-- Upload input (hidden) -->
+  <input type="file" id="photo" name="photo" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+
+  <!-- Upload label -->
+  <label for="photo"
+         class="cursor-pointer flex-1 text-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 
+                hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md 
+                transition transform hover:scale-105">
+    Upload Photo <span class="text-red-400">*</span>
+  </label>
+
+  <!-- Tooltip Icon (centered between buttons) -->
+<div class="relative flex justify-center">
+  <button type="button" id="search_info_btn" aria-label="Upload/Use Webcam Info"
+          class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative group animate-bounce">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+    </svg>
+
+    <!-- Tooltip -->
+    <span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 sm:w-56 text-xs bg-gray-900 text-white rounded-lg py-2 px-3
+                 opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                 transition-all duration-300 ease-out
+                 transform -translate-y-1 group-hover:translate-y-0 text-center">
+      For optimal results, please upload a high-quality, front-facing photo.
+      <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45"></span>
+    </span>
+  </button>
+</div>
+
+  <!-- Webcam button (hidden on mobile) -->
+  <button type="button"
+          id="use_webcam_btn"
+          onclick="openWebcamModal()"
+          class="hidden sm:flex flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 
+                 hover:from-red-500 hover:via-pink-500 hover:to-purple-500 text-white font-medium shadow-md 
+                 transition transform hover:scale-105">
+    Use Webcam
+  </button>
+</div>
+
+<!-- Preview -->
+<div id="photo_preview_container" class="hidden w-full flex justify-center mt-4 relative">
+  <img id="photo_preview" alt="Photo Preview"
+       class="max-h-56 rounded-xl shadow-md border border-gray-500/30 object-contain"/>
+  <button type="button" onclick="clearPhoto()"
+          class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md shadow-md">✕</button>
+  <span id="photo_check" class="hidden absolute top-2 left-2 text-green-500 text-2xl font-bold">✔</span>
+</div>
+
+      <!-- Divider -->
+      <div class="w-full border-t border-white/20 my-2"></div>
+
+      <!-- Full Name -->
+      <div class="w-full relative">
+        <label for="full_name" class="block font-medium mb-1 text-gray-200 text-sm">
+          Full Name <span class="text-gray-400 italic">(optional but helpful)</span>
+        </label>
+        <input type="text" id="full_name" name="full_name" placeholder="Enter the name of the missing person"
+               class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30 
+                      focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
+        <span id="full_name_check" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+      </div>
+
+      <!-- Gender -->
+<div class="w-full relative">
+  <label for="gender" class="block font-medium mb-1 text-gray-200 text-sm">
+    Gender <span class="text-gray-400 italic">(optional but helpful)</span>
+  </label>
+  <select id="gender" name="gender"
+          class="w-full min-w-0 px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30 
+                 focus:ring-2 focus:ring-purple-500 focus:outline-none sm:text-sm text-xs">
+    <option value="" selected disabled class="text-gray-400">Enter the gender of the missing person</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+
+      <!-- Divider -->
+      <div class="w-full border-t border-white/20 my-2"></div>
+
+      <!-- Submit -->
+      <button type="submit" id="search_btn"
+              class="w-full px-6 py-3 rounded-xl text-white font-semibold text-lg shadow-lg 
+                     transform transition hover:scale-105 search-shimmer
+                     bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600">
+        Search
+      </button>
+
+      <!-- Inline Error Message (hidden by default) -->
+      <p id="photo_error" class="hidden text-red-400 text-sm font-medium mt-2 text-center"></p>
+
+    </div>
+
+    <!-- Bottom Note inside card -->
+    <div class="flex flex-col items-center w-full mt-6">
+      <div class="relative w-full flex justify-center mb-4">
+        <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+        <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+          Note
+        </span>
+      </div>
+
+      <p class="text-xs sm:text-xs text-gray-200 leading-relaxed slide-fade-in text-center mt-3">
+        If you <span class="text-green-300 font-semibold">find someone</span>, please upload their photo  
+        to help us <span class="text-purple-300 font-semibold">reunite families</span>.
+      </p>
+    </div>
+  </div>
+</form>
+
+<!-- Tooltip JS -->
+<script>
+  const infoBtn = document.getElementById("info-btn");
+  const tooltip = document.getElementById("tooltip");
+  let hideTimeout;
+
+  function showTooltip() {
+    tooltip.classList.remove("opacity-0", "invisible");
+    tooltip.classList.add("opacity-100", "visible");
+
+    if (hideTimeout) clearTimeout(hideTimeout);
+
+    hideTimeout = setTimeout(() => {
+      tooltip.classList.remove("opacity-100", "visible");
+      tooltip.classList.add("opacity-0", "invisible");
+    }, 4000);
+  }
+
+  // Desktop hover/focus
+  infoBtn.addEventListener("mouseenter", showTooltip);
+  infoBtn.addEventListener("focus", showTooltip);
+
+  // Mobile tap / click
+  infoBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    showTooltip();
+  });
+
+  // Hide on mouse leave (desktop)
+  infoBtn.addEventListener("mouseleave", () => {
+    tooltip.classList.remove("opacity-100", "visible");
+    tooltip.classList.add("opacity-0", "invisible");
+  });
+</script>
+
+  <!-- Reminder Divider (outside the card) -->
+  <div class="relative w-full flex justify-center mt-12 mb-12">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Reminder
+    </span>
+  </div>
+
+  <!-- Info Box (outside card) -->
+<div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-4 shadow-lg max-w-2xl mx-auto text-center mb-16">
+  <p class="text-xs sm:text-sm leading-relaxed animate-slide-in">
+    ✨ Every search brings us one step closer to 
+    <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 font-semibold animate-gradient-x">reuniting families</span>.  
+    Your contribution, no matter how small, makes a real difference.  
+    <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 font-semibold animate-gradient-x">Thank you</span> for being part of this important 
+    <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 font-semibold animate-gradient-x">effort</span> to bring hope, comfort, and smiles to those who need it most.  
+    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 font-semibold animate-gradient-x">Together, we can make a meaningful impact</span> and 
+    <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 font-semibold animate-gradient-x">help loved ones find their way back to each other</span>.
+  </p>
+</div>
+
+<!-- Tailwind Custom Gradient Animation -->
+<style>
+  @keyframes gradient-x {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .animate-gradient-x {
+    background-size: 200% 200%;
+    animation: gradient-x 5s ease infinite;
+  }
+</style>
+
+
+  <!-- Results Section -->
+  {% if results %}
+
+    <div class="relative w-full flex justify-center my-8">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Results
+      </span>
+    </div>
+
+    <div id="results_section" class="w-full max-w-6xl">
+      <h3 class="text-2xl font-bold text-center text-green-400 mb-10">✅ Matches Found</h3>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for person in results %}
+          <div class="p-4 rounded-xl backdrop-blur-lg shadow-lg fade-slide-up tilt-card"
+               data-delay="{{ (loop.index0 * 0.05)|round(2) }}">
+
+            <!-- Person Image -->
+            <div class="w-28 h-28 sm:w-32 sm:h-32 mx-auto rounded-xl shadow-md overflow-hidden border
+                        {% if loop.first %} border-green-400 {% else %} border-white/20 {% endif %}">
+              {% set photo_name = person.photo_path.split('/')[-1] if person.photo_path else '' %}
+              <img src="{{ url_for('static', filename='uploads/' ~ photo_name) if photo_name else url_for('static', filename='images/no-photo.png') }}"
+                   alt="Person Photo"
+                   class="w-full h-full object-cover"
+                   loading="lazy"
+                   data-no-photo="{{ url_for('static', filename='images/no-photo.png') }}"/>
+            </div>
+
+            <!-- Info -->
+            <div class="mt-4 text-sm sm:text-base space-y-2 text-gray-100 text-center">
+              {% if loop.first %}<p class="text-green-300 font-bold">🎯 Best Match</p>{% endif %}
+              {% if person.full_name %}<p><span class="font-semibold">Full Name:</span> {{ person.full_name }}</p>{% endif %}
+              {% if person.age %}<p><span class="font-semibold">Age:</span> {{ person.age }}</p>{% endif %}
+              {% if person.gender %}<p><span class="font-semibold">Gender:</span> {{ person.gender }}</p>{% endif %}
+              {% if person.guardian_name %}<p><span class="font-semibold">Guardian:</span> {{ person.guardian_name }}</p>{% endif %}
+
+              {% if person.phone_number %}
+                <div class="mt-2 flex flex-col sm:flex-row gap-2 justify-center">
+                  <a href="tel:{{ person.phone_number }}" class="inline-flex sm:hidden items-center justify-center px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-md transition-transform transform hover:scale-105">📞 Call</a>
+                  <button type="button"
+                          class="copy-phone hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-transform transform hover:scale-105"
+                          data-phone="{{ person.phone_number|e }}">📋 Copy Phone Number</button>
+                </div>
+              {% endif %}
+
+              {% if person.address %}<p><span class="font-semibold">Address:</span> {{ person.address }}</p>{% endif %}
+              {% if person.last_seen %}<p><span class="font-semibold">Last Seen:</span> {{ person.last_seen }}</p>{% endif %}
+
+              {% if person.match_confidence %}
+                <p class="font-semibold">Match Confidence:</p>
+                <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+                  {% set bg_style = 
+                    'linear-gradient(to right, #4ade80, #22c55e)' if person.match_confidence >= 75 else
+                    'linear-gradient(to right, #facc15, #f59e0b)' if person.match_confidence >= 50 else
+                    'linear-gradient(to right, #f87171, #ef4444)'
+                  %}
+                  <div class="h-3 rounded-full match-bar"
+                       data-confidence="{{ person.match_confidence }}"
+                       data-bg="{{ bg_style|e }}"></div> 
+                </div>
+                <p class="text-sm text-gray-300 mt-1">{{ person.match_confidence }}%</p>
+              {% endif %}
+
+              <!-- Registered By Info -->
+              <div class="mt-3 text-xs text-gray-300 bg-white/5 rounded-lg p-2">
+                <p class="italic font-semibold text-gray-200">📌 Registered By:</p>
+                {% if person.registered_by_name %}<p><span class="font-medium">Name:</span> {{ person.registered_by_name }}</p>{% endif %}
+                {% if person.registered_by_phone %}
+                  <div class="mt-2 flex flex-col sm:flex-row gap-2 justify-center">
+                    <a href="tel:{{ person.registered_by_phone }}" class="inline-flex sm:hidden items-center justify-center px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-md transition-transform transform hover:scale-105">📞 Call</a>
+                    <button type="button"
+                            class="copy-phone hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-transform transform hover:scale-105"
+                            data-phone="{{ person.registered_by_phone|e }}">📋 Copy Phone Number</button>
+                  </div>
+                {% endif %}
+                {% if person.registered_by_relation %}<p><span class="font-medium">Relation:</span> {{ person.registered_by_relation }}</p>{% endif %}
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Auto Scroll to results -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const results = document.getElementById("results_section");
+        if (results) results.scrollIntoView({ behavior: "smooth" });
+      });
+    </script>
+
+  {% elif searched %}
+    <p id="results_section" class="text-center text-red-400 font-semibold mt-6">⚠ No matches found.</p>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const results = document.getElementById("results_section");
+        if (results) results.scrollIntoView({ behavior: "smooth" });
+      });
+    </script>
+  {% endif %}
+
+  <!-- Webcam Modal -->
+  <div id="webcamModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/70 z-[2000]">
+    <div class="bg-gray-900 rounded-2xl p-6 shadow-xl max-w-md w-full text-center relative">
+      <h3 class="text-lg font-semibold text-white mb-4">📷 Capture from Webcam</h3>
+      <video id="webcam" autoplay class="mx-auto rounded-lg border border-gray-600 shadow-md"></video>
+      <div class="flex gap-4 mt-4 justify-center">
+        <button onclick="capturePhoto()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Capture</button>
+        <button onclick="closeWebcamModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Cancel</button>
+      </div>
+      <canvas id="webcamCanvas" class="hidden"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- JS -->
+<script>
+  // Validate on submit: show inline error + shake upload label if no photo
+  function validateAndStartSearch(evt) {
+    const input = document.getElementById("photo");
+    const errorMsg = document.getElementById("photo_error");
+    const uploadLabel = document.getElementById("upload_label");
+    const searchBtn = document.getElementById("search_btn");
+
+    // If no file, stop submission and show inline error
+    if (!input || !input.files || !input.files.length) {
+      if (evt && evt.preventDefault) evt.preventDefault();
+      errorMsg.textContent = "⚠ Please upload a photo before searching.";
+      errorMsg.classList.remove("hidden");
+      // shake + flash red
+      uploadLabel.classList.add("shake", "bg-red-600", "hover:bg-red-700");
+      setTimeout(() => uploadLabel.classList.remove("shake", "bg-red-600", "hover:bg-red-700"), 600);
+      // scroll upload into view
+      uploadLabel.scrollIntoView({behavior: "smooth", block: "center"});
+      // auto-hide error after 4s if not corrected
+      clearTimeout(window._pfErrorHideTimer);
+      window._pfErrorHideTimer = setTimeout(() => {
+        if (errorMsg) errorMsg.classList.add("hidden");
+      }, 4000);
+      return false;
+    }
+
+    // File exists: hide any error and set searching state
+    if (errorMsg) errorMsg.classList.add("hidden");
+    // add visual searching shimmer to button and lock it
+    searchBtn.disabled = true;
+    searchBtn.classList.add("search-shimmer");
+    searchBtn.textContent = "Searching... 🔍";
+    return true; // allow form submission
+  }
+
+  // When a file is selected via the system file chooser
+  function handleFileSelect(e) {
+    const input = e.target;
+    const errorMsg = document.getElementById("photo_error");
+    // hide error if any
+    if (errorMsg) errorMsg.classList.add("hidden");
+    // show preview
+    previewFromInput(input);
+  }
+
+  function previewFromInput(input) {
+    const file = input && input.files && input.files[0];
+    const previewContainer = document.getElementById("photo_preview_container");
+    const preview = document.getElementById("photo_preview");
+    const check = document.getElementById("photo_check");
+    if (file) {
+      preview.src = URL.createObjectURL(file);
+      previewContainer.classList.remove("hidden");
+      check.classList.remove("hidden");
+      // enable search button visually (if previously disabled)
+      const searchBtn = document.getElementById("search_btn");
+      if (searchBtn) {
+        searchBtn.disabled = false;
+        // remove shimmer if somehow applied
+        searchBtn.classList.remove("search-shimmer");
+        searchBtn.textContent = "Search";
+      }
+    } else {
+      // no file
+      previewContainer.classList.add("hidden");
+      check.classList.add("hidden");
+    }
+  }
+
+  function clearPhoto() {
+    const input = document.getElementById("photo");
+    if (input) {
+      // clear FileList (works cross-browser by replacing the input)
+      try {
+        input.value = "";
+      } catch (err) {
+        // fallback: replace node
+        const newInput = input.cloneNode();
+        input.parentNode.replaceChild(newInput, input);
+        newInput.addEventListener('change', handleFileSelect);
+      }
+    }
+    const previewContainer = document.getElementById("photo_preview_container");
+    if (previewContainer) previewContainer.classList.add("hidden");
+    const check = document.getElementById("photo_check");
+    if (check) check.classList.add("hidden");
+    // reset search button
+    const searchBtn = document.getElementById("search_btn");
+    if (searchBtn) {
+      searchBtn.disabled = false;
+      searchBtn.classList.remove("search-shimmer");
+      searchBtn.textContent = "Search";
+    }
+  }
+
+  // Webcam handling
+  let webcamStream;
+  function openWebcamModal() {
+    const modal = document.getElementById("webcamModal");
+    if (modal) modal.classList.remove("hidden");
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      webcamStream = stream;
+      const v = document.getElementById("webcam");
+      if (v) v.srcObject = stream;
+      v.play().catch(()=>{});
+    }).catch(() => {
+      alert("Webcam access denied or unavailable.");
+      if (modal) modal.classList.add("hidden");
+    });
+  }
+
+  function closeWebcamModal() {
+    const modal = document.getElementById("webcamModal");
+    if (modal) modal.classList.add("hidden");
+    if (webcamStream) {
+      webcamStream.getTracks().forEach(track => track.stop());
+      webcamStream = null;
+    }
+  }
+
+  function capturePhoto() {
+    const video = document.getElementById("webcam");
+    const canvas = document.getElementById("webcamCanvas");
+    if (!video || !canvas) return closeWebcamModal();
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob(blob => {
+      const file = new File([blob], "webcam_photo.png", { type: "image/png" });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      const input = document.getElementById("photo");
+      if (input) {
+        input.files = dataTransfer.files;
+        // call preview with synthetic event
+        previewFromInput(input);
+        // hide webcam modal
+        closeWebcamModal();
+        // optionally scroll to preview
+        document.getElementById("photo_preview_container").scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }, 'image/png');
+  }
+
+  // Apply match-bar widths & backgrounds (for results)
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.match-bar').forEach(el => {
+      const conf = el.dataset.confidence;
+      if (conf !== undefined && conf !== null && conf !== '') {
+        const n = Number(conf);
+        if (!Number.isNaN(n)) el.style.width = Math.max(0, Math.min(100, n)) + '%';
+      }
+      const bg = el.dataset.bg;
+      if (bg) el.style.background = bg;
+    });
+  });
+
+  // Copy phone number buttons
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('.copy-phone');
+    if (!btn) return;
+    const number = btn.dataset.phone;
+    if (!number) {
+      alert("❌ No phone number available.");
+      return;
+    }
+    navigator.clipboard.writeText(number).then(() => {
+      // temporary inline confirmation (small toast could be used)
+      btn.textContent = "Copied ✅";
+      setTimeout(() => btn.textContent = "📋 Copy Phone Number", 1500);
+    }).catch(() => {
+      alert("❌ Failed to copy phone number.");
+    });
+  });
+
+  // Intersection Observer for slide-fade elements
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.slide-fade-in').forEach(el => slideObserver.observe(el));
+
+  // Image fallback handler
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('img[data-no-photo]').forEach(img => {
+      img.addEventListener('error', function () {
+        if (this.dataset._noPhotoHandled) return;
+        this.dataset._noPhotoHandled = '1';
+        this.src = this.dataset.noPhoto;
+      });
+    });
+  });
+
+  // Auto-scroll to results if present (also run on DOMContentLoaded)
+  document.addEventListener("DOMContentLoaded", function() {
+    const results = document.getElementById("results_section");
+    if (results) results.scrollIntoView({ behavior: "smooth" });
+  });
+</script>
+
+<!-- Styles -->
+{% raw %}
+<style>
+/* small animations & utilities specific to this page */
+.fade-slide-up { opacity: 0; transform: translateY(40px); animation: slideUp 0.7s ease forwards; }
+@keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+/* Shake for upload label */
+.shake { animation: shake 0.42s ease; }
+@keyframes shake { 
+  0% { transform: translateX(0);} 
+  25% { transform: translateX(-6px);} 
+  50% { transform: translateX(6px);} 
+  75% { transform: translateX(-6px);} 
+  100% { transform: translateX(0);} 
+}
+
+/* Search shimmer (apply dynamically only when searching) */
+.search-shimmer { position: relative; overflow: hidden; color: white; }
+.search-shimmer::after { content: ""; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(120deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%); transform: skewX(-20deg); animation: shimmer-slide 1.8s infinite linear; pointer-events: none; }
+@keyframes shimmer-slide { 0% { left: -150%; } 100% { left: 150%; } }
+
+/* Info box pulse */
+.info-box { opacity: 0; transform: translateY(30px); animation: fadeSlideUp 0.9s ease forwards, subtlePulse 6s ease-in-out infinite; animation-delay: 0.25s, 1.5s; }
+@keyframes fadeSlideUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes subtlePulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.015); } }
+
+/* slide-fade utility used for small text segments */
+.slide-fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+.slide-fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* small responsive tweaks */
+@media (max-width: 640px) {
+  #use_webcam_btn { display: none; }
+}
+</style>
+{% endraw %}
+
+{% endblock %}

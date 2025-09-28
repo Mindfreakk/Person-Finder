@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Developers - PersonFinder{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center pt-32 sm:pt-36 lg:pt-40">
+  <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
+    Meet the Team Behind 
+    <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
+      PersonFinder
+    </span>
+  </h1>
+  <p class="mx-auto text-xs sm:text-sm md:text-base leading-relaxed mt-2 px-2 font-light text-gray-300 max-w-2xl">
+    A passionate group of innovators, engineers, and mentors dedicated to 
+    <span class="text-blue-300 font-medium">AI research</span>, 
+    <span class="text-green-300 font-medium">code craftsmanship</span>, and 
+    <span class="text-pink-300 font-medium">data intelligence</span>, 
+    working together to reunite families with loved ones.
+  </p>
+</div>
+
+<!-- Modern Divider -->
+<div class="relative w-full flex justify-center my-12 sm:my-16 md:my-24">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md">
+    Our Developers
+  </span>
+</div>
+
+<!-- ================= Developers / Team Section ================= -->
+<section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
+
+  <!-- Card: Dr. Wajid -->
+  <div class="dev-card shimmer shimmer-blue tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
+    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-blue-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Dr. Wajid Aalam
+      </h2>
+      <p class="text-sm sm:text-base leading-relaxed">
+        Visionary mentor & <span class="font-semibold text-blue-200">AI Innovator</span>, guiding breakthroughs in machine learning and inspiring future researchers.
+      </p>
+    </div>
+  </div>
+
+  <!-- Card: Amir -->
+<div class="dev-card shimmer shimmer-green tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
+  <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-green-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+    <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+      <!-- Spark / Lightning Bolt Icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+      Amir Mushtaq
+    </h2>
+    <p class="text-sm sm:text-base leading-relaxed">
+      <span class="font-semibold text-green-200">Code Craftsman</span> building scalable AI systems with precision, clean design, and forward-thinking solutions.
+    </p>
+  </div>
+</div>
+
+
+  <!-- Card: Abrar -->
+  <div class="dev-card shimmer shimmer-pink tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
+    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-pink-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" />
+        </svg>
+        Abrar Ahmad
+      </h2>
+      <p class="text-sm sm:text-base leading-relaxed">
+        <span class="font-semibold text-pink-200">Data Engineer</span> shaping data into actionable insights, architecting systems, and enhancing AI performance.
+      </p>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- Narrative Section -->
+<section class="relative prose max-w-4xl mx-auto text-justify leading-relaxed space-y-5 
+                text-[0.75rem] sm:text-sm md:text-base lg:text-[0.95rem] 
+                scroll-fade animate-slide-up-delay-2 
+                rounded-[2rem] overflow-hidden 
+                shadow-lg transition-all duration-500 hover:shadow-2xl">
+
+  <!-- Outer Animated Gradient Border -->
+  <div class="absolute inset-0 rounded-[2rem] p-[2px] pointer-events-none z-0">
+    <div class="w-full h-full rounded-[2rem] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-border"></div>
+  </div>
+
+  <!-- Inner Content Wrapper (to block gradient bleed) -->
+  <div class="relative z-10 rounded-[2rem] bg-blue-900/30 backdrop-blur-xl p-6 sm:p-8 lg:p-10">
+    <div class="rounded-[1.8rem] bg-blue-900/40 p-4 sm:p-6 lg:p-8 border border-white/10">
+      <p>
+        The <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> app is the result of a collaborative effort by a dedicated team from the
+        <em>Centre for Artificial Intelligence at the Islamic University of Science and Technology (IUST), Awantipora, Jammu & Kashmir</em>.
+        Designed to help families locate missing or elderly loved ones quickly and safely, the platform combines AI, facial recognition, and predictive analytics.
+      </p>
+      <p>
+        The idea for <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> was conceived by <strong>Dr. Wajid Aalam</strong>, who envisioned a platform that could leverage AI to enable faster, more accurate searches while keeping privacy at the forefront.
+      </p>
+      <p>
+        Under his supervision, <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong> developed the application, contributing expertise in ML, programming, and software architecture—ensuring the system is reliable, scalable, and intuitive.
+      </p>
+      <p>
+        A robust facial recognition pipeline was implemented, capable of matching individuals against verified records with high accuracy. Predictive analytics further guide searches and prioritize leads. These features were refined iteratively for speed and usability.
+      </p>
+      <p>
+        Privacy and security were treated as first-class requirements with encrypted data handling, access controls, and ethical safeguards to protect user confidentiality.
+      </p>
+      <p>
+        The project also incorporated feedback from stakeholders, which led to improvements in usability, search filters, and notifications. This ensured the platform remained practical and community-driven.
+      </p>
+      <p>
+        In summary, <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> emerged as a vision by <strong>Dr. Wajid Aalam</strong> and was transformed into a working, community-focused platform through the efforts of <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong>.
+        Together, they delivered a solution that combines AI innovation with empathy and responsibility.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Credits Divider -->
+<div class="relative w-full flex justify-center my-12 sm:my-16 md:my-24">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md">
+    Credits
+  </span>
+</div>
+
+<!-- Credits Card -->
+<div class="credits-card shimmer shimmer-pink tilt relative rounded-3xl overflow-hidden scroll-fade max-w-4xl mx-auto mb-16">
+  <div class="tilt-inner relative rounded-3xl p-6 shadow-lg bg-pink-600/40 backdrop-blur-md text-white border border-white/10 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+    <ul class="list-disc ml-6 space-y-2 text-sm sm:text-base leading-relaxed">
+      <li><strong>Concept & Supervision:</strong> Dr. Wajid Aalam</li>
+      <li><strong>Development:</strong> Amir Mushtaq & Abrar Ahmad</li>
+      <li><strong>Institution:</strong> Islamic University of Science & Technology, Awantipora, J&K</li>
+    </ul>
+  </div>
+</div>
+
+<style>
+/* --- Animations & Effects (same as before, trimmed for brevity) --- */
+.page-slide { animation: pageSlideIn 0.9s ease-out forwards; opacity: 0; transform: translateY(40px); }
+@keyframes pageSlideIn { to { opacity: 1; transform: translateY(0); } }
+.shimmer { position: relative; overflow: hidden; border-radius: inherit; }
+.shimmer::before {
+  content: ""; position: absolute; top: 25%; left: -150%; width: 250%; height: 60%;
+  background: linear-gradient(120deg, rgba(255,255,255,0.15), rgba(255,255,255,0.35), rgba(255,255,255,0.15));
+  animation: shimmer-diagonal 4s linear infinite;
+}
+.shimmer-blue::before { background: linear-gradient(120deg, rgba(59,130,246,0.15), rgba(59,130,246,0.35), rgba(59,130,246,0.15)); }
+.shimmer-green::before { background: linear-gradient(120deg, rgba(34,197,94,0.15), rgba(34,197,94,0.35), rgba(34,197,94,0.15)); }
+.shimmer-pink::before { background: linear-gradient(120deg, rgba(236,72,153,0.15), rgba(236,72,153,0.35), rgba(236,72,153,0.15)); }
+@keyframes shimmer-diagonal { 0% { transform: translateX(-150%) rotate(25deg); } 100% { transform: translateX(150%) rotate(25deg); } }
+.scroll-fade { opacity: 0; transform: translateY(20px); transition: all 0.7s ease-out; }
+.scroll-fade.show { opacity: 1; transform: translateY(0); }
+.tilt { perspective: 1000px; transform-style: preserve-3d; }
+.tilt-inner { transition: transform 0.2s ease-out; }
+</style>
+
+<!-- Gradient Border Animation -->
+<style>
+@keyframes borderShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-border {
+  background-size: 300% 300%;
+  animation: borderShift 8s ease infinite;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const faders = document.querySelectorAll(".scroll-fade");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  faders.forEach(fader => observer.observe(fader));
+
+  const tiltCards = document.querySelectorAll(".tilt");
+  tiltCards.forEach(card => {
+    const inner = card.querySelector(".tilt-inner") || card;
+    card.addEventListener("mousemove", e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left, y = e.clientY - rect.top;
+      const midX = rect.width / 2, midY = rect.height / 2;
+      const rotateX = ((y - midY) / midY) * 6;
+      const rotateY = ((x - midX) / midX) * 6;
+      inner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+    });
+    card.addEventListener("mouseleave", () => {
+      inner.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+    });
+  });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}PersonFinder{% endblock %}</title>
+  <meta name="description" content="Find and connect with people easily using PersonFinder.">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- AOS Animation Library -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+  <style>
+    nav a.active-link { font-weight: 600; color: #ffffff; text-decoration: none; }
+
+    /* Slide down animation */
+    @keyframes slideDown { 0% { opacity:0; transform:translateY(-10px); } 100% { opacity:1; transform:translateY(0); } }
+    .animate-slide-down { animation: slideDown 0.5s ease-out forwards; }
+
+    /* Card shimmer effect */
+    .card-hover { position: relative; overflow: hidden; border-radius: 1rem; }
+    .card-hover::before {
+      content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
+      transform: skewX(-20deg); animation: slideGlow 3s linear infinite; pointer-events: none;
+    }
+    @keyframes slideGlow { 0% { left:-75%; } 100% { left:125%; } }
+
+    .card-glow-blue::before { background: linear-gradient(120deg, rgba(59,130,246,0.05), rgba(59,130,246,0.4), rgba(59,130,246,0.05)); }
+    .card-glow-green::before { background: linear-gradient(120deg, rgba(16,185,129,0.05), rgba(16,185,129,0.4), rgba(16,185,129,0.05)); }
+    .card-glow-pink::before { background: linear-gradient(120deg, rgba(236,72,153,0.05), rgba(236,72,153,0.4), rgba(236,72,153,0.05)); }
+
+    .card-glow-blue:hover { background: rgba(59,130,246,0.35); border-color: transparent; }
+    .card-glow-green:hover { background: rgba(16,185,129,0.35); border-color: transparent; }
+    .card-glow-pink:hover { background: rgba(236,72,153,0.35); border-color: transparent; }
+
+    /* Responsive adjustments */
+    @media (max-width:640px){
+      .grid-cols-3 { grid-template-columns: 1fr !important; }
+      .max-w-5xl { max-width: 100%; padding: 0 1rem; }
+    }
+
+    /* Privacy Popup Overlay */
+    #policy-popup { background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(4px); }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-900 to-blue-700 text-white min-h-screen flex flex-col">
+
+  {% include 'partials/_header.html' %}
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-container" class="fixed top-4 right-4 space-y-3 z-[1201] w-[90%] max-w-sm">
+        {% for category, message in messages %}
+          {% set color = 
+            'bg-green-500 text-white' if category=='success' else
+            'bg-red-500 text-white' if category=='error' else
+            'bg-yellow-500 text-black'
+          %}
+          <div class="flash-message flex items-center justify-between {{ color }} px-4 py-3 rounded-xl shadow-lg animate-slide-down relative">
+            <span class="font-medium">{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="ml-3 text-xl leading-none hover:opacity-75">&times;</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="flex-grow">
+    <div id="main-content" class="flex flex-col justify-start items-center px-4 sm:px-6 lg:px-8 pt-0 pb-12 sm:pb-16 lg:pb-20" data-aos="fade-up">
+      <div class="text-center max-w-5xl w-full">
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </main>
+
+  <div class="w-full bg-gradient-to-t from-indigo-900 to-transparent h-12 sm:h-16 lg:h-20"></div>
+
+  <footer class="bg-indigo-900 text-white">
+    {% include 'partials/_footer.html' %}
+  </footer>
+
+  <!-- Privacy & Terms Popup -->
+  <div id="policy-popup" class="fixed inset-0 z-[2000] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="bg-white text-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 sm:p-8 animate-slide-down">
+      <h2 class="text-xl sm:text-2xl font-bold mb-4 text-center">We value your privacy</h2>
+      <p class="mb-4 text-sm sm:text-base text-gray-600 text-center">
+        By using PersonFinder, you agree to our 
+        <a href="{{ url_for('privacy_policy') }}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">Privacy Policy</a> 
+        and 
+        <a href="{{ url_for('terms') }}" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline">Terms of Service</a>.
+      </p>
+      <div class="flex justify-center gap-4 mt-6">
+        <button id="accept-policy" class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-lg font-medium shadow-md transition">Accept</button>
+        <button id="reject-policy" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-medium shadow-md transition">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- reCAPTCHA v3 -->
+  {% if RECAPTCHA_SITE_KEY|default('') %}
+  <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
+  <script>
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action: 'submit'}).then(function(token) {
+            const recaptchaInput = document.getElementById('recaptcha_token');
+            if(recaptchaInput) recaptchaInput.value = token;
+        });
+    });
+  </script>
+  {% endif %}
+
+  <script>
+    AOS.init();
+
+    // Auto-hide flash messages
+    setTimeout(() => {
+      document.querySelectorAll(".flash-message").forEach(el => {
+        el.style.transition = "opacity 1s ease";
+        el.style.opacity = "0";
+        setTimeout(() => el.remove(), 1000);
+      });
+    }, 4000);
+
+    // Privacy & Terms popup logic
+    const popup = document.getElementById("policy-popup");
+    const acceptBtn = document.getElementById("accept-policy");
+    const rejectBtn = document.getElementById("reject-policy");
+
+    if (!localStorage.getItem("policyAccepted")) {
+      popup.classList.remove("hidden");
+    }
+
+    acceptBtn.addEventListener("click", () => {
+      localStorage.setItem("policyAccepted", "true");
+      popup.classList.add("hidden");
+    });
+
+    rejectBtn.addEventListener("click", () => {
+      alert("You must accept the Privacy Policy & Terms to use this site.");
+    });
+
+    // Mobile menu
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenuContainer = document.getElementById('mobile-menu-container');
+    const openIcon = document.getElementById('menu-open-icon');
+    const closeIcon = document.getElementById('menu-close-icon');
+    const menuLinks = document.querySelectorAll('.menu-link');
+
+    function closeMenu(){
+      if(!mobileMenuContainer) return;
+      mobileMenuContainer.classList.remove('open','pointer-events-auto');
+      mobileMenuContainer.classList.add('pointer-events-none');
+      openIcon.classList.remove('hidden'); closeIcon.classList.add('hidden');
+      menuLinks.forEach(l=>l.classList.remove('show'));
+      menuBtn?.setAttribute('aria-expanded','false');
+    }
+
+    menuBtn?.addEventListener('click', ()=>{
+      const isOpen = mobileMenuContainer.classList.toggle('open');
+      openIcon.classList.toggle('hidden'); closeIcon.classList.toggle('hidden');
+      if(isOpen){
+        mobileMenuContainer.classList.remove('pointer-events-none');
+        mobileMenuContainer.classList.add('pointer-events-auto');
+        menuBtn.setAttribute('aria-expanded','true');
+        menuLinks.forEach((link,index)=>{
+          link.classList.remove('show');
+          setTimeout(()=>link.classList.add('show'),index*150);
+          link.addEventListener('click', closeMenu,{once:true});
+        });
+      } else closeMenu();
+    });
+
+    document.addEventListener('click',(e)=>{
+      if(mobileMenuContainer?.classList.contains('open') &&
+         !mobileMenuContainer.contains(e.target) &&
+         e.target!==menuBtn && !menuBtn.contains(e.target)){
+        closeMenu();
+      }
+    });
+
+    // Highlight current nav link
+    const currentPath = window.location.pathname.replace(/\/$/,'');
+    document.querySelectorAll('nav a').forEach(link=>{
+      const linkPath = link.getAttribute('href')?.replace(/\/$/,'');
+      if(linkPath && currentPath.endsWith(linkPath)) link.classList.add('active-link');
+    });
+
+    // Push notifications
+    {% if personId %}
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('/static/service-worker.js').then(reg=>{
+        reg.pushManager.subscribe({
+          userVisibleOnly:true,
+          applicationServerKey:urlBase64ToUint8Array("{{ VAPID_PUBLIC_KEY }}")
+        }).then(subscription=>{
+          fetch('/save-subscription?person_id={{ personId }}',{
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(subscription)
+          }).then(resp=>resp.json()).then(data=>{
+            if(data.success)console.log("Subscription saved!");
+          }).catch(err=>console.error(err));
+        }).catch(err=>console.error("Push subscription failed:",err));
+      });
+    }
+
+    function urlBase64ToUint8Array(base64String){
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding).replace(/\-/g,'+').replace(/_/g,'/');
+      const rawData = atob(base64);
+      return Uint8Array.from([...rawData].map(c=>c.charCodeAt(0)));
+    }
+    {% endif %}
+  </script>
+
+</body>
+</html>

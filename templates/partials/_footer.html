@@ -1,0 +1,98 @@
+<!-- Footer -->
+<footer class="bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-600 text-white mt-auto relative shadow-inner">
+  <div class="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+
+    <!-- Left: Copyright (centered on mobile, left on desktop) -->
+    <div class="flex justify-center md:justify-start">
+      <p class="text-xs sm:text-sm text-gray-400 flex flex-wrap items-center gap-1 sm:gap-2 leading-relaxed">
+        <span class="text-gray-300">&copy; {{ current_year }}</span>
+        <span class="font-semibold tracking-wide bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+          PersonFinder
+        </span>
+        <span class="text-gray-500">•</span>
+        <span class="text-gray-400">All rights reserved.</span>
+      </p>
+    </div>
+
+    <!-- Center: Links (always centered; responsive separators) -->
+    <nav aria-label="Footer navigation" class="flex justify-center">
+      <ul class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-200">
+        <li>
+          <a href="{{ url_for('developers') }}" class="hover:underline">About Developers</a>
+        </li>
+
+        <li class="text-gray-400">|</li>
+
+        <li>
+          <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
+        </li>
+
+        <li class="text-gray-400">|</li>
+
+        <li>
+          <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Right: Tagline + Version (always stacked, centered on mobile and desktop) -->
+    <div class="flex flex-col items-center gap-1 md:text-center">
+      <p class="italic text-gray-200 text-center text-xs leading-tight">
+        Powered by AI &amp; Machine Learning
+      </p>
+      <p class="text-[10px] text-gray-400 md:mt-1">
+        v{{ app_version }}
+      </p>
+    </div>
+
+    <!-- Screen-reader-only full sentence for clarity -->
+    <span class="sr-only">©{{ current_year }} PersonFinder. All rights reserved. About Developers. Privacy Policy. Terms of Service.</span>
+  </div>
+</footer>
+
+<!-- Scroll to Top Button -->
+<button id="scrollToTopBtn"
+        aria-label="Scroll to top"
+        class="hidden fixed bottom-5 right-5 sm:bottom-6 sm:right-6
+               bg-white/10 border border-white/30 backdrop-blur
+               text-white p-3 rounded-full 
+               hover:border-white hover:bg-white/20 hover:scale-110
+               transition-all duration-300 z-50">
+  <i data-lucide="arrow-up" class="w-5 h-5" aria-hidden="true"></i>
+</button>
+
+<!-- Lucide Icons & Footer Scripts -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  if (window.lucide) lucide.createIcons();
+
+  (function scrollToTopBehavior(){
+    const scrollBtn = document.getElementById("scrollToTopBtn");
+    if (!scrollBtn) return;
+
+    const SHOW_AT = 200;
+    let lastKnownScroll = 0;
+    let ticking = false;
+
+    function onScroll() {
+      lastKnownScroll = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          scrollBtn.classList.toggle("hidden", lastKnownScroll <= SHOW_AT);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    scrollBtn.addEventListener("click", () => {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.scrollTo(0, 0);
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  })();
+</script>

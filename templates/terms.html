@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - PersonFinder{% endblock %}
+
+{% block content %}
+<div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-page-enter mt-20">
+
+    <!-- Heading -->
+    <header class="mb-6 text-center">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">Terms of Service</h1>
+      <p class="mx-auto text-[clamp(0.8rem,2.2vw,1rem)] leading-relaxed max-w-2xl mt-3 sm:mt-4 px-2 text-center">
+        Please read these terms carefully. 
+        <span class="text-green-400 font-semibold">By using PersonFinder,</span> 
+        you agree to these rules and conditions.
+      </p>
+    </header>
+
+    <!-- Divider -->
+    <div class="relative w-full flex justify-center my-12 sm:my-16">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Details
+      </span>
+    </div>
+
+    <!-- Accordion -->
+    <div id="tos-accordion" class="space-y-3">
+
+      {% set sections = [
+        {'title': '1. Acceptance of Terms', 'content': '<p>By accessing and using PersonFinder, you agree to comply with and be bound by these Terms of Service. If you do not agree, please discontinue use.</p>'},
+        {'title': '2. Use of the Service', 'content': '<p>You agree to use PersonFinder only for lawful purposes and in accordance with applicable laws. Misuse, including fraudulent reports or harassment, is strictly prohibited.</p>'},
+        {'title': '3. User Accounts', 'content': '<p>You are responsible for maintaining the confidentiality of your account and for all activities under your account.</p>'},
+        {'title': '4. Intellectual Property', 'content': '<p>All content, trademarks, and data on PersonFinder are the property of their respective owners and are protected by applicable intellectual property laws.</p>'},
+        {'title': '5. Limitation of Liability', 'content': '<p>PersonFinder is provided "as is" without warranties of any kind. We are not liable for any damages resulting from your use of the service.</p>'},
+        {'title': '6. Changes to Terms', 'content': '<p>We may update these Terms of Service from time to time to reflect improvements in our platform, legal requirements, or privacy practices. Your continued use of PersonFinder after updates constitutes acceptance of the revised terms. We recommend reviewing the Terms periodically to stay informed.</p>'}
+      ] %}
+
+      {% for section in sections %}
+      <article class="accordion-item bg-transparent rounded-lg" id="section-{{ loop.index }}">
+        <header class="w-full">
+          <button
+            type="button"
+            id="accordion-header-{{ loop.index }}"
+            class="accordion-header group flex items-start justify-between w-full px-4 py-4 sm:px-5 sm:py-5 text-left rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            aria-expanded="false"
+            aria-controls="section-content-{{ loop.index }}">
+            <div class="flex-1 pr-4">
+              <h3 class="text-white font-semibold text-base sm:text-lg">{{ section.title|safe }}</h3>
+            </div>
+
+            <svg class="accordion-icon w-5 h-5 text-white/80 transform transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </header>
+
+        <div id="section-content-{{ loop.index }}" class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300" role="region" aria-labelledby="accordion-header-{{ loop.index }}">
+          <div class="accordion-inner px-4 pb-5 pt-3 sm:px-5 sm:pt-4 text-sm text-gray-400 leading-relaxed">
+            {{ section.content|safe }}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .accordion-header:hover { background-color: rgba(255,255,255,0.02); }
+  .accordion-header:focus { box-shadow: 0 0 0 4px rgba(124,58,237,0.08); outline: none; border-radius: .5rem; }
+  .accordion-content { transition: max-height 340ms ease; }
+  .accordion-icon.rotate-180 { transform: rotate(180deg); }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const headers = document.querySelectorAll('.accordion-header');
+  const contents = document.querySelectorAll('.accordion-content');
+
+  contents.forEach(c => { c.style.maxHeight = '0px'; c.classList.remove('open'); });
+
+  function closePanel(header, content) {
+    content.style.maxHeight = '0px';
+    content.classList.remove('open');
+    header.setAttribute('aria-expanded', 'false');
+    header.querySelector('.accordion-icon')?.classList.remove('rotate-180');
+  }
+  function openPanel(header, content) {
+    const inner = content.querySelector('.accordion-inner') || content;
+    content.style.maxHeight = inner.scrollHeight + 'px';
+    content.classList.add('open');
+    header.setAttribute('aria-expanded', 'true');
+    header.querySelector('.accordion-icon')?.classList.add('rotate-180');
+  }
+  function closeAll() {
+    headers.forEach(h => closePanel(h, h.closest('.accordion-item').querySelector('.accordion-content')));
+  }
+
+  headers.forEach(header => {
+    header.addEventListener('click', function () {
+      const content = header.closest('.accordion-item').querySelector('.accordion-content');
+      if (content.classList.contains('open')) {
+        closePanel(header, content);
+      } else {
+        closeAll();
+        openPanel(header, content);
+        if (window.innerWidth < 640) {
+          setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140);
+        }
+      }
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    contents.forEach(c => {
+      if (c.classList.contains('open')) {
+        const inner = c.querySelector('.accordion-inner') || c;
+        c.style.maxHeight = inner.scrollHeight + 'px';
+      }
+    });
+  });
+});
+</script>
+{% endblock %}
