@@ -59,7 +59,7 @@ app.config.update(
     UPLOAD_FOLDER=os.path.join(app.root_path, "static", "uploads"),
     MAX_CONTENT_LENGTH=32 * 1024 * 1024,  # 32 MB
     MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.gmail.com"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT", "587")),
+    mail_port_value = int(os.getenv("MAIL_PORT", "587")),
     MAIL_USE_TLS=True,
     MAIL_USERNAME=os.getenv("MAIL_USERNAME"),
     MAIL_PASSWORD=os.getenv("EMAIL_APP_PASSWORD"),
