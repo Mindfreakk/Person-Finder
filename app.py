@@ -115,51 +115,59 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 # ----------------- Initialize Mail -----------------
 mail = Mail(app)
 
-# ----------------- Version Control (dynamic) -----------------
-# ----------------- Version Control (read-only from VERSION) -----------------
-import os, time
-basedir = os.path.abspath(os.path.dirname(__file__))
+# ----------------- Version Control (dynamic, always-read) -----------------
+import time  # only for the debug endpoint’s ISO mtime
+
 VERSION_FILE = os.path.join(basedir, "VERSION")
 
-_version_cache = {"mtime": None, "val": "1.0.0.0"}
+def _read_version_file() -> str:
+    """
+    Robust, cheap read of VERSION each request.
+    Falls back to APP_VERSION env or '1.0.0.0' if file missing/empty.
+    """
+    # 1) If VERSION exists, prefer it
+    try:
+        with open(VERSION_FILE, "r", encoding="utf-8") as f:
+            v = (f.read() or "").strip()
+            if v:
+                return v
+    except FileNotFoundError:
+        pass
+    except Exception:
+        # ignore other read errors and fall through to fallback
+        pass
+    # 2) Optional env override for emergency
+    env_v = (os.getenv("APP_VERSION") or "").strip()
+    if env_v:
+        return env_v
+    # 3) Final fallback
+    return "1.0.0.0"
 
 def get_app_version() -> str:
-    """
-    Read version from VERSION at runtime.
-    Uses an mtime cache so template gets updated on the next request
-    whenever the file changes (no restart needed).
-    """
-    try:
-        st_mtime = os.stat(VERSION_FILE).st_mtime
-        if st_mtime != _version_cache["mtime"]:
-            with open(VERSION_FILE, "r", encoding="utf-8") as f:
-                val = (f.read() or "").strip() or "1.0.0.0"
-            _version_cache.update({"mtime": st_mtime, "val": val})
-    except Exception:
-        # If file missing/unreadable, keep last known value or fallback
-        pass
-    return _version_cache["val"]
+    # kept as a thin wrapper in case you later add caching logic
+    return _read_version_file()
 
 def get_app_version_meta():
-    """Small helper to debug what file/value Flask is using."""
+    """Helper to debug in /__version."""
+    meta = {"file": VERSION_FILE, "value": get_app_version()}
     try:
         st = os.stat(VERSION_FILE)
-        return {
-            "file": VERSION_FILE,
+        meta.update({
             "mtime": int(st.st_mtime),
             "mtime_iso": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime)),
-            "value": get_app_version(),
-        }
-    except Exception:
-        return {"file": VERSION_FILE, "error": "unreadable", "value": get_app_version()}
-
+            "exists": True
+        })
+    except FileNotFoundError:
+        meta.update({"exists": False})
+    except Exception as e:
+        meta.update({"exists": "unknown", "error": str(e)})
+    return meta
 
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
-    meta = get_app_version_meta()
     return {
-        "app_version": meta["value"],          # use this in the footer
+        "app_version": get_app_version(),  # ✅ always fresh from VERSION
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
