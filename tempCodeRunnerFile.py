@@ -1,78 +1,41 @@
-# ----------------- Utility Function -----------------
-def get_stats():
-    try:
-        registrations = Person.query.count()
-        searches = SearchLog.query.count()
-        searches_traced = SearchLog.query.filter(SearchLog.success == 1).count()
-    except Exception:
-        registrations = searches = searches_traced = 0
+# ----------------- Version Control -----------------
+VERSION_FILE = "VERSION"
 
-    return {
-        "registrations": registrations,
-        "searches": searches,
-        "searches_traced": searches_traced,
-    }
+def get_version():
+    """Read the version from the VERSION file, or initialize it."""
+    if not os.path.exists(VERSION_FILE):
+        with open(VERSION_FILE, "w") as f:
+            f.write("1.0.0.0")
+    with open(VERSION_FILE, "r") as f:
+        version = f.read().strip()
+        parts = version.split(".")
+        while len(parts) < 4:
+            parts.append("0")
+        return ".".join(parts)
 
-# ----------------- Home Route -----------------
-@app.route("/")
-def home():
-    stats = get_stats()
-    return render_template("home.html", stats=stats)
+def bump_version():
+    """Automatically increment version with cascading: build -> patch -> minor -> major."""
+    version = get_version()
+    major, minor, patch, build = map(int, version.split("."))
 
-# ----------------- API Route -----------------
-@app.route("/api/stats")
-def api_stats():
-    stats = get_stats()
-    return jsonify(stats)
+    build += 1
+    if build > 9:
+        build = 0
+        patch += 1
+        if patch > 9:
+            patch = 0
+            minor += 1
+            if minor > 9:
+                minor = 0
+                major += 1
 
-# ----------------- Auth Routes -----------------
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        password = request.form.get("password", "").strip()
-        user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password_hash, password):
-            flash("Invalid username or password.", "error")
-            return redirect(url_for("login"))
-        login_user(UserLogin(user))
-        flash("Logged in successfully!", "success")
-        return redirect(url_for("admin_dashboard") if user.role == "admin" else url_for("home"))
-    return render_template("login.html")
+    new_version = f"{major}.{minor}.{patch}.{build}"
+    with open(VERSION_FILE, "w") as f:
+        f.write(new_version)
+    return new_version
 
-@app.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    flash("Logged out successfully.", "success")
-    return redirect(url_for("login"))
-
-# ----------------- Auto-detect LAN IP & build external URLs -----------------
-import socket
-from urllib.parse import urljoin
-
-def get_local_ip() -> str:
-    """Return LAN IP (e.g. 192.168.x.x). Falls back to 127.0.0.1."""
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(("8.8.8.8", 80))  # only to learn the outbound iface
-        ip = s.getsockname()[0]
-    except Exception:
-        ip = "127.0.0.1"
-    finally:
-        s.close()
-    return ip
-
-def build_external_url(endpoint: str, **values) -> str:
-    """
-    Reset links that open on phone:
-    - Use PUBLIC_BASE_URL if set (e.g. https://your-domain.com)
-    - Else use auto-detected LAN IP + PORT
-    """
-    base = (os.getenv("PUBLIC_BASE_URL") or "").strip()
-    if not base:
-        local_ip = get_local_ip()
-        port = os.getenv("PORT", "5001")
-        base = f"http://{local_ip}:{port}"
-    rel = url_for(endpoint, _external=False, **values).lstrip("/")
-    return urljoin(base.rstrip("/") + "/", rel)
+# ----------------- Auto Bump on Actual Server Start -----------------
+if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or os.environ.get("FLASK_RUN_FROM_CLI") == "true":
+    APP_VERSION = bump_version()
+else:
+    APP_VERSION = get_version()

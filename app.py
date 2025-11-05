@@ -115,70 +115,149 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 # ----------------- Initialize Mail -----------------
 mail = Mail(app)
 
-# ----------------- Version Control (dynamic, always-read) -----------------
-import time  # only for the debug endpoint’s ISO mtime
+# ----------------- Version Control (CI-friendly + local auto-bump) -----------------
+import os, time
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-VERSION_FILE = os.path.join(basedir, "VERSION")
+# Prefer CI-managed file `version.txt`; otherwise use/keep a local `VERSION`
+_VERSION_CANDIDATES = [
+    os.path.join(basedir, "version.txt"),  # written by GitHub Actions (recommended)
+    os.path.join(basedir, "VERSION"),      # local/dev fallback
+]
+for _p in _VERSION_CANDIDATES:
+    if os.path.exists(_p):
+        VERSION_FILE = _p
+        break
+else:
+    # default to CI filename so when CI starts writing it, we auto-switch
+    VERSION_FILE = _VERSION_CANDIDATES[0]
 
-def _read_version_file() -> str:
-    """
-    Robust, cheap read of VERSION each request.
-    Falls back to APP_VERSION env or '1.0.0.0' if file missing/empty.
-    """
-    # 1) If VERSION exists, prefer it
-    try:
-        with open(VERSION_FILE, "r", encoding="utf-8") as f:
-            v = (f.read() or "").strip()
-            if v:
-                return v
-    except FileNotFoundError:
-        pass
-    except Exception:
-        # ignore other read errors and fall through to fallback
-        pass
-    # 2) Optional env override for emergency
-    env_v = (os.getenv("APP_VERSION") or "").strip()
-    if env_v:
-        return env_v
-    # 3) Final fallback
-    return "1.0.0.0"
+# Small cache so we only re-read when the file actually changes
+_version_cache = {"mtime": None, "val": "1.0.0"}
+
+def _ensure_file(path: str, default_val: str = "1.0.0") -> None:
+    """Make sure version file exists with a sane default."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    if not os.path.exists(path):
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(default_val + "\n")
 
 def get_app_version() -> str:
-    # kept as a thin wrapper in case you later add caching logic
-    return _read_version_file()
-
-def get_app_version_meta():
-    """Helper to debug in /__version."""
-    meta = {"file": VERSION_FILE, "value": get_app_version()}
+    """
+    Return current version string from VERSION_FILE.
+    Re-reads when the file's mtime changes so the footer updates without a restart.
+    """
     try:
-        st = os.stat(VERSION_FILE)
-        meta.update({
-            "mtime": int(st.st_mtime),
-            "mtime_iso": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime)),
-            "exists": True
-        })
-    except FileNotFoundError:
-        meta.update({"exists": False})
-    except Exception as e:
-        meta.update({"exists": "unknown", "error": str(e)})
-    return meta
+        st_mtime = os.stat(VERSION_FILE).st_mtime
+        if st_mtime != _version_cache["mtime"]:
+            with open(VERSION_FILE, "r", encoding="utf-8") as f:
+                val = (f.read() or "").strip() or "1.0.0"
+            _version_cache.update({"mtime": st_mtime, "val": val})
+    except Exception:
+        # If file unreadable/missing, keep last known value
+        pass
+    return _version_cache["val"]
+
+def _write_version(new_val: str) -> None:
+    with open(VERSION_FILE, "w", encoding="utf-8") as f:
+        f.write(new_val + "\n")
+    # Invalidate cache so the next request picks it up immediately
+    _version_cache["mtime"] = None
+
+def bump_version(which: str = "patch") -> str:
+    """
+    3-part semantic version with 0..99 limits on minor & patch. Cascades upward:
+      - patch 0..99 (then +1 minor, patch -> 0)
+      - minor 0..99 (then +1 major, minor -> 0)
+      - major (no upper limit; resets minor/patch to 0)
+    Returns the new version string.
+    """
+    _ensure_file(VERSION_FILE, default_val="1.0.0")
+    cur = get_app_version()
+    try:
+        major, minor, patch = [int(x) for x in cur.split(".")[:3]]
+    except Exception:
+        major, minor, patch = 1, 0, 0  # recover if malformed
+
+    which = (which or "patch").lower()
+    if which == "major":
+        major += 1
+        minor = 0
+        patch = 0
+    elif which == "minor":
+        minor += 1
+        if minor > 99:
+            minor = 0
+            major += 1
+        patch = 0
+    else:  # patch
+        patch += 1
+        if patch > 99:
+            patch = 0
+            minor += 1
+            if minor > 99:
+                minor = 0
+                major += 1
+
+    newv = f"{major}.{minor}.{patch}"
+    _write_version(newv)
+    return newv
+
+# --- Local auto-bump on each app run (without fighting CI) ---
+# Behavior:
+# - If CI's `version.txt` exists, we do *not* bump locally (we trust CI to bump on push).
+# - If we're using the local `VERSION` file (dev), we bump once per *real* server start.
+#   You can disable this by setting PF_LOCAL_BUMP_ON_START=false
+_LOCAL_BUMP_ENABLED = str(os.getenv("PF_LOCAL_BUMP_ON_START", "true")).lower() in ("1", "true", "yes", "on")
+
+def _is_reloader_child() -> bool:
+    # When using the Flask dev server, the reloader spawns a child process;
+    # only bump in the actual serving process.
+    return os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+
+# Decide if the current VERSION_FILE is CI-managed
+_USING_CI_VERSION = os.path.basename(VERSION_FILE).lower() == "version.txt"
+
+try:
+    _ensure_file(VERSION_FILE, default_val="1.0.0")
+    if _LOCAL_BUMP_ENABLED and not _USING_CI_VERSION and _is_reloader_child():
+        # Bump patch locally at each run for DEV flows
+        bumped = bump_version("patch")
+        # Optional debug print to server logs:
+        print(f"[version] Local auto-bump -> {bumped} (file: {VERSION_FILE})")
+except Exception as _e:
+    # Avoid crashing app on version write errors
+    print(f"[version] Warning: could not bump version: {_e}")
 
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
+    """Inject global template variables (version updates live per request)."""
     return {
-        "app_version": get_app_version(),  # ✅ always fresh from VERSION
+        "app_version": get_app_version(),
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
         "RECAPTCHA_SITE_KEY": current_app.config.get("RECAPTCHA_SITE_KEY", None),
     }
 
+# Optional: inspect from browser
 @app.get("/__version")
 def __version():
     from flask import jsonify
-    return jsonify(get_app_version_meta())
-
+    try:
+        st = os.stat(VERSION_FILE)
+        meta = {
+            "file": VERSION_FILE,
+            "mtime": int(st.st_mtime),
+            "mtime_iso": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime)),
+            "value": get_app_version(),
+            "using_ci_version": _USING_CI_VERSION,
+            "local_bump_enabled": _LOCAL_BUMP_ENABLED,
+        }
+    except Exception as e:
+        meta = {"file": VERSION_FILE, "error": str(e), "value": get_app_version()}
+    return jsonify(meta)
 
 # ----------------- reCAPTCHA Verification -----------------
 def verify_recaptcha(token, action="submit", min_score=0.5):
