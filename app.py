@@ -116,26 +116,19 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 mail = Mail(app)
 
 # ----------------- Version Control (dynamic) -----------------
-# ----------------- Version Control (dynamic + self-diagnostic) -----------------
+# ----------------- Version Control (read-only from VERSION) -----------------
 import os, time
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-# Prefer CI-written version.txt, fallback to VERSION
-_VERSION_CANDIDATES = [
-    os.path.join(basedir, "version.txt"),
-    os.path.join(basedir, "VERSION"),
-]
-for _p in _VERSION_CANDIDATES:
-    if os.path.exists(_p):
-        VERSION_FILE = _p
-        break
-else:
-    VERSION_FILE = _VERSION_CANDIDATES[0]  # default to version.txt
+VERSION_FILE = os.path.join(basedir, "VERSION")
 
 _version_cache = {"mtime": None, "val": "1.0.0.0"}
 
 def get_app_version() -> str:
-    """Return version from VERSION_FILE; hot-reload on mtime change."""
+    """
+    Read version from VERSION at runtime.
+    Uses an mtime cache so template gets updated on the next request
+    whenever the file changes (no restart needed).
+    """
     try:
         st_mtime = os.stat(VERSION_FILE).st_mtime
         if st_mtime != _version_cache["mtime"]:
@@ -143,11 +136,12 @@ def get_app_version() -> str:
                 val = (f.read() or "").strip() or "1.0.0.0"
             _version_cache.update({"mtime": st_mtime, "val": val})
     except Exception:
+        # If file missing/unreadable, keep last known value or fallback
         pass
     return _version_cache["val"]
 
 def get_app_version_meta():
-    """For debugging in templates/endpoint."""
+    """Small helper to debug what file/value Flask is using."""
     try:
         st = os.stat(VERSION_FILE)
         return {
@@ -165,13 +159,17 @@ def get_app_version_meta():
 def inject_globals():
     meta = get_app_version_meta()
     return {
-        "app_version": meta["value"],          # what your footer should use
-        "app_version_file": meta.get("file"),  # temporary: helps verify path
+        "app_version": meta["value"],          # use this in the footer
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
         "RECAPTCHA_SITE_KEY": current_app.config.get("RECAPTCHA_SITE_KEY", None),
     }
+
+@app.get("/__version")
+def __version():
+    from flask import jsonify
+    return jsonify(get_app_version_meta())
 
 
 # ----------------- reCAPTCHA Verification -----------------
