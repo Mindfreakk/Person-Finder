@@ -335,6 +335,7 @@
   </div>
 </div>
 <!-- END Features 5–8 -->
+
 <!-- ================= Mission Section ================= -->
 
   <!-- Mission / Tagline -->
@@ -352,8 +353,8 @@
         Reuniting Families, Empowering Communities
         <span class="absolute inset-0 bg-gradient-to-r from-white/40 via-white/15 to-white/40 opacity-0 glimmer-animation"></span>
       </h2>
-      <p class="mt-4 text-[clamp(0.85rem,2.5vw,1.15rem)] sm:text-[clamp(1rem,2vw,1.25rem)] text-gray-300 font-semibold overflow-hidden relative h-7 sm:h-8 flex justify-center">
-        <span class="rotating-text inline-block"></span>
+      <p class="mt-4 text-[clamp(0.85rem,2.5vw,1.15rem)] sm:text-[clamp(1rem,2vw,1.25rem)] text-gray-300 font-semibold overflow-hidden relative h-7 sm:h-8 text-center">
+        <span class="rotating-text"></span>
       </p>
     </div>
   </div>
@@ -369,7 +370,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   // ========================
-  // Rotating tagline
+  // Rotating tagline (smooth, consistent, no gaps)
   // ========================
   const phrases = [
     "AI-Powered Facial Recognition",
@@ -378,33 +379,54 @@ document.addEventListener("DOMContentLoaded", () => {
     "Empowering Families",
     "Global Reach"
   ];
+
   const container = document.querySelector(".rotating-text");
-  let index = 0;
-  let currentSpan = null;
+  if (container) {
+    // Make the container act as a stage
+    container.classList.add("rotating-wrap");
 
-  function showPhrase() {
-    if (!container) return;
+    // Timing
+    const IN_MS   = 400;   // slide-in time
+    const HOLD_MS = 1400;  // fully visible
+    const OUT_MS  = 400;   // slide-out time
+    const CYCLE   = IN_MS + HOLD_MS + OUT_MS;
 
-    if (currentSpan) {
-      currentSpan.classList.remove("slide-in-text");
-      currentSpan.classList.add("slide-out-text");
-      currentSpan.addEventListener("animationend", () => {
-        if (currentSpan?.parentNode) container.removeChild(currentSpan);
-      }, { once: true });
+    let index = 0;
+    let current = null;
+
+    function cycle() {
+      // Create next line
+      const incoming = document.createElement("span");
+      incoming.className = "tagline";
+      incoming.textContent = phrases[index % phrases.length];
+      index++;
+
+      container.appendChild(incoming);
+      requestAnimationFrame(() => {
+        incoming.classList.add("enter");
+      });
+
+      // Slide out the current one
+      if (current) {
+        current.classList.remove("enter");
+        current.classList.add("exit");
+        current.addEventListener("animationend", () => current.remove(), { once: true });
+      }
+
+      current = incoming;
+      setTimeout(cycle, CYCLE);
     }
 
-    setTimeout(() => {
-      const span = document.createElement("span");
-      span.textContent = phrases[index];
-      span.className = "slide-in-text";
-      container.appendChild(span);
-      currentSpan = span;
-      index = (index + 1) % phrases.length;
-    }, 600);
-  }
+    // Prime first line immediately
+    const first = document.createElement("span");
+    first.className = "tagline enter";
+    first.textContent = phrases[0];
+    container.appendChild(first);
+    current = first;
+    index = 1;
 
-  showPhrase();
-  setInterval(showPhrase, 3400);
+    setTimeout(cycle, CYCLE);
+  }
 
   // ========================
   // Slide-Up Cards Intersection Observer
@@ -587,5 +609,62 @@ function animateCount(elementId, target) {
 }
 </script>
 
-{% endblock %}
+<!-- Rotating tagline CSS -->
+<style>
+/* Stage for rotating lines — force layout so width isn't 0 before first phrase */
+.rotating-wrap {
+  position: relative;
+  display: block;           /* was inline-block — now full width */
+  width: 100%;              /* ensure stage always has width */
+  height: 1.75rem;          /* mobile = h-7 */
+  line-height: 1.75rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+@media (min-width: 640px) { /* sm: */
+  .rotating-wrap {
+    height: 2rem;           /* sm:h-8 */
+    line-height: 2rem;
+  }
+}
 
+/* Each line */
+.rotating-wrap .tagline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;              /* centered via text-align */
+  text-align: center;
+  transform: translateY(100%);
+  opacity: 0;
+  will-change: transform, opacity;
+  text-overflow: ellipsis;
+  padding: 0 .25rem;
+}
+
+/* Enter and Exit animations with fixed timing */
+.rotating-wrap .tagline.enter {
+  animation: tagline-in 400ms ease forwards,
+             tagline-hold 1400ms linear 400ms forwards,
+             tagline-out 400ms ease 1800ms forwards;
+}
+
+.rotating-wrap .tagline.exit {
+  animation: tagline-out 400ms ease forwards;
+}
+
+@keyframes tagline-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0%);   opacity: 1; }
+}
+@keyframes tagline-hold {
+  from { transform: translateY(0%); opacity: 1; }
+  to   { transform: translateY(0%); opacity: 1; }
+}
+@keyframes tagline-out {
+  from { transform: translateY(0%);   opacity: 1; }
+  to   { transform: translateY(-100%); opacity: 0; }
+}
+</style>
+
+{% endblock %}

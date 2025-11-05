@@ -67,7 +67,7 @@
   <input type="file" id="photo" name="photo" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
 
   <!-- Upload label -->
-  <label for="photo"
+  <label for="photo" id="upload_label"
          class="cursor-pointer flex-1 text-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 
                 hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md 
                 transition transform hover:scale-105">
@@ -97,7 +97,8 @@
   <!-- Webcam button (hidden on mobile) -->
   <button type="button"
           id="use_webcam_btn"
-          onclick="openWebcamModal()"
+          onclick="openWebcamModal()
+"
           class="hidden sm:flex flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 
                  hover:from-red-500 hover:via-pink-500 hover:to-purple-500 text-white font-medium shadow-md 
                  transition transform hover:scale-105">
@@ -274,40 +275,62 @@
                    data-no-photo="{{ url_for('static', filename='images/no-photo.png') }}"/>
             </div>
 
-            <!-- Info -->
-            <div class="mt-4 text-sm sm:text-base space-y-2 text-gray-100 text-center">
-              {% if loop.first %}<p class="text-green-300 font-bold">🎯 Best Match</p>{% endif %}
-              {% if person.full_name %}<p><span class="font-semibold">Full Name:</span> {{ person.full_name }}</p>{% endif %}
-              {% if person.age %}<p><span class="font-semibold">Age:</span> {{ person.age }}</p>{% endif %}
-              {% if person.gender %}<p><span class="font-semibold">Gender:</span> {{ person.gender }}</p>{% endif %}
-              {% if person.guardian_name %}<p><span class="font-semibold">Guardian:</span> {{ person.guardian_name }}</p>{% endif %}
+           <!-- Info -->
+<div class="mt-4 text-sm sm:text-base space-y-2 text-gray-100 text-center">
+  {# --- Basics --- #}
+  {% if loop.first and person.match_confidence is not none and person.match_confidence|int >= 85 %}
+    <p class="text-green-300 font-bold">🎯 Best Match</p>
+  {% endif %}
 
-              {% if person.phone_number %}
-                <div class="mt-2 flex flex-col sm:flex-row gap-2 justify-center">
-                  <a href="tel:{{ person.phone_number }}" class="inline-flex sm:hidden items-center justify-center px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-md transition-transform transform hover:scale-105">📞 Call</a>
-                  <button type="button"
-                          class="copy-phone hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-transform transform hover:scale-105"
-                          data-phone="{{ person.phone_number|e }}">📋 Copy Phone Number</button>
-                </div>
-              {% endif %}
+  {% if person.full_name %}<p><span class="font-semibold">Full Name:</span> {{ person.full_name }}</p>{% endif %}
+  {% if person.age %}<p><span class="font-semibold">Age:</span> {{ person.age }}</p>{% endif %}
+  {% if person.gender %}<p><span class="font-semibold">Gender:</span> {{ person.gender }}</p>{% endif %}
+  {% if person.guardian_name %}<p><span class="font-semibold">Guardian:</span> {{ person.guardian_name }}</p>{% endif %}
 
-              {% if person.address %}<p><span class="font-semibold">Address:</span> {{ person.address }}</p>{% endif %}
-              {% if person.last_seen %}<p><span class="font-semibold">Last Seen:</span> {{ person.last_seen }}</p>{% endif %}
+  {% if person.phone_number %}
+    <div class="mt-2 flex flex-col sm:flex-row gap-2 justify-center">
+      <a href="tel:{{ person.phone_number }}" class="inline-flex sm:hidden items-center justify-center px-4 py-2 rounded-xl bg-green-600 hover:bg-green-700 text-white font-medium shadow-md transition-transform transform hover:scale-105">📞 Call</a>
+      <button type="button"
+              class="copy-phone hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-md transition-transform transform hover:scale-105"
+              data-phone="{{ person.phone_number|e }}">📋 Copy Phone Number</button>
+    </div>
+  {% endif %}
 
-              {% if person.match_confidence %}
-                <p class="font-semibold">Match Confidence:</p>
-                <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                  {% set bg_style = 
-                    'linear-gradient(to right, #4ade80, #22c55e)' if person.match_confidence >= 75 else
-                    'linear-gradient(to right, #facc15, #f59e0b)' if person.match_confidence >= 50 else
-                    'linear-gradient(to right, #f87171, #ef4444)'
-                  %}
-                  <div class="h-3 rounded-full match-bar"
-                       data-confidence="{{ person.match_confidence }}"
-                       data-bg="{{ bg_style|e }}"></div> 
-                </div>
-                <p class="text-sm text-gray-300 mt-1">{{ person.match_confidence }}%</p>
-              {% endif %}
+  {% if person.address %}<p><span class="font-semibold">Address:</span> {{ person.address }}</p>{% endif %}
+  {% if person.last_seen %}<p><span class="font-semibold">Last Seen:</span> {{ person.last_seen }}</p>{% endif %}
+
+  {# --- Confidence meter (clamped + clearer bands) --- #}
+  {% if person.match_confidence is not none %}
+    {% set conf = person.match_confidence|int %}
+    {% if conf < 0 %}{% set conf = 0 %}{% endif %}
+    {% if conf > 100 %}{% set conf = 100 %}{% endif %}
+
+    {# Color banding: >=85 strong, 70–84 good, 50–69 fair, <50 weak #}
+    {% if conf >= 85 %}
+      {% set bg_style = 'linear-gradient(to right, #22c55e, #16a34a)' %}
+      {% set band_label = 'High confidence' %}
+    {% elif conf >= 70 %}
+      {% set bg_style = 'linear-gradient(to right, #4ade80, #22c55e)' %}
+      {% set band_label = 'Good confidence' %}
+    {% elif conf >= 50 %}
+      {% set bg_style = 'linear-gradient(to right, #facc15, #f59e0b)' %}
+      {% set band_label = 'Moderate confidence' %}
+    {% else %}
+      {% set bg_style = 'linear-gradient(to right, #f87171, #ef4444)' %}
+      {% set band_label = 'Low confidence — verify visually' %}
+    {% endif %}
+
+    <p class="font-semibold">Match Confidence:</p>
+    <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden" aria-label="{{ band_label }}">
+      <div class="h-3 rounded-full match-bar"
+           data-confidence="{{ conf }}"
+           data-bg="{{ bg_style|e }}"></div>
+    </div>
+    <p class="text-sm text-gray-300 mt-1">
+      {{ conf }}% <span class="text-gray-400">· {{ band_label }}</span>
+    </p>
+  {% endif %}
+</div>
 
               <!-- Registered By Info -->
               <div class="mt-3 text-xs text-gray-300 bg-white/5 rounded-lg p-2">

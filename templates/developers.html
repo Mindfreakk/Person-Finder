@@ -29,58 +29,83 @@
 </div>
 
 <!-- ================= Developers / Team Section ================= -->
-<section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16">
+<section class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-16 text-center sm:text-left">
 
   <!-- Card: Dr. Wajid -->
   <div class="dev-card shimmer shimmer-blue tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
     <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-blue-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         Dr. Wajid Aalam
       </h2>
-      <p class="text-sm sm:text-base leading-relaxed">
+      <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
         Visionary mentor & <span class="font-semibold text-blue-200">AI Innovator</span>, guiding breakthroughs in machine learning and inspiring future researchers.
       </p>
+
+      <a href="https://www.linkedin.com/in/sdwjd51/" target="_blank" rel="noopener noreferrer"
+         class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
+             class="w-5 h-5 object-contain" />
+        <span class="text-blue-100">LinkedIn</span>
+      </a>
     </div>
   </div>
 
   <!-- Card: Amir -->
-<div class="dev-card shimmer shimmer-green tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
-  <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-green-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-    <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
-      <!-- Spark / Lightning Bolt Icon -->
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-      Amir Mushtaq
-    </h2>
-    <p class="text-sm sm:text-base leading-relaxed">
-      <span class="font-semibold text-green-200">Code Craftsman</span> building scalable AI systems with precision, clean design, and forward-thinking solutions.
-    </p>
-  </div>
-</div>
+  <div class="dev-card shimmer shimmer-green tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
+    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-green-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Amir Mushtaq
+      </h2>
+      <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
+        <span class="font-semibold text-green-200">Code Craftsman</span> building scalable AI systems with precision, clean design, and forward-thinking solutions.
+      </p>
 
+      <a href="https://www.linkedin.com/in/idaretoshare" target="_blank" rel="noopener noreferrer"
+         class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
+             class="w-5 h-5 object-contain" />
+        <span class="text-green-100">LinkedIn</span>
+      </a>
+    </div>
+  </div>
 
   <!-- Card: Abrar -->
   <div class="dev-card shimmer shimmer-pink tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
     <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-pink-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <h2 class="flex items-center gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" />
         </svg>
         Abrar Ahmad
       </h2>
-      <p class="text-sm sm:text-base leading-relaxed">
+      <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
         <span class="font-semibold text-pink-200">Data Engineer</span> shaping data into actionable insights, architecting systems, and enhancing AI performance.
       </p>
+
+      <a href="https://www.linkedin.com/in/siyran-shafi/" target="_blank" rel="noopener noreferrer"
+         class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
+             class="w-5 h-5 object-contain" />
+        <span class="text-pink-100">LinkedIn</span>
+      </a>
     </div>
   </div>
 
 </section>
 
+<!-- Modern Divider -->
+<div class="relative w-full flex justify-center my-12 sm:my-16 md:my-24">
+  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md">
+    Our Story
+  </span>
+</div>
 
 <!-- Narrative Section -->
 <section class="relative prose max-w-4xl mx-auto text-justify leading-relaxed space-y-5 
@@ -134,15 +159,73 @@
 </div>
 
 <!-- Credits Card -->
-<div class="credits-card shimmer shimmer-pink tilt relative rounded-3xl overflow-hidden scroll-fade max-w-4xl mx-auto mb-16">
-  <div class="tilt-inner relative rounded-3xl p-6 shadow-lg bg-pink-600/40 backdrop-blur-md text-white border border-white/10 transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-    <ul class="list-disc ml-6 space-y-2 text-sm sm:text-base leading-relaxed">
-      <li><strong>Concept & Supervision:</strong> Dr. Wajid Aalam</li>
-      <li><strong>Development:</strong> Amir Mushtaq & Abrar Ahmad</li>
-      <li><strong>Institution:</strong> Islamic University of Science & Technology, Awantipora, J&K</li>
-    </ul>
+<div class="credits-card relative max-w-4xl mx-auto mb-16 shimmer scroll-fade tilt">
+  <div class="rounded-3xl overflow-hidden shadow-lg border border-white/10
+              bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-900/20
+              backdrop-blur supports-[backdrop-filter]:backdrop-blur-lg
+              ring-1 ring-white/10 text-white tilt-inner page-slide">
+
+    <!-- Top bar (centered) -->
+    <div class="px-6 pt-6 text-center">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1">
+        <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400/90"></span>
+        <span class="text-[10px] uppercase tracking-wider text-white/80">Project Credits</span>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="px-6 pb-6 mt-4">
+      <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Concept & Supervision -->
+        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-300/30">
+            <svg class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-width="1.5" d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <dt class="text-sm font-medium text-white/90">Concept &amp; Supervision</dt>
+          <dd class="text-sm text-white/70">Dr. Wajid Aalam</dd>
+        </div>
+
+        <!-- Development -->
+        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 ring-1 ring-sky-300/30">
+            <svg class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-width="1.5" d="M8 7l-5 5 5 5M16 7l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <dt class="text-sm font-medium text-white/90">Development</dt>
+          <dd class="text-sm text-white/70">Amir Mushtaq &amp; Abrar Ahmad</dd>
+        </div>
+
+        <!-- Institution -->
+        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 sm:col-span-1 scroll-fade">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-violet-300/30">
+            <svg class="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-width="1.5" d="M3 10l9-6 9 6M4 10v8h16v-8M8 18v-6h8v6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <dt class="text-sm font-medium text-white/90">Institution</dt>
+          <dd class="text-sm text-white/70">
+            Islamic University of Science &amp; Technology, Awantipora, J&amp;K
+          </dd>
+        </div>
+      </dl>
+    </div>
   </div>
 </div>
+
+<!-- Credits Card Style -->
+
+<style>
+/* Softer shimmer (optional) */
+.shimmer::before { opacity: .35; }
+
+/* Subtle hover lift on tiles (optional) */
+.credits-card dl > div { transition: transform .25s ease, box-shadow .25s ease; }
+.credits-card dl > div:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+</style>
 
 <style>
 /* --- Animations & Effects (same as before, trimmed for brevity) --- */
@@ -158,10 +241,14 @@
 .shimmer-green::before { background: linear-gradient(120deg, rgba(34,197,94,0.15), rgba(34,197,94,0.35), rgba(34,197,94,0.15)); }
 .shimmer-pink::before { background: linear-gradient(120deg, rgba(236,72,153,0.15), rgba(236,72,153,0.35), rgba(236,72,153,0.15)); }
 @keyframes shimmer-diagonal { 0% { transform: translateX(-150%) rotate(25deg); } 100% { transform: translateX(150%) rotate(25deg); } }
+
+/* Scroll fade-in */
 .scroll-fade { opacity: 0; transform: translateY(20px); transition: all 0.7s ease-out; }
 .scroll-fade.show { opacity: 1; transform: translateY(0); }
+
+/* Tilt */
 .tilt { perspective: 1000px; transform-style: preserve-3d; }
-.tilt-inner { transition: transform 0.2s ease-out; }
+.tilt-inner { transition: transform 0.2s ease-out; will-change: transform; }
 </style>
 
 <!-- Gradient Border Animation -->

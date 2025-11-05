@@ -1,98 +1,164 @@
-<!-- Footer -->
-<footer class="bg-gradient-to-r from-indigo-900 via-blue-800 to-blue-600 text-white mt-auto relative shadow-inner">
-  <div class="max-w-7xl mx-auto px-6 py-6 grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+<!-- ================= FOOTER ================= -->
+<footer class="relative mt-auto bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 text-white/90 shadow-inner">
+  <!-- Top divider glow -->
+  <div class="pointer-events-none absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
-    <!-- Left: Copyright (centered on mobile, left on desktop) -->
-    <div class="flex justify-center md:justify-start">
-      <p class="text-xs sm:text-sm text-gray-400 flex flex-wrap items-center gap-1 sm:gap-2 leading-relaxed">
-        <span class="text-gray-300">&copy; {{ current_year }}</span>
-        <span class="font-semibold tracking-wide bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          PersonFinder
-        </span>
-        <span class="text-gray-500">•</span>
-        <span class="text-gray-400">All rights reserved.</span>
-      </p>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+      <!-- Left: Brand & Copyright -->
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-2 md:gap-3 text-center md:text-left">
+        <p class="text-xs sm:text-sm text-white/70 leading-relaxed">
+          <span class="text-white/80">&copy; {{ current_year }}</span>
+          <span class="mx-1 text-white/40">•</span>
+          <span class="font-semibold tracking-wide bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            PersonFinder
+          </span>
+          <span class="mx-1 text-white/40">•</span>
+          <span class="text-white/70">All rights reserved.</span>
+        </p>
+      </div>
+
+      <!-- Center: Navigation Links -->
+      <nav aria-label="Footer navigation" class="flex justify-center">
+        <ul class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-white/80">
+          <li>
+            <a href="{{ url_for('developers') }}" class="footer-link">About Developers</a>
+          </li>
+          <li class="hidden sm:block text-white/30">|</li>
+          <li>
+            <a href="{{ url_for('privacy_policy') }}" class="footer-link">Privacy Policy</a>
+          </li>
+          <li class="hidden sm:block text-white/30">|</li>
+          <li>
+            <a href="{{ url_for('terms') }}" class="footer-link">Terms of Service</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Right: Tagline + Version -->
+      <div class="flex flex-col items-center md:items-end text-center md:text-right gap-1">
+        <p class="italic text-white/80 text-xs leading-tight">
+          Powered by AI &amp; Machine Learning
+        </p>
+        <p class="text-[10px] text-white/50">
+          v{{ app_version }}
+        </p>
+      </div>
     </div>
 
-    <!-- Center: Links (always centered; responsive separators) -->
-    <nav aria-label="Footer navigation" class="flex justify-center">
-      <ul class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-200">
-        <li>
-          <a href="{{ url_for('developers') }}" class="hover:underline">About Developers</a>
-        </li>
-
-        <li class="text-gray-400">|</li>
-
-        <li>
-          <a href="{{ url_for('privacy_policy') }}" class="hover:underline">Privacy Policy</a>
-        </li>
-
-        <li class="text-gray-400">|</li>
-
-        <li>
-          <a href="{{ url_for('terms') }}" class="hover:underline">Terms of Service</a>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- Right: Tagline + Version (always stacked, centered on mobile and desktop) -->
-    <div class="flex flex-col items-center gap-1 md:text-center">
-      <p class="italic text-gray-200 text-center text-xs leading-tight">
-        Powered by AI &amp; Machine Learning
-      </p>
-      <p class="text-[10px] text-gray-400 md:mt-1">
-        v{{ app_version }}
-      </p>
-    </div>
-
-    <!-- Screen-reader-only full sentence for clarity -->
+    <!-- Accessibility helper (SR-only complete sentence) -->
     <span class="sr-only">©{{ current_year }} PersonFinder. All rights reserved. About Developers. Privacy Policy. Terms of Service.</span>
   </div>
 </footer>
 
-<!-- Scroll to Top Button -->
+<!-- ============== SCROLL TO TOP (Progress Button) ============== -->
 <button id="scrollToTopBtn"
         aria-label="Scroll to top"
-        class="hidden fixed bottom-5 right-5 sm:bottom-6 sm:right-6
-               bg-white/10 border border-white/30 backdrop-blur
-               text-white p-3 rounded-full 
-               hover:border-white hover:bg-white/20 hover:scale-110
-               transition-all duration-300 z-50">
-  <i data-lucide="arrow-up" class="w-5 h-5" aria-hidden="true"></i>
+        class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 group rounded-full z-50
+               transition-all duration-300 focus:outline-none focus-visible:ring-2
+               focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900
+               opacity-0 translate-y-3 pointer-events-none"
+        type="button">
+  <!-- Progress ring (conic gradient) -->
+  <span id="scrollRing"
+        class="block h-12 w-12 sm:h-14 sm:w-14 rounded-full p-[2px]
+               bg-[conic-gradient(var(--pf-progress,0%),theme(colors.blue.400)_0)]
+               shadow-lg">
+    <span class="block h-full w-full rounded-full
+                 bg-slate-900/70 backdrop-blur border border-white/15
+                 grid place-items-center transition-transform duration-300 group-hover:scale-[1.03]">
+      <i data-lucide="arrow-up" class="w-5 h-5 sm:w-6 sm:h-6 text-white/90 transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden="true"></i>
+      <span class="sr-only">Back to top</span>
+    </span>
+  </span>
 </button>
 
-<!-- Lucide Icons & Footer Scripts -->
+<!-- ============== SCRIPTS ============== -->
+<!-- If lucide is already loaded elsewhere, you can remove this duplicate. -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
   if (window.lucide) lucide.createIcons();
 
-  (function scrollToTopBehavior(){
-    const scrollBtn = document.getElementById("scrollToTopBtn");
-    if (!scrollBtn) return;
+  (function backToTop(){
+    const btn  = document.getElementById("scrollToTopBtn");
+    const ring = document.getElementById("scrollRing");
+    if (!btn || !ring) return;
 
-    const SHOW_AT = 200;
-    let lastKnownScroll = 0;
+    const SHOW_AT = 160; // px scrolled before showing
     let ticking = false;
 
-    function onScroll() {
-      lastKnownScroll = window.scrollY;
+    function setProgress(){
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+      ring.style.setProperty("--pf-progress", pct.toFixed(1) + "%");
+    }
+
+    function toggleButton(){
+      const show = (window.scrollY || document.documentElement.scrollTop) > SHOW_AT;
+      // use pointer-events to prevent accidental taps when hidden
+      btn.classList.toggle("opacity-100", show);
+      btn.classList.toggle("opacity-0", !show);
+      btn.classList.toggle("translate-y-0", show);
+      btn.classList.toggle("translate-y-3", !show);
+      btn.classList.toggle("pointer-events-auto", show);
+      btn.classList.toggle("pointer-events-none", !show);
+    }
+
+    function onScroll(){
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          scrollBtn.classList.toggle("hidden", lastKnownScroll <= SHOW_AT);
+          setProgress();
+          toggleButton();
           ticking = false;
         });
         ticking = true;
       }
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true });
+    // Init
+    setProgress();
+    toggleButton();
 
-    scrollBtn.addEventListener("click", () => {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    btn.addEventListener("click", () => {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         window.scrollTo(0, 0);
       } else {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
-    });
+    }, { passive: true });
   })();
 </script>
+
+<!-- ============== FOOTER STYLES ============== -->
+<style>
+/* Link micro-interactions */
+.footer-link {
+  position: relative;
+  padding-bottom: 2px;
+  transition: color .2s ease;
+}
+.footer-link::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:0;
+  height:1px; transform:scaleX(0); transform-origin:left;
+  background: linear-gradient(to right, rgba(96,165,250,.8), rgba(192,132,252,.8), rgba(244,114,182,.8));
+  transition: transform .25s ease;
+}
+.footer-link:hover { color: rgba(255,255,255,.95); }
+.footer-link:hover::after{ transform:scaleX(1); }
+
+/* Back-to-top entrance states (paired with JS toggles) */
+#scrollToTopBtn { opacity: 0; transform: translateY(12px); }
+#scrollToTopBtn.opacity-100 { opacity: 1 !important; }
+#scrollToTopBtn.translate-y-0 { transform: translateY(0) !important; }
+
+/* Respect reduced motion for the progress ring animation changes */
+@media (prefers-reduced-motion: reduce) {
+  #scrollToTopBtn, #scrollRing > span { transition: none !important; }
+}
+</style>
+<!-- ============== END FOOTER ============== -->
