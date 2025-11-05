@@ -1,0 +1,79 @@
+name: Auto Versioning
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to push tags & create releases
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # we need tags/history
+
+      - name: Get last version tag
+        id: get_tag
+        run: |
+          last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "last_tag=$last_tag" >> $GITHUB_ENV
+          echo "🕓 Last version: $last_tag"
+
+      - name: Bump version with 99-limit logic
+        id: bump
+        run: |
+          tag=${last_tag#v}
+          IFS='.' read -r major minor patch <<< "$tag"
+
+          major=${major:-0}
+          minor=${minor:-0}
+          patch=${patch:-0}
+
+          if [ "$patch" -lt 99 ]; then
+            patch=$((patch + 1))
+          else
+            patch=0
+            if [ "$minor" -lt 99 ]; then
+              minor=$((minor + 1))
+            else
+              minor=0
+              major=$((major + 1))
+            fi
+          fi
+
+          new_tag="v${major}.${minor}.${patch}"
+          echo "new_tag=$new_tag" >> $GITHUB_ENV
+          # expose new_tag as a step output so later workflow expressions can access it
+          echo "new_tag=${new_tag}" >> $GITHUB_OUTPUT
+          echo "🔖 New version: $new_tag"
+
+      - name: Tag and push new version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag "${new_tag}"
+          git push origin "${new_tag}"
+          echo "✅ Pushed tag: ${new_tag}"
+
+      - name: Write version to file and push (for app to read)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${new_tag}" > version.txt
+          git add version.txt
+          git commit -m "chore: bump version to ${new_tag}" || echo "No commit needed"
+      # ---------- NEW: Create GitHub Release with auto notes ----------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.bump.outputs.new_tag }}
+          name: ${{ steps.bump.outputs.new_tag }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
