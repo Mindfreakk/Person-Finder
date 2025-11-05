@@ -1,0 +1,54 @@
+name: Auto bump VERSION
+
+on:
+  push:
+    branches: [ main ]
+    # Optional: ignore changes that are ONLY the VERSION file to avoid loops
+    paths-ignore:
+      - "VERSION"
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install script deps (none)
+        run: echo "No deps"
+
+      - name: Bump patch version (0..99; cascade to minor/major)
+        id: bump
+        run: |
+          chmod +x scripts/bump_version.py
+          NEW_VER=$(scripts/bump_version.py patch)
+          echo "NEW_VER=$NEW_VER" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VER"
+
+      - name: Commit VERSION if changed
+        run: |
+          if git diff --quiet VERSION; then
+            echo "VERSION not changed (unexpected). Exiting."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "chore: bump VERSION to ${{
+            steps.bump.outputs.NEW_VER
+          }} [skip ci]"
+          git push
+
+      - name: Create tag
+        run: |
+          git fetch --tags
+          git tag -f "v${{ steps.bump.outputs.NEW_VER }}"
+          git push -f origin "v${{ steps.bump.outputs.NEW_VER }}"
