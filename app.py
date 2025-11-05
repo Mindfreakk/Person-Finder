@@ -115,25 +115,56 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 # ----------------- Initialize Mail -----------------
 mail = Mail(app)
 
-# ----------------- Version Control -----------------
-VERSION_FILE = "VERSION"
+# ----------------- Version Control (dynamic) -----------------
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
 
-def get_version():
-    """Read the version from the VERSION file, or initialize it."""
-    if not os.path.exists(VERSION_FILE):
-        with open(VERSION_FILE, "w") as f:
-            f.write("1.0.0.0")
-    with open(VERSION_FILE, "r") as f:
-        version = f.read().strip()
-        parts = version.split(".")
-        while len(parts) < 4:
-            parts.append("0")
-        return ".".join(parts)
+# Prefer version.txt (set by CI), fall back to VERSION if present
+_VERSION_CANDIDATES = [
+    os.path.join(basedir, "version.txt"),
+    os.path.join(basedir, "VERSION"),
+]
+for _p in _VERSION_CANDIDATES:
+    if os.path.exists(_p):
+        VERSION_FILE = _p
+        break
+else:
+    VERSION_FILE = _VERSION_CANDIDATES[0]  # default to version.txt
 
+# Tiny cache so we don't re-read on every request unless file changed
+_version_cache = {"mtime": None, "val": "1.0.0.0"}
+
+def get_app_version() -> str:
+    """Return current version string from VERSION_FILE; re-read on mtime change."""
+    try:
+        st_mtime = os.stat(VERSION_FILE).st_mtime
+        if st_mtime != _version_cache["mtime"]:
+            with open(VERSION_FILE, "r", encoding="utf-8") as f:
+                val = (f.read() or "").strip() or "1.0.0.0"
+            _version_cache.update({"mtime": st_mtime, "val": val})
+    except Exception:
+        # If file missing/unreadable, keep last known value
+        pass
+    return _version_cache["val"]
+
+# (Optional) keep your bump_version if you still call it elsewhere
 def bump_version():
-    """Automatically increment version with cascading: build -> patch -> minor -> major."""
-    version = get_version()
-    major, minor, patch, build = map(int, version.split("."))
+    """
+    Keeps your original 4-segment cascade bump logic.
+    Only use this if you explicitly want to bump locally on demand.
+    """
+    # Ensure file exists
+    if not os.path.exists(VERSION_FILE):
+        with open(VERSION_FILE, "w", encoding="utf-8") as f:
+            f.write("1.0.0.0")
+
+    with open(VERSION_FILE, "r", encoding="utf-8") as f:
+        version = (f.read() or "").strip() or "1.0.0.0"
+
+    parts = version.split(".")
+    while len(parts) < 4:
+        parts.append("0")
+    major, minor, patch, build = map(int, parts[:4])
 
     build += 1
     if build > 9:
@@ -147,22 +178,18 @@ def bump_version():
                 major += 1
 
     new_version = f"{major}.{minor}.{patch}.{build}"
-    with open(VERSION_FILE, "w") as f:
+    with open(VERSION_FILE, "w", encoding="utf-8") as f:
         f.write(new_version)
+    # Invalidate cache so next request sees the new version
+    _version_cache["mtime"] = None
     return new_version
-
-# ----------------- Auto Bump on Actual Server Start -----------------
-if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or os.environ.get("FLASK_RUN_FROM_CLI") == "true":
-    APP_VERSION = bump_version()
-else:
-    APP_VERSION = get_version()
 
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
     """Inject global template variables."""
     return {
-        "app_version": APP_VERSION,
+        "app_version": get_app_version(),  # <— dynamic now
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
