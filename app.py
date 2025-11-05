@@ -116,10 +116,11 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 mail = Mail(app)
 
 # ----------------- Version Control (dynamic) -----------------
-import os
+# ----------------- Version Control (dynamic + self-diagnostic) -----------------
+import os, time
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-# Prefer version.txt (set by CI), fall back to VERSION if present
+# Prefer CI-written version.txt, fallback to VERSION
 _VERSION_CANDIDATES = [
     os.path.join(basedir, "version.txt"),
     os.path.join(basedir, "VERSION"),
@@ -131,11 +132,10 @@ for _p in _VERSION_CANDIDATES:
 else:
     VERSION_FILE = _VERSION_CANDIDATES[0]  # default to version.txt
 
-# Tiny cache so we don't re-read on every request unless file changed
 _version_cache = {"mtime": None, "val": "1.0.0.0"}
 
 def get_app_version() -> str:
-    """Return current version string from VERSION_FILE; re-read on mtime change."""
+    """Return version from VERSION_FILE; hot-reload on mtime change."""
     try:
         st_mtime = os.stat(VERSION_FILE).st_mtime
         if st_mtime != _version_cache["mtime"]:
@@ -143,58 +143,36 @@ def get_app_version() -> str:
                 val = (f.read() or "").strip() or "1.0.0.0"
             _version_cache.update({"mtime": st_mtime, "val": val})
     except Exception:
-        # If file missing/unreadable, keep last known value
         pass
     return _version_cache["val"]
 
-# (Optional) keep your bump_version if you still call it elsewhere
-def bump_version():
-    """
-    Keeps your original 4-segment cascade bump logic.
-    Only use this if you explicitly want to bump locally on demand.
-    """
-    # Ensure file exists
-    if not os.path.exists(VERSION_FILE):
-        with open(VERSION_FILE, "w", encoding="utf-8") as f:
-            f.write("1.0.0.0")
+def get_app_version_meta():
+    """For debugging in templates/endpoint."""
+    try:
+        st = os.stat(VERSION_FILE)
+        return {
+            "file": VERSION_FILE,
+            "mtime": int(st.st_mtime),
+            "mtime_iso": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime)),
+            "value": get_app_version(),
+        }
+    except Exception:
+        return {"file": VERSION_FILE, "error": "unreadable", "value": get_app_version()}
 
-    with open(VERSION_FILE, "r", encoding="utf-8") as f:
-        version = (f.read() or "").strip() or "1.0.0.0"
-
-    parts = version.split(".")
-    while len(parts) < 4:
-        parts.append("0")
-    major, minor, patch, build = map(int, parts[:4])
-
-    build += 1
-    if build > 9:
-        build = 0
-        patch += 1
-        if patch > 9:
-            patch = 0
-            minor += 1
-            if minor > 9:
-                minor = 0
-                major += 1
-
-    new_version = f"{major}.{minor}.{patch}.{build}"
-    with open(VERSION_FILE, "w", encoding="utf-8") as f:
-        f.write(new_version)
-    # Invalidate cache so next request sees the new version
-    _version_cache["mtime"] = None
-    return new_version
 
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
-    """Inject global template variables."""
+    meta = get_app_version_meta()
     return {
-        "app_version": get_app_version(),  # <— dynamic now
+        "app_version": meta["value"],          # what your footer should use
+        "app_version_file": meta.get("file"),  # temporary: helps verify path
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
         "RECAPTCHA_SITE_KEY": current_app.config.get("RECAPTCHA_SITE_KEY", None),
     }
+
 
 # ----------------- reCAPTCHA Verification -----------------
 def verify_recaptcha(token, action="submit", min_score=0.5):
