@@ -73,41 +73,244 @@
   </div>
 </header>
 
-<!-- Overlay -->
-<div id="pf-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-[1195]"></div>
+<!-- Overlay (click to close) -->
+<div id="pf-overlay"
+     class="fixed inset-0 bg-black/40 opacity-0 pointer-events-none transition-opacity duration-300 ease-out z-[1198] md:hidden"
+     aria-hidden="true"></div>
 
 <!-- Mobile Drawer (height & top are set via JS to match header) -->
 <aside id="pf-mobile-drawer"
-       class="fixed inset-x-0 opacity-0 pointer-events-none translate-y-[-8px] z-[1199]
-              bg-white/12 backdrop-blur-xl border-t border-white/10 shadow-2xl
-              transition-all duration-300 will-change-transform md:hidden">
-  <nav class="px-4 py-3" aria-label="Mobile Primary">
-    <ul class="flex flex-col gap-1.5">
-      <li><a href="{{ url_for('home') }}" class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %}">
-        <span class="pf-icon">🏠</span> Home
-      </a></li>
-      <li><a href="{{ url_for('register') }}" class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %}">
-        <span class="pf-icon">📝</span> Register
-      </a></li>
-      <li><a href="{{ url_for('search') }}" class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %}">
-        <span class="pf-icon">🔍</span> Search
-      </a></li>
-      <li><a href="{{ url_for('donate_page') }}" class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %}">
-        <span class="pf-icon">❤️</span> Donate
-      </a></li>
-      <li><a href="{{ url_for('about') }}" class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %}">
-        <span class="pf-icon">ℹ️</span> About
-      </a></li>
-      <li><a href="{{ url_for('developers') }}" class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %}">
-        <span class="pf-icon">👨‍💻</span> Developers
-      </a></li>
+       role="dialog" aria-modal="true" aria-labelledby="pf-mobile-title" tabindex="-1"
+       class="fixed inset-x-0 top-0 opacity-0 pointer-events-none -translate-y-3 z-[1199]
+              bg-white/10 backdrop-blur-2xl border-b border-white/10 shadow-2xl
+              rounded-b-2xl transition-all duration-300 ease-out will-change-transform md:hidden">
+  <nav class="px-4 py-4" aria-label="Mobile Primary">
+    <h2 id="pf-mobile-title" class="sr-only">Main Menu</h2>
+    <ul class="flex flex-col gap-2">
+      <li>
+        <a href="{{ url_for('home') }}"
+           class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          Home
+        </a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('register') }}"
+           class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          Register
+        </a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('search') }}"
+           class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          Search
+        </a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('donate_page') }}"
+           class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          Donate
+        </a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('about') }}"
+           class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          About
+        </a>
+      </li>
+
+      <li>
+        <a href="{{ url_for('developers') }}"
+           class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %} block w-full
+                  rounded-xl px-4 py-3 text-[15px] font-medium tracking-wide
+                  bg-white/5 hover:bg-white/10 active:bg-white/15
+                  border border-white/10 shadow-sm
+                  transition-all duration-200 ease-out
+                  focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30
+                  motion-safe:hover:translate-x-0.5">
+          Developers
+        </a>
+      </li>
     </ul>
 
-    <div class="mt-3 border-t border-white/10 pt-3">
-      <a href="{{ url_for('login') }}" class="pf-btn pf-btn-primary w-full justify-center">Admin Login</a>
+    <div class="mt-4 border-t border-white/10 pt-4">
+      <a href="{{ url_for('login') }}"
+         class="pf-btn pf-btn-primary w-full justify-center rounded-xl py-3 text-center
+                bg-white/20 hover:bg-white/30 font-semibold
+                shadow-md hover:shadow-lg transition-all duration-200 ease-out
+                focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30">
+        Admin Login
+      </a>
     </div>
   </nav>
 </aside>
+
+<!-- Tiny style tweaks for active/animation polish -->
+<style>
+  #pf-mobile-drawer .pf-mobile-item.is-active {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.22);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #pf-overlay, #pf-mobile-drawer, #pf-mobile-drawer .pf-mobile-item {
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+  
+  /* Smooth & slightly slower drawer motion (keeps your classes intact) */
+  #pf-mobile-drawer {
+    transition-property: transform, opacity;
+    transition-duration: 550ms; /* drawer slide */
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+  }
+
+  /* One-by-one item animation (JS sets delays) */
+  #pf-mobile-drawer .pf-mobile-item {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  #pf-mobile-drawer .pf-item-show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+  }
+</style>
+
+<script>
+  // ---------- Shared stagger helpers ----------
+  // Call animateItemsIn() on open and animateItemsOut() on close.
+  function animateItemsIn(container){
+    const items = Array.from(container.querySelectorAll('.pf-mobile-item'));
+    items.forEach((el, i) => {
+      el.style.transition = 'transform 420ms cubic-bezier(0.16,1,0.3,1), opacity 420ms cubic-bezier(0.16,1,0.3,1)';
+      el.style.transitionDelay = (i * 60) + 'ms';
+      // start state ensured by CSS (opacity 0, translateY -8px)
+      requestAnimationFrame(() => {
+        // next frame to ensure transitions apply
+        requestAnimationFrame(() => el.classList.add('pf-item-show'));
+      });
+    });
+  }
+
+  function animateItemsOut(container){
+    const items = Array.from(container.querySelectorAll('.pf-mobile-item')).reverse();
+    items.forEach((el, i) => {
+      el.style.transition = 'transform 360ms cubic-bezier(0.4,0,0.2,1), opacity 360ms cubic-bezier(0.4,0,0.2,1)';
+      el.style.transitionDelay = (i * 60) + 'ms';
+      el.classList.remove('pf-item-show'); // returns to CSS base (opacity 0, translateY -8px)
+    });
+  }
+</script>
+
+<script>
+  // Minimal, drop-in toggle helpers. Assumes you have a button #pf-mobile-toggle in your header.
+  document.addEventListener("DOMContentLoaded", () => {
+    const drawer = document.getElementById("pf-mobile-drawer");
+    const overlay = document.getElementById("pf-overlay");
+    const toggle = document.getElementById("pf-mobile-toggle"); // your trigger button
+    const body = document.body;
+
+    // focus trap basics
+    const focusable = 'a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])';
+    let prevFocus = null;
+
+    function trapFocus(container) {
+      const items = container.querySelectorAll(focusable);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      function onKeydown(e) {
+        if (e.key !== "Tab") return;
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+      container.addEventListener("keydown", onKeydown);
+      container._untrap = () => container.removeEventListener("keydown", onKeydown);
+    }
+
+    function openDrawer() {
+      prevFocus = document.activeElement;
+
+      drawer.classList.remove("pointer-events-none", "opacity-0", "-translate-y-3");
+      drawer.classList.add("opacity-100", "translate-y-0");
+
+      overlay.classList.remove("pointer-events-none");
+      overlay.classList.add("opacity-100");
+
+      // stagger items
+      animateItemsIn(drawer);
+
+      body.style.overflow = "hidden";
+      if (toggle) toggle.setAttribute("aria-expanded", "true");
+
+      setTimeout(() => { drawer.focus(); trapFocus(drawer); }, 10);
+    }
+
+    function closeDrawer() {
+      // stagger out first
+      animateItemsOut(drawer);
+
+      drawer.classList.remove("opacity-100", "translate-y-0");
+      drawer.classList.add("opacity-0", "-translate-y-3");
+      // Allow time for the last item's delay + its animation (~60ms * 5 + 360ms ≈ 660ms)
+      setTimeout(() => drawer.classList.add("pointer-events-none"), 720);
+
+      overlay.classList.remove("opacity-100");
+      overlay.classList.add("pointer-events-none");
+
+      body.style.overflow = "";
+      if (toggle) toggle.setAttribute("aria-expanded", "false");
+
+      if (drawer._untrap) drawer._untrap();
+      if (prevFocus) prevFocus.focus();
+    }
+
+    function toggleDrawer() {
+      const isOpen = drawer.classList.contains("opacity-100");
+      isOpen ? closeDrawer() : openDrawer();
+    }
+
+    if (toggle) toggle.addEventListener("click", toggleDrawer);
+    overlay.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+  });
+</script>
+
 
 <!-- ============ SCRIPT ============ -->
 <script>
@@ -120,7 +323,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Position drawer right under the header and size it nicely for mobile
   const placeDrawer = () => {
-    const h = header.offsetHeight; // includes 16/20 heights
+    const h = header ? header.offsetHeight : 0;
     drawer.style.top = h + "px";
     drawer.style.maxHeight = `calc(100vh - ${h}px - env(safe-area-inset-bottom,0px))`;
   };
@@ -129,24 +332,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const openDrawer = () => {
     placeDrawer();
-    drawer.classList.remove("pointer-events-none","opacity-0","translate-y-[-8px]");
-    overlay.classList.remove("hidden");
-    btn.setAttribute("aria-expanded","true");
+    drawer.classList.remove("pointer-events-none","opacity-0","-translate-y-3");
+    drawer.classList.add("opacity-100","translate-y-0");
+
+    overlay.classList.remove("pointer-events-none");
+    overlay.classList.add("opacity-100");
+
+    // stagger items
+    animateItemsIn(drawer);
+
+    if (btn) btn.setAttribute("aria-expanded","true");
     body.style.overflow = "hidden";
-    // burger to X
-    document.querySelector(".pf-b1").setAttribute("d","M6 7L18 17");
-    document.querySelector(".pf-b2").style.opacity = 0;
-    document.querySelector(".pf-b3").setAttribute("d","M6 17L18 7");
+
+    // burger to X (guarded)
+    const b1 = document.querySelector(".pf-b1");
+    const b2 = document.querySelector(".pf-b2");
+    const b3 = document.querySelector(".pf-b3");
+    if (b1 && b2 && b3) {
+      b1.setAttribute("d","M6 7L18 17");
+      if (b2.style) b2.style.opacity = 0;
+      b3.setAttribute("d","M6 17L18 7");
+    }
   };
+
   const closeDrawer = () => {
-    drawer.classList.add("pointer-events-none","opacity-0","translate-y-[-8px]");
-    overlay.classList.add("hidden");
-    btn.setAttribute("aria-expanded","false");
+    // stagger out
+    animateItemsOut(drawer);
+
+    drawer.classList.remove("opacity-100","translate-y-0");
+    drawer.classList.add("opacity-0","-translate-y-3");
+    setTimeout(() => drawer.classList.add("pointer-events-none"), 720);
+
+    overlay.classList.remove("opacity-100");
+    overlay.classList.add("pointer-events-none");
+
+    if (btn) btn.setAttribute("aria-expanded","false");
     body.style.overflow = "";
-    // burger back
-    document.querySelector(".pf-b1").setAttribute("d","M5 7H19");
-    document.querySelector(".pf-b2").style.opacity = 1;
-    document.querySelector(".pf-b3").setAttribute("d","M5 17H19");
+
+    // burger back (guarded)
+    const b1 = document.querySelector(".pf-b1");
+    const b2 = document.querySelector(".pf-b2");
+    const b3 = document.querySelector(".pf-b3");
+    if (b1 && b2 && b3) {
+      b1.setAttribute("d","M5 7H19");
+      if (b2.style) b2.style.opacity = 1;
+      b3.setAttribute("d","M5 17H19");
+    }
   };
 
   if (btn && drawer && overlay) {
@@ -233,3 +464,4 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 </style>
 <!-- ================= END HEADER ================= -->
+

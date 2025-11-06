@@ -68,7 +68,7 @@
           %}
           <div class="flash-message flex items-center justify-between {{ color }} px-4 py-3 rounded-xl shadow-lg animate-slide-down relative">
             <span class="font-medium">{{ message }}</span>
-            <button onclick="this.parentElement.remove()" class="ml-3 text-xl leading-none hover:opacity-75">&times;</button>
+            <button onclick="this.parentElement.remove()" class="ml-3 text-xl leading-none hover:opacity-75" aria-label="Dismiss message">&times;</button>
           </div>
         {% endfor %}
       </div>
@@ -110,115 +110,147 @@
   {% if RECAPTCHA_SITE_KEY|default('') %}
   <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
   <script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action: 'submit'}).then(function(token) {
-            const recaptchaInput = document.getElementById('recaptcha_token');
-            if(recaptchaInput) recaptchaInput.value = token;
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.grecaptcha && typeof grecaptcha.ready === 'function') {
+        grecaptcha.ready(function() {
+          grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action: 'submit'}).then(function(token) {
+            var recaptchaInput = document.getElementById('recaptcha_token');
+            if (recaptchaInput) { recaptchaInput.value = token; }
+          });
         });
+      }
     });
   </script>
   {% endif %}
 
   <script>
-    AOS.init();
-
-    // Auto-hide flash messages
-    setTimeout(() => {
-      document.querySelectorAll(".flash-message").forEach(el => {
-        el.style.transition = "opacity 1s ease";
-        el.style.opacity = "0";
-        setTimeout(() => el.remove(), 1000);
-      });
-    }, 4000);
-
-    // Privacy & Terms popup logic
-    const popup = document.getElementById("policy-popup");
-    const acceptBtn = document.getElementById("accept-policy");
-    const rejectBtn = document.getElementById("reject-policy");
-
-    if (!localStorage.getItem("policyAccepted")) {
-      popup.classList.remove("hidden");
-    }
-
-    acceptBtn.addEventListener("click", () => {
-      localStorage.setItem("policyAccepted", "true");
-      popup.classList.add("hidden");
-    });
-
-    rejectBtn.addEventListener("click", () => {
-      alert("You must accept the Privacy Policy & Terms to use this site.");
-    });
-
-    // Mobile menu
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenuContainer = document.getElementById('mobile-menu-container');
-    const openIcon = document.getElementById('menu-open-icon');
-    const closeIcon = document.getElementById('menu-close-icon');
-    const menuLinks = document.querySelectorAll('.menu-link');
-
-    function closeMenu(){
-      if(!mobileMenuContainer) return;
-      mobileMenuContainer.classList.remove('open','pointer-events-auto');
-      mobileMenuContainer.classList.add('pointer-events-none');
-      openIcon.classList.remove('hidden'); closeIcon.classList.add('hidden');
-      menuLinks.forEach(l=>l.classList.remove('show'));
-      menuBtn?.setAttribute('aria-expanded','false');
-    }
-
-    menuBtn?.addEventListener('click', ()=>{
-      const isOpen = mobileMenuContainer.classList.toggle('open');
-      openIcon.classList.toggle('hidden'); closeIcon.classList.toggle('hidden');
-      if(isOpen){
-        mobileMenuContainer.classList.remove('pointer-events-none');
-        mobileMenuContainer.classList.add('pointer-events-auto');
-        menuBtn.setAttribute('aria-expanded','true');
-        menuLinks.forEach((link,index)=>{
-          link.classList.remove('show');
-          setTimeout(()=>link.classList.add('show'),index*150);
-          link.addEventListener('click', closeMenu,{once:true});
-        });
-      } else closeMenu();
-    });
-
-    document.addEventListener('click',(e)=>{
-      if(mobileMenuContainer?.classList.contains('open') &&
-         !mobileMenuContainer.contains(e.target) &&
-         e.target!==menuBtn && !menuBtn.contains(e.target)){
-        closeMenu();
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize AOS after DOM is ready
+      if (window.AOS && typeof AOS.init === 'function') {
+        AOS.init();
       }
-    });
 
-    // Highlight current nav link
-    const currentPath = window.location.pathname.replace(/\/$/,'');
-    document.querySelectorAll('nav a').forEach(link=>{
-      const linkPath = link.getAttribute('href')?.replace(/\/$/,'');
-      if(linkPath && currentPath.endsWith(linkPath)) link.classList.add('active-link');
-    });
+      // Auto-hide flash messages
+      setTimeout(function () {
+        document.querySelectorAll(".flash-message").forEach(function (el) {
+          el.style.transition = "opacity 1s ease";
+          el.style.opacity = "0";
+          setTimeout(function () { if (el && el.parentElement) { el.remove(); } }, 1000);
+        });
+      }, 4000);
 
-    // Push notifications
-    {% if personId %}
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('/static/service-worker.js').then(reg=>{
-        reg.pushManager.subscribe({
-          userVisibleOnly:true,
-          applicationServerKey:urlBase64ToUint8Array("{{ VAPID_PUBLIC_KEY }}")
-        }).then(subscription=>{
-          fetch('/save-subscription?person_id={{ personId }}',{
-            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(subscription)
-          }).then(resp=>resp.json()).then(data=>{
-            if(data.success)console.log("Subscription saved!");
-          }).catch(err=>console.error(err));
-        }).catch(err=>console.error("Push subscription failed:",err));
+      // Privacy & Terms popup logic
+      var popup = document.getElementById("policy-popup");
+      var acceptBtn = document.getElementById("accept-policy");
+      var rejectBtn = document.getElementById("reject-policy");
+
+      if (popup && !localStorage.getItem("policyAccepted")) {
+        popup.classList.remove("hidden");
+      }
+
+      if (acceptBtn && popup) {
+        acceptBtn.addEventListener("click", function () {
+          localStorage.setItem("policyAccepted", "true");
+          popup.classList.add("hidden");
+        });
+      }
+      if (rejectBtn) {
+        rejectBtn.addEventListener("click", function () {
+          alert("You must accept the Privacy Policy & Terms to use this site.");
+        });
+      }
+
+      // Mobile menu
+      var menuBtn = document.getElementById('menu-btn');
+      var mobileMenuContainer = document.getElementById('mobile-menu-container');
+      var openIcon = document.getElementById('menu-open-icon');
+      var closeIcon = document.getElementById('menu-close-icon');
+      var menuLinks = document.querySelectorAll('.menu-link');
+
+      function closeMenu(){
+        if(!mobileMenuContainer) { return; }
+        mobileMenuContainer.classList.remove('open','pointer-events-auto');
+        mobileMenuContainer.classList.add('pointer-events-none');
+        if (openIcon) { openIcon.classList.remove('hidden'); }
+        if (closeIcon) { closeIcon.classList.add('hidden'); }
+        menuLinks.forEach(function(l){ l.classList.remove('show'); });
+        if (menuBtn) { menuBtn.setAttribute('aria-expanded','false'); }
+      }
+
+      if (menuBtn && mobileMenuContainer) {
+        menuBtn.addEventListener('click', function (){
+          var isOpen = mobileMenuContainer.classList.toggle('open');
+          if (openIcon) { openIcon.classList.toggle('hidden'); }
+          if (closeIcon) { closeIcon.classList.toggle('hidden'); }
+
+          if(isOpen){
+            mobileMenuContainer.classList.remove('pointer-events-none');
+            mobileMenuContainer.classList.add('pointer-events-auto');
+            menuBtn.setAttribute('aria-expanded','true');
+            menuLinks.forEach(function (link, index){
+              link.classList.remove('show');
+              setTimeout(function(){ link.classList.add('show'); }, index * 150);
+              link.addEventListener('click', closeMenu, { once:true });
+            });
+          } else {
+            closeMenu();
+          }
+        });
+      }
+
+      document.addEventListener('click', function (e){
+        if(mobileMenuContainer &&
+           mobileMenuContainer.classList.contains('open') &&
+           !mobileMenuContainer.contains(e.target) &&
+           e.target !== menuBtn && (!menuBtn || !menuBtn.contains(e.target))){
+          closeMenu();
+        }
       });
-    }
 
-    function urlBase64ToUint8Array(base64String){
-      const padding = '='.repeat((4 - base64String.length % 4) % 4);
-      const base64 = (base64String + padding).replace(/\-/g,'+').replace(/_/g,'/');
-      const rawData = atob(base64);
-      return Uint8Array.from([...rawData].map(c=>c.charCodeAt(0)));
-    }
-    {% endif %}
+      // Highlight current nav link
+      var currentPath = window.location.pathname.replace(/\/$/,'');
+      document.querySelectorAll('nav a').forEach(function (link){
+        var href = link.getAttribute('href');
+        if (!href) { return; }
+        var linkPath = href.replace(/\/$/,'');
+        if (linkPath && currentPath.endsWith(linkPath)) {
+          link.classList.add('active-link');
+        }
+      });
+
+      // Push notifications
+      var PERSON_ID = "{{ person_id|default('') }}";
+      if (PERSON_ID && 'serviceWorker' in navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.register('/static/service-worker.js').then(function (reg){
+          return reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array("{{ VAPID_PUBLIC_KEY }}")
+          });
+        }).then(function (subscription){
+          return fetch('/save-subscription?person_id=' + encodeURIComponent(PERSON_ID), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+          });
+        }).then(function (resp){ return resp.json(); })
+          .then(function (data){
+            if (data && data.success) { console.log("Subscription saved!"); }
+          }).catch(function (err){
+            console.error("Push subscription failed or save error:", err);
+          });
+      }
+
+      function urlBase64ToUint8Array(base64String){
+        var padding = '='.repeat((4 - base64String.length % 4) % 4);
+        var base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
+        var rawData = atob(base64);
+        var outputArray = new Uint8Array(rawData.length);
+        for (var i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
+      }
+    }); // end DOMContentLoaded listener
   </script>
 
 </body>
