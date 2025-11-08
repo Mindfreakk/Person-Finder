@@ -3,22 +3,60 @@
 
 {% block content %}
 
-<!-- Hero Section -->
-<div class="flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 text-center pt-32 sm:pt-36 lg:pt-40">
-  <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
-    Meet the Team Behind 
-    <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
-      PersonFinder
-    </span>
-  </h1>
-  <p class="mx-auto text-xs sm:text-sm md:text-base leading-relaxed mt-2 px-2 font-light text-gray-300 max-w-2xl">
-    A passionate group of innovators, engineers, and mentors dedicated to 
-    <span class="text-blue-300 font-medium">AI research</span>, 
-    <span class="text-green-300 font-medium">code craftsmanship</span>, and 
-    <span class="text-pink-300 font-medium">data intelligence</span>, 
-    working together to reunite families with loved ones.
-  </p>
+<!-- Hero Card -->
+<div class="w-full flex justify-center pt-32 sm:pt-36 lg:pt-40 px-4 sm:px-6 lg:px-8">
+  <div
+    class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-4xl text-center"
+  >
+    <!-- Decorative dots overlay -->
+    <div class="absolute inset-0 pointer-events-none opacity-[.08]"
+         style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+    <!-- Heading -->
+    <div class="relative z-10 w-full">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
+        Meet the Team Behind 
+        <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
+          PersonFinder
+        </span>
+      </h1>
+
+      <p class="mx-auto text-xs sm:text-sm md:text-base leading-relaxed mt-2 px-2 font-light text-gray-300 max-w-2xl">
+        A passionate group of innovators, engineers, and mentors dedicated to 
+        <span class="text-blue-300 font-medium">AI research</span>, 
+        <span class="text-green-300 font-medium">code craftsmanship</span>, and 
+        <span class="text-pink-300 font-medium">data intelligence</span>, 
+        working together to reunite families with loved ones.
+      </p>
+    </div>
+  </div>
 </div>
+
+<style>
+/* Gradient animation for highlighted text */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating card effect */
+.card-float {
+  animation: floaty 6.5s ease-in-out infinite;
+}
+@keyframes floaty {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-float { animation: none !important; }
+}
+</style>
 
 <!-- Modern Divider -->
 <div class="relative w-full flex justify-center my-12 sm:my-16 md:my-24">
@@ -159,55 +197,61 @@
 </div>
 
 <!-- Credits Card -->
-<div class="credits-card relative max-w-4xl mx-auto mb-16 shimmer scroll-fade tilt">
-  <div class="rounded-3xl overflow-hidden shadow-lg border border-white/10
-              bg-gradient-to-br from-slate-900/70 via-slate-900/40 to-slate-900/20
-              backdrop-blur supports-[backdrop-filter]:backdrop-blur-lg
-              ring-1 ring-white/10 text-white tilt-inner page-slide">
+<div class="credits-card card-base card-float relative max-w-4xl mx-auto mb-16 shimmer scroll-fade tilt">
+  <div class="rounded-3xl overflow-hidden shadow-lg border border-blue-400/20
+              bg-blue-900/40 backdrop-blur supports-[backdrop-filter]:backdrop-blur
+              ring-1 ring-white/10 text-white tilt-inner page-slide relative">
+
+    <!-- Decorative dots overlay -->
+    <div class="absolute inset-0 pointer-events-none opacity-[.08]"
+         style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
 
     <!-- Top bar (centered) -->
-    <div class="px-6 pt-6 text-center">
-      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1">
+    <div class="relative z-10 px-6 pt-6 text-center">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10">
         <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400/90"></span>
         <span class="text-[10px] uppercase tracking-wider text-white/80">Project Credits</span>
       </div>
     </div>
 
     <!-- Body -->
-    <div class="px-6 pb-6 mt-4">
+    <div class="relative z-10 px-6 pb-6 mt-4">
       <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <!-- Concept & Supervision -->
-        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade">
+        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-emerald-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+             role="group" aria-labelledby="credit-concept-title" tabindex="0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-300/30">
-            <svg class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path stroke-width="1.5" d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
               <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
             </svg>
           </div>
-          <dt class="text-sm font-medium text-white/90">Concept &amp; Supervision</dt>
-          <dd class="text-sm text-white/70">Dr. Wajid Aalam</dd>
+          <dt id="credit-concept-title" class="text-sm font-medium text-white/90">Concept &amp; Supervision</dt>
+          <dd class="text-sm text-white/80">Dr. Wajid Aalam</dd>
         </div>
 
         <!-- Development -->
-        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade">
+        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-sky-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+             role="group" aria-labelledby="credit-dev-title" tabindex="0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 ring-1 ring-sky-300/30">
-            <svg class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path stroke-width="1.5" d="M8 7l-5 5 5 5M16 7l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <dt class="text-sm font-medium text-white/90">Development</dt>
-          <dd class="text-sm text-white/70">Amir Mushtaq &amp; Abrar Ahmad</dd>
+          <dt id="credit-dev-title" class="text-sm font-medium text-white/90">Development</dt>
+          <dd class="text-sm text-white/80">Amir Mushtaq &amp; Abrar Ahmad</dd>
         </div>
 
         <!-- Institution -->
-        <div class="flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 sm:col-span-1 scroll-fade">
+        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 sm:col-span-1 scroll-fade focus-within:ring-2 focus-within:ring-violet-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+             role="group" aria-labelledby="credit-inst-title" tabindex="0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-violet-300/30">
-            <svg class="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <svg class="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
               <path stroke-width="1.5" d="M3 10l9-6 9 6M4 10v8h16v-8M8 18v-6h8v6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <dt class="text-sm font-medium text-white/90">Institution</dt>
-          <dd class="text-sm text-white/70">
+          <dt id="credit-inst-title" class="text-sm font-medium text-white/90">Institution</dt>
+          <dd class="text-sm text-white/80">
             Islamic University of Science &amp; Technology, Awantipora, J&amp;K
           </dd>
         </div>
@@ -217,24 +261,21 @@
 </div>
 
 <!-- Credits Card Style -->
-
 <style>
 /* Softer shimmer (optional) */
-.shimmer::before { opacity: .35; }
+.shimmer::before { opacity: .28; }
 
 /* Subtle hover lift on tiles (optional) */
 .credits-card dl > div { transition: transform .25s ease, box-shadow .25s ease; }
 .credits-card dl > div:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-</style>
 
-<style>
-/* --- Animations & Effects (same as before, trimmed for brevity) --- */
+/* --- Animations & Effects --- */
 .page-slide { animation: pageSlideIn 0.9s ease-out forwards; opacity: 0; transform: translateY(40px); }
 @keyframes pageSlideIn { to { opacity: 1; transform: translateY(0); } }
 .shimmer { position: relative; overflow: hidden; border-radius: inherit; }
 .shimmer::before {
   content: ""; position: absolute; top: 25%; left: -150%; width: 250%; height: 60%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.15), rgba(255,255,255,0.35), rgba(255,255,255,0.15));
+  background: linear-gradient(120deg, rgba(255,255,255,0.12), rgba(255,255,255,0.28), rgba(255,255,255,0.12));
   animation: shimmer-diagonal 4s linear infinite;
 }
 .shimmer-blue::before { background: linear-gradient(120deg, rgba(59,130,246,0.15), rgba(59,130,246,0.35), rgba(59,130,246,0.15)); }
@@ -249,10 +290,37 @@
 /* Tilt */
 .tilt { perspective: 1000px; transform-style: preserve-3d; }
 .tilt-inner { transition: transform 0.2s ease-out; will-change: transform; }
-</style>
 
-<!-- Gradient Border Animation -->
-<style>
+/* ===== Floating animation ===== */
+@keyframes floaty {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+.dev-card, .credits-card {
+  animation: floaty 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Stagger the developer cards for a more organic feel */
+section .dev-card:nth-of-type(1) { animation-duration: 6.5s; animation-delay: .1s; }
+section .dev-card:nth-of-type(2) { animation-duration: 6.2s; animation-delay: .4s; }
+section .dev-card:nth-of-type(3) { animation-duration: 6.8s; animation-delay: .25s; }
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dev-card, .credits-card { animation: none !important; }
+  .shimmer::before { animation: none !important; }
+}
+
+/* Keep hover/tilt transforms crisp even while floating */
+.dev-card .tilt-inner:hover,
+.credits-card .tilt-inner:hover {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Gradient Border Animation (optional utility) */
 @keyframes borderShift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -266,6 +334,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+  // Scroll fade-in
   const faders = document.querySelectorAll(".scroll-fade");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -277,21 +346,27 @@ document.addEventListener("DOMContentLoaded", function() {
   }, { threshold: 0.2 });
   faders.forEach(fader => observer.observe(fader));
 
+  // Tilt interaction (respect reduced motion)
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const tiltCards = document.querySelectorAll(".tilt");
-  tiltCards.forEach(card => {
-    const inner = card.querySelector(".tilt-inner") || card;
-    card.addEventListener("mousemove", e => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left, y = e.clientY - rect.top;
-      const midX = rect.width / 2, midY = rect.height / 2;
-      const rotateX = ((y - midY) / midY) * 6;
-      const rotateY = ((x - midX) / midX) * 6;
-      inner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+  if (!prefersReduced) {
+    tiltCards.forEach(card => {
+      const inner = card.querySelector(".tilt-inner") || card;
+      card.addEventListener("mousemove", e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left, y = e.clientY - rect.top;
+        const midX = rect.width / 2, midY = rect.height / 2;
+        const rotateX = ((y - midY) / midY) * 6;
+        const rotateY = ((x - midX) / midX) * 6;
+        inner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+      });
+      card.addEventListener("mouseleave", () => {
+        inner.style.transform = "rotateX(0deg) rotateY(0deg)";
+      });
+      card.addEventListener("focusin", () => card.classList.add("ring-2","ring-white/20"));
+      card.addEventListener("focusout", () => card.classList.remove("ring-2","ring-white/20"));
     });
-    card.addEventListener("mouseleave", () => {
-      inner.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
-    });
-  });
+  }
 });
 </script>
 

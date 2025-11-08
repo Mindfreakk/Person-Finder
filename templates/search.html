@@ -24,26 +24,68 @@
 {% block content %}
 <div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 animate-page-enter mt-24">
 
-  <!-- Heading -->
-<div class="text-center w-full mb-6">
-  <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2">
-    Search for a Missing Person
-  </h2>
-  <p class="mx-auto text-[0.85rem] sm:text-sm md:text-base text-gray-300 max-w-2xl text-center leading-relaxed">
-  Find missing persons quickly — by 
-  <span class="bg-gradient-to-r from-blue-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
-    family
-  </span>, 
-  <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent font-semibold animate-gradient">
-    loved ones
-  </span>, or anyone who encounters them — using the 
-  <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold animate-gradient">
-    PersonFinder
-  </span> database.
-</p>
-</div>
+  <!-- Heading Card -->
+  <div class="w-full flex justify-center">
+    <div
+      class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center"
+    >
+      <!-- Decorative dots overlay -->
+      <div class="absolute inset-0 pointer-events-none opacity-[.08]"
+           style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-  <!-- Divider: Search Now -->
+      <!-- Heading + Lead -->
+      <div class="relative z-10 w-full">
+        <div class="text-center w-full mb-2">
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
+            Search for a Missing Person
+          </h2>
+        </div>
+
+        <p class="mx-auto text-[0.85rem] sm:text-sm md:text-base text-gray-300 max-w-2xl text-center leading-relaxed px-2">
+          Find missing persons quickly — by
+          <span class="bg-gradient-to-r from-blue-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
+            family
+          </span>,
+          <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent font-semibold animate-gradient">
+            loved ones
+          </span>, or anyone who encounters them — using the
+          <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold animate-gradient">
+            PersonFinder
+          </span> database.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  /* Gradient animation for highlighted text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating card effect */
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-float { animation: none !important; }
+  }
+  </style>
+
+  <br/>
+
+   <!-- Divider: Search Now -->
   <div class="relative w-full flex justify-center mt-8 mb-8">
     <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
     <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
@@ -53,11 +95,15 @@
 
 <!-- Search Form -->
 <form method="POST" enctype="multipart/form-data"
-      class="w-full max-w-md mb-16"
+      class="w-full max-w-md mb-24 sm:mb-28 lg:mb-32"
       onsubmit="return validateAndStartSearch(event)">
 
-  <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl shadow-xl flex flex-col justify-between items-center relative min-h-[400px]">
+  <div class="bg-white/5 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl 
+              flex flex-col justify-between items-center relative 
+              min-h-[520px] sm:min-h-[560px] lg:min-h-[600px] 
+              border border-white/10">
 
+    <!-- Form Fields Container -->
     <div class="w-full flex flex-col items-center space-y-6">
 
       <!-- Upload + Tooltip + Webcam in one row -->
@@ -147,13 +193,51 @@
       <!-- Divider -->
       <div class="w-full border-t border-white/20 my-2"></div>
 
-      <!-- Submit -->
-      <button type="submit" id="search_btn"
-              class="w-full px-6 py-3 rounded-xl text-white font-semibold text-lg shadow-lg 
-                     transform transition hover:scale-105 search-shimmer
-                     bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600">
-        Search
-      </button>
+      <!-- Submit Button (wrapped in a container card like Register button) -->
+<div class="flex justify-center mt-4">
+  <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3 shadow-xl">
+    <button type="submit" id="search_btn"
+            class="px-14 py-3 rounded-xl text-white font-semibold text-lg shadow-lg
+                   transform transition hover:scale-105 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600
+                   hover:from-pink-600 hover:via-purple-600 hover:to-blue-600
+                   relative overflow-hidden flex items-center justify-center gap-2
+                   w-auto min-w-[220px] max-w-[420px]">
+      <svg id="search_spinner"
+           class="hidden w-5 h-5 animate-spin spinner-pulse text-white mr-2"
+           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10"
+                stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <span id="search_text">Search</span>
+      <!-- Shimmer overlay -->
+      <span class="absolute inset-0 rounded-xl shimmer pointer-events-none"></span>
+    </button>
+  </div>
+</div>
+
+      <style>
+/* Shimmer for Register/Search buttons */
+@keyframes pfShimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.shimmer {
+  /* Make the shimmer a narrow moving highlight so it looks slick */
+  background: linear-gradient(120deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.12) 40%, transparent 100%);
+  animation: pfShimmer 2.5s linear infinite;
+  /* Only a vertical strip moves across */
+  width: 140%;              /* a bit wider for smooth entry/exit */
+  transform: translateX(-100%);
+  /* Keep the highlight narrower so it looks like a true shimmer */
+  mask-image: linear-gradient(to right, transparent 0%, black 12%, black 38%, transparent 52%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 38%, transparent 52%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+}
+</style>
 
       <!-- Inline Error Message (hidden by default) -->
       <p id="photo_error" class="hidden text-red-400 text-sm font-medium mt-2 text-center"></p>
@@ -221,9 +305,20 @@
   </div>
 
   <!-- Info Box (outside card) -->
-<div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-4 shadow-lg max-w-2xl mx-auto text-center mb-16">
-  <p class="text-xs sm:text-sm leading-relaxed animate-slide-in">
-    ✨ Every search brings us one step closer to 
+<div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-5 sm:p-6 shadow-lg 
+            max-w-2xl mx-auto text-center mb-16 relative animate-slide-in animate-pulse-slow">
+
+  <!-- Floating Centered Icon -->
+  <div class="absolute -top-4 sm:-top-5 left-1/2 -translate-x-1/2
+              bg-indigo-800 border border-indigo-400/50 text-yellow-300
+              w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center shadow-md pf-tooltip-float"
+       aria-hidden="true">
+    ✨
+  </div>
+
+  <!-- Content -->
+  <p class="mt-6 sm:mt-7 text-xs sm:text-sm leading-relaxed text-gray-200">
+    Every search brings us one step closer to 
     <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 font-semibold animate-gradient-x">reuniting families</span>.  
     Your contribution, no matter how small, makes a real difference.  
     <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 font-semibold animate-gradient-x">Thank you</span> for being part of this important 
@@ -232,6 +327,53 @@
     <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 font-semibold animate-gradient-x">help loved ones find their way back to each other</span>.
   </p>
 </div>
+
+<!-- ================= Animations ================= -->
+<style>
+/* Slide-in from bottom */
+@keyframes slideInUp {
+  0%   { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(2px); }
+  60%  { opacity: 1; transform: translateY(-6px) scale(1.01); filter: none; }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: none; }
+}
+
+/* Pulse in/out for card */
+@keyframes pulseInOut {
+  0%   { transform: scale(0.985); opacity: 0.9; }
+  50%  { transform: scale(1.015); opacity: 1; }
+  100% { transform: scale(0.985); opacity: 0.9; }
+}
+
+/* Floating icon animation */
+@keyframes pfTooltipFloat {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, -5px); }
+}
+
+/* Apply animations */
+.animate-slide-in {
+  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both;
+  will-change: transform, opacity;
+}
+.animate-pulse-slow {
+  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both,
+             pulseInOut 3s ease-in-out 700ms infinite;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+.pf-tooltip-float {
+  animation: pfTooltipFloat 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Accessibility: reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in, .animate-pulse-slow, .pf-tooltip-float {
+    animation: none !important;
+  }
+}
+</style>
+  <!-- Remainder CSS -->
 
 <!-- Tailwind Custom Gradient Animation -->
 <style>

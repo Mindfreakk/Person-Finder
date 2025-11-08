@@ -3,28 +3,64 @@
 {% block title %}Register - PersonFinder{% endblock %}
 
 {% block content %}
-<div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-10 animate-page-enter mt-20">
+<div class="w-full overflow-x-hidden">  {# protect against horizontal scroll #}
+  <div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-10 animate-page-enter mt-20">
 
-  <!-- Heading -->
-  <div class="text-center max-w-2xl mx-auto mb-10">
-    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3">
-      Register a Missing Person
-    </h2>
-    <p class="mx-auto text-xs sm:text-sm md:text-base text-center font-semibold leading-relaxed">
-      <span class="text-blue-400">Fill in the details</span>
-      <span class="text-purple-400">and upload a photo</span>
-      <span class="text-pink-400">to add a person to the database.</span>
-      <br>
-      <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold">
-        Ensure all information
-      </span>
-      <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold">
-        provided is accurate
-      </span>
-      <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold">
-        to assist with proper identification.
-      </span>
-    </p>
+    <!-- Heading Card -->
+    <div class="w-full flex justify-center mt-16">
+      <div class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center">
+        <!-- Decorative dots overlay -->
+        <div class="absolute inset-0 pointer-events-none opacity-[.08]" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+        <!-- Heading -->
+        <div class="relative z-10 max-w-2xl mx-auto mb-2">
+          <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-3">
+            Register a Missing Person
+          </h2>
+          <p class="mx-auto text-xs sm:text-sm md:text-base text-center font-semibold leading-relaxed text-blue-100/90">
+            <span class="text-blue-400">Fill in the details</span>
+            <span class="text-purple-400">and upload a photo</span>
+            <span class="text-pink-400">to add a person to the database.</span>
+            <br>
+            <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
+              Ensure all information
+            </span>
+            <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
+              provided is accurate
+            </span>
+            <span class="bg-gradient-to-r from-green-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent font-semibold animate-gradient">
+              to assist with proper identification.
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <style>
+    /* Match About page styles */
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradientShift 6s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating card effect */
+    .card-float {
+      animation: floaty 6.5s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card-float { animation: none !important; }
+    }
+    </style>
 
     <!-- Divider: Form -->
     <div class="relative w-full flex justify-center my-8 sm:my-10">
@@ -33,22 +69,13 @@
         Register Now
       </span>
     </div>
-  </div>
 
-  <!-- Registration Form -->
-  <form method="POST" enctype="multipart/form-data" class="w-full max-w-2xl space-y-6" id="register_form" novalidate>
-
-    <!-- Card Container -->
-    <div class="bg-white/5 backdrop-blur-sm p-6 rounded-2xl shadow-xl flex flex-col animate-card">
-
+    <!-- Registration Form -->
+    <form method="POST" enctype="multipart/form-data" class="w-full max-w-2xl space-y-6" id="register_form" novalidate>
       <!-- Section Heading -->
-      <h3 class="text-2xl sm:text-3xl font-extrabold text-center mb-6 flex items-center justify-center gap-2 text-gray-200">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-7 h-7 text-indigo-400 drop-shadow-sm"
-             fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87
-                   M16 11a4 4 0 10-8 0 4 4 0 008 0z" />
+      <h3 class="text-2xl sm:text-3xl font-extrabold text-center mb-2 flex items-center justify-center gap-2 text-gray-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-400 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87 M16 11a4 4 0 10-8 0 4 4 0 008 0z" />
         </svg>
         Missing Person Details
       </h3>
@@ -79,46 +106,36 @@
               Upload Photo <span class="text-red-400">*</span>
             </label>
 
-            <!-- Tooltip Icon (below Upload on mobile, inline on desktop) -->
+            <!-- Tooltip trigger (mobile) -->
             <div class="relative flex justify-center sm:hidden">
               <button type="button" id="search_info_btn_mobile"
                       aria-label="Upload/Use Webcam Info"
-                      class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative group animate-subtle-bounce">
+                      class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
                 </svg>
-
-                <!-- Tooltip -->
-                <span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 sm:w-56 text-xs bg-gray-900 text-white rounded-lg py-2 px-3
-                             opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                             transition-all duration-300 ease-out
-                             transform -translate-y-1 group-hover:translate-y-0 text-center z-50">
-                  For optimal results, please upload a high-quality, front-facing photo.
-                  <svg class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 text-gray-900" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0 5 L5 10 L10 5 Z" fill="currentColor"/></svg>
-                </span>
               </button>
+              <!-- Tooltip (will be floated via JS) -->
+              <span id="search_info_tip_mobile" role="tooltip"
+                    class="tooltip theme-dark">
+                For optimal results, please upload a high-quality, front-facing photo.
+              </span>
             </div>
           </div>
 
-          <!-- Tooltip Icon (desktop inline) -->
+          <!-- Tooltip trigger (desktop) -->
           <div class="relative hidden sm:flex justify-center">
             <button type="button" id="search_info_btn" aria-label="Upload/Use Webcam Info"
-                    class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative group animate-subtle-bounce">
+                    class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
               </svg>
-
-              <!-- Tooltip -->
-              <span class="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 sm:w-56 text-xs bg-gray-900 text-white rounded-lg py-2 px-3
-                           opacity-0 invisible group-hover:opacity-100 group-hover:visible
-                           transition-all duration-300 ease-out
-                           transform -translate-y-1 group-hover:translate-y-0 text-center z-50">
-                For optimal results, please upload a high-quality, front-facing photo.
-                <svg class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 text-gray-900" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0 5 L5 10 L10 5 Z" fill="currentColor"/></svg>
-              </span>
             </button>
+            <span id="search_info_tip" role="tooltip" class="tooltip theme-dark">
+              For optimal results, please upload a high-quality, front-facing photo.
+            </span>
           </div>
 
           <!-- Webcam -->
@@ -248,7 +265,7 @@
       <div class="w-full border-t border-white/20 my-6"></div>
 
       <!-- Registered By Heading + Checkbox with Tooltip -->
-      <div class="flex items-center justify-between gap-4 mb-6">
+      <div class="flex items-center justify-between gap-4 mb-2">
         <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
           👤 Registered By
         </h3>
@@ -259,29 +276,25 @@
                  class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
           <span class="text-gray-200">Same as Guardian</span>
 
-          <!-- Info button -->
-          <button type="button" id="info-btn" aria-label="Info about Same as Guardian"
-                  class="ml-3 h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
-            </svg>
-          </button>
+          <!-- Info button + tooltip -->
+          <span class="relative ml-3 inline-flex items-center justify-center">
+            <button type="button" id="info-btn" aria-label="Info about Same as Guardian"
+                    class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+              </svg>
+            </button>
+
+            <span id="info-tooltip" role="tooltip" class="tooltip theme-dark">
+              If selected, the Guardian's Name and Phone Number will be automatically filled and locked.
+            </span>
+          </span>
         </label>
       </div>
 
-      <!-- Tooltip (same-as-guardian): hidden by default -->
-      <div class="relative mb-6">
-        <span id="info-tooltip"
-              class="absolute left-0 -translate-y-2 w-64 sm:w-56 text-xs bg-gray-900 text-white rounded-lg py-2 px-3
-                     opacity-0 pointer-events-none transform transition-all duration-300 ease-out animate-tooltip-pulse z-50">
-          If selected, the Guardian's Name and Phone Number will be automatically filled and locked.
-          <svg id="info-tooltip-arrow" class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 text-gray-900" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M0 5 L5 10 L10 5 Z" fill="currentColor"/></svg>
-        </span>
-      </div>
-
       <!-- Registered By Fields -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="relative">
           <label for="registered_by_name" class="block font-medium mb-1 text-gray-200">Name</label>
           <input type="text" id="registered_by_name" name="registered_by_name" placeholder="Full Name" required
@@ -313,43 +326,52 @@
         </div>
       </div>
 
-      <!-- Divider: Consent -->
-      <div class="relative w-full flex justify-center my-8 sm:my-12">
-        <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-        <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-          Consent
-        </span>
-      </div>
+      <!-- Divider before Registered By -->
+      <div class="w-full border-t border-white/20 my-6"></div>
 
       <!-- Agreement Block -->
-      <div class="mt-4 flex items-center gap-2 relative">
-        <input type="checkbox" id="agreement" name="agreement"
-               class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-        <label for="agreement"
-               class="text-[0.7rem] sm:text-xs leading-relaxed text-gray-200 flex-1 font-sans">
-          I confirm that the information and photo provided are accurate and may be used for identification and registration purposes, in accordance with the
-          <a href="{{ url_for('privacy_policy') }}" class="text-blue-400 hover:underline">Privacy Policy</a> and
-          <a href="{{ url_for('terms') }}" class="text-blue-400 hover:underline">Terms of Service</a> of
-          <span class="font-extrabold tracking-widest bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500
-                       bg-clip-text text-transparent animate-gradient drop-shadow-md">
-            PersonFinder.
+      <div class="mt-2 relative">
+        <div class="flex items-start gap-3">
+          <input type="checkbox" id="agreement" name="agreement"
+                 class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shrink-0">
+          <label for="agreement" class="flex-1">
+            <span class="block text-[0.78rem] sm:text-[0.86rem] md:text-sm leading-6 text-gray-200 font-sans">
+              I confirm that the information and photo provided are accurate and may be used for identification and registration purposes,
+              in accordance with the
+              <a href="{{ url_for('privacy_policy') }}" class="text-blue-300 hover:text-blue-200 underline underline-offset-2">Privacy Policy</a>
+              and
+              <a href="{{ url_for('terms') }}" class="text-blue-300 hover:text-blue-200 underline underline-offset-2">Terms of Service</a>
+              of
+              <span class="font-extrabold tracking-wider bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+                PersonFinder
+              </span>.
+            </span>
+          </label>
+
+          <!-- Agreement info button + tooltip -->
+          <span class="relative inline-flex items-center">
+            <button
+              type="button"
+              id="agreement_info_btn"
+              class="ml-1 flex items-center justify-center h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/40 rounded"
+              aria-label="Agreement info"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path fill-rule="evenodd"
+                      d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8
+                         8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
+                         000-2zm-1 4a1 1 0 012 0v4a1 1 0 11-2
+                         0v-4z" clip-rule="evenodd" />
+              </svg>
+            </button>
+
+            <span id="agreement_tooltip" role="tooltip" class="tooltip theme-dark">
+              Please review and accept the terms before submitting the form.
+            </span>
           </span>
-        </label>
+        </div>
 
-        <button type="button" id="agreement_info_btn"
-                class="ml-1 flex items-center justify-center h-5 w-5 text-gray-400 hover:text-blue-400 relative group" aria-label="Agreement info">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-            <path fill-rule="evenodd"
-                  d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8
-                     8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
-                     000-2zm-1 4a1 1 0 012 0v4a1 1 0 11-2
-                     0v-4z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-
-      <!-- Toast & Tooltip Container -->
-      <div class="relative">
+        <!-- Toast (re-usable) -->
         <div id="agreement_toast"
              class="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-[90vw] w-auto px-4 py-3 text-sm
                     text-white bg-red-600 rounded shadow-md z-50 opacity-0 pointer-events-none
@@ -360,35 +382,34 @@
             ×
           </button>
         </div>
-
-        <div id="agreement_tooltip"
-             class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-gray-800 text-white text-xs p-2 rounded shadow-lg
-                    opacity-0 pointer-events-none transition-opacity duration-200 z-50 text-center hidden">
-          Please review and accept the terms before submitting the form.
-        </div>
       </div>
 
-      <!-- Google reCAPTCHA v3 -->
+      <!-- Divider before Registered By -->
+      <div class="w-full border-t border-white/20 my-6"></div>
+
+      <!-- reCAPTCHA v3 response input -->
       <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 
-      <!-- Submit Button -->
-      <div class="flex justify-center mt-8">
-        <button type="button" id="register_btn"
-                class="px-14 py-3 rounded-xl text-white font-semibold text-lg shadow-lg
-                       transform transition hover:scale-105 bg-gradient-to-r from-green-500 to-blue-500
-                       relative overflow-hidden flex items-center justify-center gap-2
-                       w-auto min-w-[220px] max-w-[420px]">
-          <svg id="register_spinner"
-               class="hidden w-5 h-5 animate-spin spinner-pulse text-white mr-2"
-               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-            <circle class="opacity-25" cx="12" cy="12" r="10"
-                    stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-          </svg>
-          <span id="register_text">Register</span>
-          <span class="absolute inset-0 rounded-xl shimmer pointer-events-none"></span>
-        </button>
+      <!-- Submit Button (wrapped in a container card) -->
+      <div class="flex justify-center mt-4">
+        <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3 shadow-xl">
+          <button type="button" id="register_btn"
+                  class="px-14 py-3 rounded-xl text-white font-semibold text-lg shadow-lg
+                         transform transition hover:scale-105 bg-gradient-to-r from-green-500 to-blue-500
+                         relative overflow-hidden flex items-center justify-center gap-2
+                         w-auto min-w-[220px] max-w-[420px]">
+            <svg id="register_spinner"
+                 class="hidden w-5 h-5 animate-spin spinner-pulse text-white mr-2"
+                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10"
+                      stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span id="register_text">Register</span>
+            <span class="absolute inset-0 rounded-xl shimmer pointer-events-none"></span>
+          </button>
+        </div>
       </div>
 
       {% if errors.get("recaptcha") %}
@@ -398,7 +419,7 @@
       {% endif %}
 
       <p id="review_note"
-         class="text-xs flex items-center justify-center gap-2 mt-4 opacity-0 transform translate-y-6 transition-all duration-500">
+         class="text-xs flex items-center justify-center gap-2 mt-2 opacity-0 transform translate-y-6 transition-all duration-500">
         <svg xmlns="http://www.w3.org/2000/svg"
              class="h-4 w-4 text-yellow-500"
              fill="none" viewBox="0 0 24 24"
@@ -412,35 +433,281 @@
 
       <!-- Load reCAPTCHA v3 (only once, with render param) -->
       <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}" async defer></script>
+    </form>
 
-    </div> <!-- End card -->
+  <!-- Note Divider -->
+  <div class="relative w-full flex justify-center my-16 sm:my-20">
+    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Note
+    </span>
+  </div>
 
-  </form> <!-- End form -->
-
-</div>
-
-<!-- Note Divider -->
-<div class="relative w-full flex justify-center my-16 sm:my-20">
-  <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-  <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-    Note
-  </span>
-</div>
-
+  <!-- Info Box with Floating Icon + Pulse Card -->
 <div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-6 shadow-lg
-            max-w-2xl mx-auto text-center mb-20 animate-slide-in animate-pulse-slow">
-  <p class="text-xs sm:text-sm leading-relaxed text-gray-200">
-    ⚠️ All information provided will only be used for search and identification purposes within
-    <span class="font-semibold gradient-text">PersonFinder</span>.
+            max-w-2xl mx-auto text-center mb-20 relative animate-slide-in animate-pulse-slow">
+
+  <!-- Centering wrapper (handles -translate-x-1/2) -->
+  <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+    <!-- Inner animated chip (only translateY so X-centering is preserved) -->
+    <div class="pf-float-chip bg-indigo-800 border border-indigo-400/50 text-yellow-300
+                w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md"
+         aria-hidden="true">⚠️</div>
+  </div>
+
+  <p class="mt-7 sm:mt-6 text-xs sm:text-sm leading-relaxed text-gray-200">
+    All information provided will only be used for search and identification purposes within
+    <span class="font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+      PersonFinder
+    </span>.
     Your data is stored securely and not shared with third parties.
     Providing accurate details helps us <span class="text-green-300 font-semibold">reunite families faster</span>.
   </p>
 </div>
 
-<!-- ================= FULL JS (organized; prevents 413; agreement guard) ================= -->
+<!-- Animations -->
+<style>
+/* Slide-in from bottom */
+@keyframes slideInUp {
+  0%   { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(2px); }
+  60%  { opacity: 1; transform: translateY(-6px) scale(1.01); filter: none; }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: none; }
+}
+
+/* Gentle pulse for the card */
+@keyframes pulseInOut {
+  0%   { transform: scale(0.985); opacity: 0.9; }
+  50%  { transform: scale(1.015); opacity: 1; }
+  100% { transform: scale(0.985); opacity: 0.9; }
+}
+
+/* Float only on Y (so it doesn't fight the -translate-x-1/2 centering) */
+@keyframes pfTooltipFloatY {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+/* Apply animations */
+.animate-slide-in {
+  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both;
+  will-change: transform, opacity;
+}
+.animate-pulse-slow {
+  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both,
+             pulseInOut 3s ease-in-out 700ms infinite;
+  transform-origin: center;
+  will-change: transform, opacity;
+}
+.pf-float-chip {
+  animation: pfTooltipFloatY 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Mobile polish */
+@media (max-width: 480px) {
+  .pf-float-chip { box-shadow: 0 6px 14px rgba(0,0,0,.35); }
+}
+
+/* Reduce motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-in, .animate-pulse-slow, .pf-float-chip { animation: none !important; }
+}
+</style>
+
 <script>
-/* ===== Perf helpers ===== */
-const runIdle = (fn) => ('requestIdleCallback' in window) ? requestIdleCallback(fn, { timeout: 800 }) : setTimeout(fn, 0);
+/* Add the float class to your tooltip icons (run once after DOM is ready) */
+(function () {
+  const ids = [
+    'agreement_info_btn', // consent tooltip icon
+    'info-btn',           // "Same as Guardian" info icon
+    'search_info_btn',    // desktop photo/upload info
+    'search_info_btn_mobile' // mobile photo/upload info
+  ];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('pf-tooltip-float');
+  });
+})();
+</script>
+<!-- Floating Tooltip JS -->
+<script>
+/* Optional: keep or merge with your existing CSS */
+(function ensureTooltipHiddenClass(){
+  if (!document.getElementById('pf-tooltip-style')) {
+    const s = document.createElement('style');
+    s.id = 'pf-tooltip-style';
+    s.textContent = `.tooltip-hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s ease}`;
+    document.head.appendChild(s);
+  }
+})();
+
+/* A single fixed overlay that hosts all tooltips to avoid clipping/offset bugs */
+function getTooltipLayer() {
+  let layer = document.getElementById('tooltip-layer');
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.id = 'tooltip-layer';
+    layer.style.position = 'fixed';
+    layer.style.inset = '0';
+    layer.style.zIndex = '9999';
+    layer.style.pointerEvents = 'none';      // each tooltip enables its own pointer events when shown
+    layer.style.contain = 'layout style size';
+    document.body.appendChild(layer);
+  }
+  return layer;
+}
+
+function attachFloatingTooltip(trigger, tooltip, { hover=true, click=true, gap=8 } = {}) {
+  if (!trigger || !tooltip) return;
+
+  const layer = getTooltipLayer();
+
+  // Prepare tooltip node
+  tooltip.classList.add('tooltip-hidden');
+  tooltip.style.position = 'absolute';       // inside fixed layer
+  tooltip.style.top = '-9999px';
+  tooltip.style.left = '-9999px';
+  tooltip.style.maxWidth = 'min(320px, calc(100vw - 16px))';
+  tooltip.style.pointerEvents = 'none';      // enabled when visible
+  tooltip.setAttribute('aria-hidden', 'true');
+
+  // Move into the layer to avoid clipping/transform issues from parents
+  if (!layer.contains(tooltip)) layer.appendChild(tooltip);
+
+  // Visual viewport offsets (iOS Safari / zoom / collapsing URL bar)
+  const vv = window.visualViewport || null;
+  const getVV = () => ({
+    ox: vv ? (vv.offsetLeft || 0) : 0,
+    oy: vv ? (vv.offsetTop  || 0) : 0
+  });
+
+  // Clamp horizontally inside viewport
+  const clampX = (left, width) => {
+    const vw = window.innerWidth;
+    const min = 8;
+    const max = Math.max(min, vw - width - 8);
+    return Math.max(min, Math.min(left, max));
+  };
+
+  const show = () => {
+    const rect = trigger.getBoundingClientRect();
+    const { ox, oy } = getVV();
+
+    // Make visible for measurement
+    tooltip.classList.remove('tooltip-hidden');
+    tooltip.setAttribute('aria-hidden', 'false');
+    tooltip.style.pointerEvents = 'auto';
+
+    // Park for measurement
+    tooltip.style.left = '0px';
+    tooltip.style.top  = '-9999px';
+
+    // First pass size
+    const maxW = Math.min(320, window.innerWidth - 16);
+    tooltip.style.maxWidth = maxW + 'px';
+    let tw = Math.min(tooltip.offsetWidth, maxW);
+    let th = tooltip.offsetHeight;
+
+    // Prefer above; fall back to below if not enough space
+    let top = rect.top - gap - th;
+    let placement = 'top';
+    if (top < 8) { top = rect.bottom + gap; placement = 'bottom'; }
+
+    // Center horizontally relative to trigger and clamp
+    let left = rect.left + (rect.width / 2) - (tw / 2);
+    left = clampX(left, tw);
+
+    // Apply visual viewport offsets so absolute-in-fixed aligns with trigger
+    tooltip.style.left = (left + ox) + 'px';
+    tooltip.style.top  = (top  + oy) + 'px';
+    tooltip.dataset.placement = placement;
+
+    // Re-measure in case of reflow after positioning (fonts/wrap)
+    tw = Math.min(tooltip.offsetWidth, maxW);
+    th = tooltip.offsetHeight;
+
+    left = rect.left + (rect.width / 2) - (tw / 2);
+    left = clampX(left, tw);
+    top  = placement === 'top' ? (rect.top - gap - th) : (rect.bottom + gap);
+
+    tooltip.style.left = (left + ox) + 'px';
+    tooltip.style.top  = (top  + oy) + 'px';
+  };
+
+  const hide = () => {
+    tooltip.classList.add('tooltip-hidden');
+    tooltip.setAttribute('aria-hidden', 'true');
+    tooltip.style.pointerEvents = 'none';
+  };
+
+  // Keep positioned while visible on layout/viewport changes
+  const onLayout = () => { if (!tooltip.classList.contains('tooltip-hidden')) show(); };
+
+  // Hover handlers
+  let hoverHandlers = [];
+  if (hover) {
+    const onEnter = () => show();
+    const onLeave = (e) => {
+      // If moving into tooltip itself, don't hide yet (pointer events are on when visible)
+      if (e && tooltip.contains(e.relatedTarget)) return;
+      hide();
+    };
+    trigger.addEventListener('mouseenter', onEnter, { passive:true });
+    trigger.addEventListener('mouseleave', onLeave, { passive:true });
+    tooltip.addEventListener('mouseleave', hide, { passive:true });
+    hoverHandlers.push(['mouseenter', onEnter], ['mouseleave', onLeave]);
+  }
+
+  // Click / tap handlers
+  let clickHandler = null;
+  let outsideHandler = null;
+  let escHandler = null;
+  if (click) {
+    clickHandler = (e) => {
+      e.stopPropagation();
+      if (tooltip.classList.contains('tooltip-hidden')) show();
+      else hide();
+    };
+    trigger.addEventListener('click', clickHandler);
+
+    outsideHandler = (e) => {
+      if (e.target !== trigger && !tooltip.contains(e.target)) hide();
+    };
+    document.addEventListener('click', outsideHandler);
+
+    escHandler = (e) => { if (e.key === 'Escape') hide(); };
+    document.addEventListener('keydown', escHandler);
+  }
+
+  // Reposition on scroll/resize and visualViewport changes
+  window.addEventListener('resize', onLayout, { passive:true });
+  window.addEventListener('scroll', onLayout, { passive:true });
+  if (vv) {
+    vv.addEventListener('scroll', onLayout, { passive:true });
+    vv.addEventListener('resize', onLayout, { passive:true });
+  }
+
+  return {
+    show, hide,
+    destroy() {
+      hoverHandlers.forEach(([t, fn]) => trigger.removeEventListener(t, fn));
+      if (clickHandler) trigger.removeEventListener('click', clickHandler);
+      if (outsideHandler) document.removeEventListener('click', outsideHandler);
+      if (escHandler) document.removeEventListener('keydown', escHandler);
+      window.removeEventListener('resize', onLayout);
+      window.removeEventListener('scroll', onLayout);
+      if (vv) {
+        vv.removeEventListener('scroll', onLayout);
+        vv.removeEventListener('resize', onLayout);
+      }
+    }
+  };
+}
+
+/* ===== Perf helper ===== */
+const runIdle = (fn) => ('requestIdleCallback' in window)
+  ? requestIdleCallback(fn, { timeout: 800 })
+  : setTimeout(fn, 0);
 
 /* ===== Toast ===== */
 function showServerToast(message, type = "success", opts = {}) {
@@ -463,10 +730,12 @@ function showServerToast(message, type = "success", opts = {}) {
   if (timeout > 0) setTimeout(close, timeout);
 }
 
-/* ===== Image Compression (keep dimensions) ===== */
-const IMG_TARGET_MAX_BYTES = 400 * 1024; // ~400KB
-const IMG_MIN_QUALITY     = 0.5;
-const IMG_START_QUALITY   = 0.9;
+/* ===== Image compression, webcam, validation, submission ===== */
+/* (unchanged logic from your previous working version; trimmed for brevity) */
+
+const IMG_TARGET_MAX_BYTES = 400 * 1024;
+const IMG_MIN_QUALITY = 0.5;
+const IMG_START_QUALITY = 0.9;
 
 function isHeicLike(type, name='') {
   const t = (type||'').toLowerCase();
@@ -491,14 +760,11 @@ function fileToDataURL(file) {
 }
 async function fileToOptimizedDataURL(file) {
   if (!file) return null;
-  // Pass-through if already small enough
   if (file.size <= IMG_TARGET_MAX_BYTES) return await fileToDataURL(file);
-
   if (isHeicLike(file.type, file.name)) {
     showServerToast("HEIC/HEIF isn’t supported in browser. Please upload JPG/PNG/WebP.", "error");
     throw new Error("heic-not-supported");
   }
-
   const bitmap = await createImageBitmap(file).catch(async () => {
     const dataUrl = await fileToDataURL(file);
     const img = await new Promise((resolve, reject) => {
@@ -510,7 +776,6 @@ async function fileToOptimizedDataURL(file) {
     });
     return { _fallbackImage: img, width: img.naturalWidth || img.width, height: img.naturalHeight || img.height };
   });
-
   const drawSource = bitmap.close ? bitmap : bitmap._fallbackImage;
   const w = bitmap.width, h = bitmap.height;
   const canvas = document.createElement('canvas');
@@ -520,7 +785,6 @@ async function fileToOptimizedDataURL(file) {
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(drawSource, 0, 0, w, h);
   if (bitmap.close) { try { bitmap.close(); } catch(_){} }
-
   const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
   let q = IMG_START_QUALITY;
   let blob = await toBlobQ(q);
@@ -548,7 +812,7 @@ async function canvasToTargetJpegNoResize(sourceCanvas, targetBytes) {
   return await blobToDataURL(blob);
 }
 
-/* ===== Elements ===== */
+/* Elements */
 let webcamStream = null;
 const useWebcamBtn = document.getElementById("use_webcam_btn"),
       webcamContainer = document.getElementById("webcam_container"),
@@ -563,11 +827,10 @@ const useWebcamBtn = document.getElementById("use_webcam_btn"),
       photoCheck = document.getElementById("photo_check"),
       uploadLabel = document.getElementById("upload_label");
 
-/* ===== File field suppress/restore helpers (to avoid 413) ===== */
+/* File suppress/restore */
 const originalFileNameAttr = photoFileInput ? (photoFileInput.getAttribute('name') || 'photo') : 'photo';
 function suppressFileField() {
   if (!photoFileInput) return;
-  // strip name and value so the big file isn’t posted
   photoFileInput.value = "";
   photoFileInput.setAttribute('data-suppressed', '1');
   photoFileInput.removeAttribute('name');
@@ -580,7 +843,7 @@ function restoreFileField() {
   }
 }
 
-/* ===== Webcam handling ===== */
+/* Webcam */
 function toggleWebcam(){ (webcamContainer && webcamContainer.classList.contains("hidden")) ? openWebcam() : closeWebcam(); }
 function openWebcam(){
   if (!navigator.mediaDevices || !webcamVideo || !webcamContainer) { showServerToast("Webcam not available.","error"); return; }
@@ -602,7 +865,7 @@ async function capturePhoto(){
   try {
     const dataUrl = await canvasToTargetJpegNoResize(tmp, IMG_TARGET_MAX_BYTES);
     setOptimizedPreview(dataUrl);
-    suppressFileField(); // ensure we only send base64
+    suppressFileField();
   } catch { showServerToast("Failed to process webcam photo.","error"); }
   closeWebcam();
 }
@@ -610,7 +873,7 @@ if (useWebcamBtn) useWebcamBtn.addEventListener("click", toggleWebcam, { passive
 if (captureBtn) captureBtn.addEventListener("click", capturePhoto);
 if (closeWebcamBtn) closeWebcamBtn.addEventListener("click", closeWebcam, { passive:true });
 
-/* ===== Preview & clear ===== */
+/* Preview & clear */
 function setOptimizedPreview(dataUrl){
   if (!dataUrl) return;
   if (photoHiddenInput) photoHiddenInput.value = dataUrl;
@@ -627,29 +890,29 @@ function clearPhoto(){
   if (photoPreviewImg) photoPreviewImg.src = "";
   if (photoHiddenInput) photoHiddenInput.value = "";
   if (photoFileInput) photoFileInput.value = "";
-  restoreFileField(); // allow file upload again
+  restoreFileField();
   photoCheck && photoCheck.classList.add("hidden");
   updatePhotoValidity(); updateRegisterButtonState();
 }
 window.clearPhoto = clearPhoto;
 
-/* ===== File input → compress to base64 & suppress file field ===== */
+/* File input → compress */
 if (photoFileInput) {
   photoFileInput.addEventListener("change", async (e) => {
     const f = e.target.files && e.target.files[0];
     if (!f) { clearPhoto(); return; }
     try {
-      const dataUrl = await fileToOptimizedDataURL(f); // keeps pixels, reduces bytes
+      const dataUrl = await fileToOptimizedDataURL(f);
       setOptimizedPreview(dataUrl);
-      suppressFileField(); // CRITICAL: don’t post the raw file alongside base64
+      suppressFileField();
     } catch (err) {
-      if (String(err && err.message).includes('heic')) return; // already shown toast
+      if (String(err && err.message).includes('heic')) return;
       showServerToast("Could not process the selected image.","error");
     }
   });
 }
 
-/* ===== Validation ===== */
+/* Validation */
 let showErrors = false;
 const fields = [
   { id: "full_name", errorId: "full_name_error", checkId: "full_name_check" },
@@ -690,7 +953,7 @@ fields.forEach(f => {
   setTimeout(()=>validateField(f.id, f.errorId, f.checkId), 40);
 });
 
-/* ===== Registered By sync ===== */
+/* Registered By sync */
 const sameAsGuardianCheckbox = document.getElementById("same_as_guardian"),
       guardianNameInput = document.getElementById("guardian_name"),
       guardianPhoneInput = document.getElementById("phone_number"),
@@ -724,28 +987,51 @@ if (sameAsGuardianCheckbox) sameAsGuardianCheckbox.addEventListener("change", ()
   }
 }, { passive:true });
 
-/* ===== Same-as-guardian tooltip ===== */
-const infoBtnEl = document.getElementById("info-btn"),
-      infoTooltip = document.getElementById("info-tooltip");
-let infoTooltipTimer=null;
-function showInfoTooltip(){ if (!infoTooltip) return; clearTimeout(infoTooltipTimer); infoTooltip.classList.remove("opacity-0","pointer-events-none"); infoTooltip.classList.add("opacity-100","pointer-events-auto"); infoTooltip.style.visibility="visible"; infoTooltipTimer=setTimeout(hideInfoTooltip,4000); }
-function hideInfoTooltip(){ if (!infoTooltip) return; infoTooltip.classList.add("opacity-0","pointer-events-none"); infoTooltip.classList.remove("opacity-100","pointer-events-auto"); infoTooltip.style.visibility="hidden"; clearTimeout(infoTooltipTimer); }
-if (infoBtnEl && infoTooltip){
-  infoTooltip.style.visibility="hidden";
-  infoBtnEl.addEventListener("mouseenter", showInfoTooltip, { passive:true });
-  infoBtnEl.addEventListener("mouseleave", hideInfoTooltip, { passive:true });
-  infoBtnEl.addEventListener("click", (e)=>{ e.stopPropagation(); (infoTooltip.style.visibility==="visible")?hideInfoTooltip():showInfoTooltip(); });
-  document.addEventListener("click", (e)=>{ if (!infoBtnEl.contains(e.target) && infoTooltip.style.visibility==="visible") hideInfoTooltip(); }, { passive:true });
-}
+/* ===== Tooltips: attach floating behavior ===== */
+const tipBindings = [];
+function bindTips() {
+  // Upload info tips
+  tipBindings.push(
+    attachFloatingTooltip(
+      document.getElementById('search_info_btn'),
+      document.getElementById('search_info_tip'),
+      { hover:true, click:true }
+    )
+  );
+  tipBindings.push(
+    attachFloatingTooltip(
+      document.getElementById('search_info_btn_mobile'),
+      document.getElementById('search_info_tip_mobile'),
+      { hover:true, click:true }
+    )
+  );
 
-/* ===== Agreement helpers ===== */
+  // Same-as-guardian tip
+  tipBindings.push(
+    attachFloatingTooltip(
+      document.getElementById('info-btn'),
+      document.getElementById('info-tooltip'),
+      { hover:true, click:true }
+    )
+  );
+
+  // Agreement tip (ensure it opens)
+  tipBindings.push(
+    attachFloatingTooltip(
+      document.getElementById('agreement_info_btn'),
+      document.getElementById('agreement_tooltip'),
+      { hover:true, click:true }
+    )
+  );
+}
+runIdle(bindTips);
+
+/* ===== Agreement warning toast helpers (unchanged) ===== */
 function showAgreementTooltipIfAvailable(){
   const t=document.getElementById("agreement_tooltip"); if (!t) return;
-  t._tipTimer && clearTimeout(t._tipTimer);
-  t.classList.remove("hidden","opacity-0","pointer-events-none");
-  t.classList.add("opacity-100","pointer-events-auto","animate-subtle-bounce");
-  t.style.visibility="visible";
-  t._tipTimer=setTimeout(()=>{ t.classList.add("opacity-0","pointer-events-none"); t.classList.remove("opacity-100","pointer-events-auto","animate-subtle-bounce"); t.style.visibility="hidden"; t._tipTimer=null; }, 3500);
+  // Force it open via click-like reveal
+  t.classList.remove('tooltip-hidden');
+  t.setAttribute('aria-hidden','false');
 }
 function showAgreementWarningToast(timeout=3500){
   const t=document.getElementById("agreement_toast");
@@ -774,17 +1060,13 @@ window.updateRegisterButtonState = updateRegisterButtonState;
 
 function doSubmitWithRecaptcha(){
   if (typeof grecaptcha === "undefined"){ showServerToast("Security check failed. Please try again.","error"); return; }
-
-  // FINAL GUARD: if we have base64, guarantee the file field is not posted
   if (photoHiddenInput && photoHiddenInput.value.trim() !== "") suppressFileField();
-
   registerSpinner && registerSpinner.classList.remove("hidden");
   registerText && (registerText.textContent = "Checking...");
   grecaptcha.ready(function(){
     grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action:'register'}).then(function(token){
       const recaptchaInput = document.getElementById("g-recaptcha-response");
       if (recaptchaInput) recaptchaInput.value = token || "";
-      // Real submit
       const realSubmit = document.createElement('button');
       realSubmit.type = 'submit'; realSubmit.style.display = 'none';
       registerForm.appendChild(realSubmit); realSubmit.click(); realSubmit.remove();
@@ -834,28 +1116,44 @@ if (registerBtn){
 runIdle(updateRegisterButtonState);
 </script>
 
-<!-- ===== CSS ===== -->
+<!-- ================= CSS ================= -->
 <style>
+html, body { overflow-x: hidden; }
+
+/* Reusable tooltip base (theme + hidden state) */
+.tooltip {
+  position: fixed;
+  top: -9999px;
+  left: -9999px;
+  z-index: 9999;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  border-radius: 0.375rem;
+  max-width: min(320px, calc(100vw - 16px));
+  word-wrap: break-word;
+  white-space: normal;
+  pointer-events: auto;
+  transition: opacity 0.18s ease;
+}
+.tooltip.theme-dark {
+  background: #1f2937; /* gray-800 */
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+.tooltip-hidden {
+  opacity: 0;
+  pointer-events: none !important;
+}
+
+/* Animations & misc from earlier */
 @keyframes pageFadeSlide {0%{opacity:0;transform:translateY(14px) scale(0.98);filter:blur(2px);}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}}
 .animate-page-enter{animation:pageFadeSlide .7s cubic-bezier(.22,.61,.36,1) both;}
-
-@keyframes cardRise{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
-.animate-card{animation:cardRise .55s cubic-bezier(.22,.61,.36,1) both;}
-
 @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
 .shimmer{background:linear-gradient(120deg,rgba(255,255,255,0.30) 0%,rgba(255,255,255,0.12) 40%,transparent 100%);animation:shimmer 2.5s infinite linear;}
-
 @keyframes subtle-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
 .animate-subtle-bounce{animation:subtle-bounce 1s infinite ease-in-out;}
-
-/* Upload label shake on error */
-@keyframes shake { 
-  0% { transform: translateX(0);} 
-  25% { transform: translateX(-6px);} 
-  50% { transform: translateX(6px);} 
-  75% { transform: translateX(-6px);} 
-  100% { transform: translateX(0);} 
-}
+@keyframes shake { 0% { transform: translateX(0);} 25% { transform: translateX(-6px);} 50% { transform: translateX(6px);} 75% { transform: translateX(-6px);} 100% { transform: translateX(0);} }
 .shake { animation: shake 0.42s ease; }
 
 .server-toast{position:fixed;right:1rem;bottom:1rem;max-width:min(92vw,420px);padding:0.6rem 0.9rem;border-radius:0.6rem;box-shadow:0 8px 20px rgba(0,0,0,0.35);display:flex;gap:0.75rem;align-items:center;z-index:9999;transform:translateY(12px);opacity:0;transition:all 320ms ease;}
@@ -864,23 +1162,6 @@ runIdle(updateRegisterButtonState);
 .server-toast.success{background:#16a34a;}
 .server-toast.error{background:#dc2626;}
 .server-toast .close-btn{cursor:pointer;background:rgba(255,255,255,0.12);padding:0.2rem 0.45rem;border-radius:6px;color:#fff;font-weight:700;}
-
-@keyframes slideInUp { 0% { opacity: 0; transform: translateY(18px) scale(.994); filter: blur(2px); }
-  60% { opacity: 1; transform: translateY(-6px) scale(1.002); filter: none; }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: none; } }
-@keyframes pulseInOut { 0% { transform: scale(0.985); opacity: 0.88; }
-  50% { transform: scale(1.02);  opacity: 1; }
-  100% { transform: scale(0.985); opacity: 0.88; } }
-.animate-slide-in { animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both; will-change: transform, opacity; }
-.animate-pulse-slow {
-  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both, pulseInOut 2800ms ease-in-out 700ms infinite;
-  transform-origin: center; will-change: transform, opacity; backface-visibility: hidden; -webkit-font-smoothing: antialiased;
-}
-.info-box.animate-slide-in.animate-pulse-slow { opacity: 1 !important; }
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-slide-in, .animate-pulse-slow { animation: none !important; transition: none !important; }
-}
 </style>
 
 <!-- reCAPTCHA loader (kept once) -->

@@ -5,20 +5,59 @@
 {% block content %}
 <div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-12 space-y-10 animate-page-enter mt-24">
 
-  <!-- Heading -->
-  <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center mb-2">
-    Support Our Mission
-  </h2>
+  <!-- Heading Card -->
+  <div class="w-full flex justify-center">
+    <div
+      class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center"
+    >
+      <!-- Decorative dots overlay -->
+      <div class="absolute inset-0 pointer-events-none opacity-[.08]"
+           style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-  <!-- Intro paragraph -->
-  <p class="text-center text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl">
-    Your contribution directly helps us improve 
-    <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
-                 bg-clip-text text-transparent font-semibold animate-gradient">
-      PersonFinder
-    </span> 
-    and supports families searching for their loved ones.
-  </p>
+      <!-- Heading -->
+      <div class="relative z-10 max-w-2xl mx-auto mb-2">
+        <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center mb-3">
+          Support Our Mission
+        </h2>
+
+        <!-- Intro paragraph -->
+        <p class="text-center text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-2xl mx-auto">
+          Your contribution directly helps us improve 
+          <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 
+                       bg-clip-text text-transparent font-semibold animate-gradient">
+            PersonFinder
+          </span> 
+          and supports families searching for their loved ones.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  /* Gradient animation for highlighted text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating card effect */
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-float { animation: none !important; }
+  }
+  </style>
 
   <!-- Divider below heading -->
   <div class="relative w-full flex justify-center my-16 sm:my-20 lg:my-24">
@@ -27,6 +66,8 @@
       Donate
     </span>
   </div>
+
+</div>
 
   <!-- QR + Bank Transfer Section -->
   <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
@@ -78,7 +119,7 @@
     </span>
   </div>
 
-  <!-- Donation Cards Section -->
+  <!-- Donation Cards Section (floating enabled here) -->
   <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
     {% set cards = [
       {"icon": "fas fa-hands-helping", "title": "Every Rupee Counts", "desc": "Your donation, no matter how small, directly supports missing persons searches.", "from": "indigo-500", "via": "purple-500", "to": "pink-500"},
@@ -88,7 +129,7 @@
     ] %}
 
     {% for card in cards %}
-    <div class="group relative overflow-hidden rounded-2xl p-6 sm:p-8 w-full bg-white/10 shadow-lg transition-all duration-500
+    <div class="group relative overflow-hidden rounded-2xl p-6 sm:p-8 w-full bg-white/10 shadow-lg transition-all duration-500 card-float
                 hover:bg-gradient-to-br hover:from-{{ card.from }} hover:via-{{ card.via }} hover:to-{{ card.to }} hover:shadow-2xl">
       <div class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-br from-{{ card.from }} via-{{ card.via }} to-{{ card.to }} opacity-20 donation-glow group-hover:donation-glow-fast"></div>
       <div class="relative z-10 flex flex-col items-center text-center space-y-3">
@@ -178,6 +219,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   .animate-float {
     animation: float 2s ease-in-out infinite;
+  }
+
+  /* Floating animation for donation cards only */
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-float { animation: none !important; }
   }
 </style>
 {% endblock %}

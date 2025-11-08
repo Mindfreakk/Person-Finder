@@ -5,160 +5,215 @@
 {% block content %}
 <div class="flex flex-col items-center w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-page-enter mt-20">
 
-  <!-- Heading -->
-  <header class="mb-6 text-center">
-    <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white">
-      About 
-      <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-        PersonFinder
-      </span>
-    </h1>
-    <p class="mx-auto text-[clamp(0.8rem,2.2vw,1rem)] leading-relaxed max-w-2xl mt-3 sm:mt-4 px-2 text-center">
-      PersonFinder is a platform designed to help 
-      <span class="text-green-400 font-semibold">families and communities</span> 
-      reunite with their lost or elderly loved ones 
-      <span class="text-purple-300 font-semibold">quickly, safely, and efficiently</span>.
-    </p>
+  <!-- Heading Card -->
+  <header class="mb-6 w-full max-w-3xl">
+    <div class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute inset-0 pointer-events-none opacity-[.08]" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
+      <h1 class="relative z-10 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white text-center">
+        About
+        <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span>
+      </h1>
+      <p class="relative z-10 mx-auto text-[clamp(0.8rem,2.2vw,1rem)] leading-relaxed max-w-2xl mt-3 sm:mt-4 px-2 text-center text-blue-100/80">
+        <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> helps
+        <span class="text-blue-300 font-semibold">families and communities</span> reunite with their lost or elderly loved ones
+        <span class="text-blue-200 font-semibold">quickly, safely, and efficiently</span>.
+      </p>
+    </div>
   </header>
 
-  <!-- Divider Between Heading and Accordion -->
-  <div class="relative w-full flex justify-center my-12 sm:my-16">
+  <!-- Divider -->
+  <div class="relative w-full flex justify-center my-6 sm:my-8">
     <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
     <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-      Learn More
+      Learn more
     </span>
   </div>
+</div>
 
-  <!-- Accordion -->
-  <div id="about-accordion" class="space-y-3">
+<!-- Cards -->
+<div id="about-accordion" class="w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-    {% set sections = [
-      {'title': '1. Mission', 'content': '<p>Our mission is to reunite families and loved ones safely and efficiently. PersonFinder is built with empathy and social responsibility at its core, ensuring that every missing person report is handled with care and speed.</p>'},
-      {'title': '2. Features', 'content': '<ul class="list-disc pl-5 space-y-2"><li>User-friendly registration and search for missing persons.</li><li>Advanced matching technology for faster identification.</li><li>Community support with donations and leads.</li><li>Secure data handling and privacy protection.</li></ul>'},
-      {'title': '3. Security & Privacy', 'content': '<p>All personal information, images, and reports are encrypted and stored securely. PersonFinder prioritizes confidentiality while maintaining efficiency in searches.</p>'},
-      {'title': '4. Community Engagement', 'content': '<p>PersonFinder empowers communities to actively participate in locating missing persons. Users can share reports, provide leads, and support ongoing search initiatives.</p>'},
-      {'title': '5. Accessibility & Responsiveness', 'content': '<p>The platform is fully responsive and accessible across devices, whether on desktop or mobile, ensuring ease of use for everyone.</p>'},
-      {'title': '6. Impact', 'content': '<p>PersonFinder is more than an app; it is a lifeline for families in distress. By combining technology with compassion, the platform helps create safer communities and quicker reunions.</p>'}
-    ] %}
+  {% set sections = [
+    {'title': '1. Mission', 'content': '<p>Our mission is to reunite families and loved ones safely and efficiently. <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> is built with empathy and social responsibility at its core, ensuring that every missing person report is handled with care and speed.</p>'},
+    {'title': '2. Features', 'content': '<ul><li>User-friendly registration and search for missing persons.</li><li>Advanced matching technology for faster identification.</li><li>Community support with donations and leads.</li><li>Secure data handling and privacy protection.</li></ul>'},
+    {'title': '3. Security & Privacy', 'content': '<p>All personal information, images, and reports are encrypted and stored securely. <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> prioritizes confidentiality while maintaining efficiency in searches.</p>'},
+    {'title': '4. Community Engagement', 'content': '<p><span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> empowers communities to actively participate in locating missing persons. Users can share reports, provide leads, and support ongoing search initiatives.</p>'},
+    {'title': '5. Accessibility & Responsiveness', 'content': '<p>The platform is fully responsive and accessible across devices, whether on desktop or mobile, ensuring ease of use for everyone.</p>'},
+    {'title': '6. Impact', 'content': '<p><span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> is more than an app; it is a lifeline for families in distress. By combining technology with compassion, the platform helps create safer communities and quicker reunions.</p>'}
+  ] %}
 
-    {% for section in sections %}
-    <article class="accordion-item bg-transparent rounded-lg" id="section-{{ loop.index }}">
-      <header class="w-full">
-        <button
-          type="button"
-          id="accordion-header-{{ loop.index }}"
-          class="accordion-header group flex items-start justify-between w-full px-4 py-3 sm:px-5 sm:py-4 text-left rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-          aria-expanded="false"
-          aria-controls="section-content-{{ loop.index }}">
-          <div class="flex-1 pr-4">
-            <h3 class="text-gray-300 font-semibold text-sm sm:text-base">{{ section.title|safe }}</h3>
-          </div>
-
-          <svg class="accordion-icon w-5 h-5 text-gray-400 transform transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+  {% for section in sections %}
+  <article class="accordion-item subcard card-float rounded-2xl overflow-hidden relative bg-blue-950/40 border border-blue-400/20 backdrop-blur-md">
+    <header class="w-full">
+      <button type="button" class="accordion-header group flex items-center justify-between w-full px-4 py-4 sm:px-5 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400/50">
+        <h3 class="text-blue-100 font-semibold text-sm sm:text-base tracking-[.01em]">{{ section.title|safe }}</h3>
+        <span class="inline-flex items-center justify-center shrink-0 w-8 h-8 rounded-xl bg-blue-900/30 border border-blue-400/20 transition-all duration-300 group-hover:bg-blue-800/40">
+          <svg class="accordion-icon w-5 h-5 text-blue-300 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true" focusable="false">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
           </svg>
-        </button>
-      </header>
-
-      <div id="section-content-{{ loop.index }}" class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300" role="region" aria-labelledby="accordion-header-{{ loop.index }}">
-        <div class="accordion-inner px-4 pb-5 pt-3 sm:px-5 sm:pt-4 text-gray-400 text-xs sm:text-sm leading-relaxed">
-          {{ section.content|safe }}
-        </div>
+        </span>
+      </button>
+    </header>
+    <div class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300">
+      <div class="accordion-inner px-4 sm:px-5 pb-5 pt-0 text-blue-100/90 text-xs sm:text-[0.925rem] leading-relaxed space-y-3 text-justify">
+        {{ section.content|safe }}
       </div>
-    </article>
-    {% endfor %}
-  </div>
+    </div>
+  </article>
+  {% endfor %}
+</div>
 
-  <!-- About App Divider -->
-<div class="relative w-full flex justify-center my-16 sm:my-20">
+<!-- Divider -->
+<div class="relative w-full flex justify-center my-6 sm:my-8">
   <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
   <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
     Did You Know?
   </span>
 </div>
 
-<!-- Info Box -->
-<div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-6 shadow-lg 
-            max-w-2xl mx-auto text-center mt-12 sm:mt-16 lg:mt-20 mb-20 animate-slide-in animate-pulse-slow">
-  <p class="text-xs sm:text-sm leading-relaxed text-gray-200">
-    <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-        PersonFinder
-      </span> was designed with a mission to 
-    <span class="text-blue-300 font-semibold">bring families closer</span>.  
-    Combining <span class="text-purple-300 font-semibold">AI innovation</span> and 
-    <span class="text-green-300 font-semibold">privacy-first design</span>, it delivers a secure, reliable, and human-centered experience.
-  </p>
+<!-- Info Card -->
+<div class="flex justify-center w-full">
+  <div class="card-base card-float bg-blue-950/40 border border-blue-500/30 rounded-2xl p-6 sm:p-7 shadow-xl w-full max-w-3xl text-center mt-2 relative overflow-hidden backdrop-blur-md">
+    <p class="relative z-10 text-xs sm:text-sm leading-relaxed text-blue-100 text-justify">
+      <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">PersonFinder</span> was designed to
+      <span class="text-blue-200 font-semibold">bring families closer</span>. Combining
+      <span class="text-blue-400 font-semibold">AI innovation</span> and a
+      <span class="text-blue-200 font-semibold">privacy-first design</span>, it delivers a secure, reliable, and human-centered experience.
+    </p>
+  </div>
 </div>
 
-<!-- Inline Styles & Script -->
 <style>
-  .accordion-content { transition: max-height 340ms ease; }
-  .accordion-icon.rotate-180 { transform: rotate(180deg); }
-  .accordion-inner { will-change: transform, opacity; }
+/* Blue glass base */
+.card-base, .subcard, .accordion-inner p, .styled-list li {
+  background-image: none !important;
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+.subcard:hover {
+  background-color: rgba(30,58,138,0.5);
+  transform: translateY(-2px);
+}
 
-  @keyframes slide-up { 
-    0% { opacity: 0; transform: translateY(1.5rem); } 
-    100% { opacity: 1; transform: translateY(0); } 
-  }
-  .accordion-item { animation: slide-up 0.5s forwards; }
+/* Ensure SVG icons always visible on mobile */
+.accordion-header .accordion-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  stroke-width: 2.2;
+}
 
-  .accordion-header:hover { background-color: rgba(255,255,255,0.02); }
-  .accordion-header:focus { box-shadow: 0 0 0 4px rgba(124,58,237,0.08); outline: none; border-radius: .5rem; }
+/* Bullet styling for multi-item lists */
+.styled-list { 
+  list-style: disc; 
+  padding-left: 1.25rem; 
+  margin: .5rem 0 0 0;
+}
+.styled-list li + li { margin-top: .25rem; }
 
-  @keyframes pulse-slow {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.95; transform: scale(1.01); }
-  }
-  .animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+/* Gradient animation for PersonFinder text */
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating animation for cards */
+@keyframes floaty {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+.card-float {
+  animation: floaty 6.5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-float { animation: none !important; }
+}
 </style>
 
+<!-- Accordion Script -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
   const headers = Array.from(document.querySelectorAll('.accordion-header'));
   const contents = Array.from(document.querySelectorAll('.accordion-content'));
 
-  contents.forEach(c => { c.style.maxHeight = '0px'; c.classList.remove('open'); });
+  contents.forEach(c => {
+    c.style.maxHeight = '0px';
+    c.classList.remove('open');
+    const ico = c.parentElement.querySelector('.accordion-icon');
+    ico && ico.classList.remove('rotate-180');
+  });
 
-  function closePanel(header, content) {
-    content.style.maxHeight = '0px';
-    content.classList.remove('open');
-    header.setAttribute('aria-expanded', 'false');
-    const ico = header.querySelector('.accordion-icon');
+  function closePanel(headerEl, contentEl) {
+    contentEl.style.maxHeight = '0px';
+    contentEl.classList.remove('open');
+    headerEl.setAttribute('aria-expanded', 'false');
+    const ico = headerEl.querySelector('.accordion-icon');
     if (ico) ico.classList.remove('rotate-180');
   }
 
-  function openPanel(header, content) {
-    const inner = content.querySelector('.accordion-inner') || content;
-    content.style.maxHeight = inner.scrollHeight + 'px';
-    content.classList.add('open');
-    header.setAttribute('aria-expanded', 'true');
-    const ico = header.querySelector('.accordion-icon');
+  function openPanel(headerEl, contentEl) {
+    const inner = contentEl.querySelector('.accordion-inner') || contentEl;
+    inner.querySelectorAll('ul').forEach(ul => {
+      const lis = Array.from(ul.querySelectorAll(':scope > li'));
+      if (lis.length === 1) {
+        const p = document.createElement('p');
+        p.innerHTML = lis[0].innerHTML;
+        ul.replaceWith(p);
+      } else if (lis.length > 1) {
+        ul.classList.add('styled-list');
+      }
+    });
+
+    contentEl.classList.add('open');
+    contentEl.style.maxHeight = inner.scrollHeight + 'px';
+    headerEl.setAttribute('aria-expanded', 'true');
+    const ico = headerEl.querySelector('.accordion-icon');
     if (ico) ico.classList.add('rotate-180');
+
+    const tiles = inner.querySelectorAll('p, ul li');
+    tiles.forEach((tile, i) => {
+      tile.style.opacity = 0;
+      tile.style.transform = 'translateY(6px)';
+      setTimeout(() => {
+        tile.style.transition = 'opacity .26s ease, transform .26s ease';
+        tile.style.opacity = 1;
+        tile.style.transform = 'translateY(0)';
+      }, 30 + i * 35);
+    });
   }
 
-  function closeAll() {
+  function closeAll(exceptContent = null) {
     headers.forEach(h => {
-      const parent = h.closest('.accordion-item');
-      const c = parent.querySelector('.accordion-content');
-      closePanel(h, c);
+      const c = h.closest('.accordion-item').querySelector('.accordion-content');
+      if (c !== exceptContent) closePanel(h, c);
     });
   }
 
   headers.forEach(header => {
     header.addEventListener('click', function () {
-      const parent = header.closest('.accordion-item');
-      const content = parent.querySelector('.accordion-content');
+      const content = header.closest('.accordion-item').querySelector('.accordion-content');
       const isOpen = content.classList.contains('open');
-
       if (isOpen) closePanel(header, content);
-      else { 
-        closeAll(); 
-        openPanel(header, content); 
-        if (window.innerWidth < 640) 
-          setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140); 
+      else {
+        closeAll(content);
+        openPanel(header, content);
+        setTimeout(() => {
+          if (content.classList.contains('open')) {
+            const inner = content.querySelector('.accordion-inner') || content;
+            content.style.maxHeight = inner.scrollHeight + 'px';
+          }
+        }, 180);
+        if (window.innerWidth < 640) {
+          setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+        }
       }
     });
-
     header.addEventListener('keydown', function (ev) {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); header.click(); }
     });
@@ -168,11 +223,9 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      contents.forEach(c => { 
-        if (c.classList.contains('open')) { 
-          const inner = c.querySelector('.accordion-inner') || c; 
-          c.style.maxHeight = inner.scrollHeight + 'px'; 
-        } 
+      document.querySelectorAll('.accordion-content.open').forEach(c => {
+        const inner = c.querySelector('.accordion-inner') || c;
+        c.style.maxHeight = inner.scrollHeight + 'px';
       });
     }, 120);
   });

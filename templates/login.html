@@ -4,23 +4,64 @@
 {% block content %}
 <div class="flex flex-col min-h-screen items-center px-4 sm:px-6 lg:px-8 space-y-12">
 
-  <!-- Heading & Subheading -->
-  <div class="text-center mt-[3cm] sm:mt-[8rem]">
-    <h2 class="text-4xl sm:text-5xl font-extrabold text-white mb-3">Admin Login Portal</h2>
-    <p class="mx-auto text-[clamp(0.9rem,2.8vw,1.15rem)] leading-relaxed max-w-2xl px-2 text-center">
-  <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-    Secure access
-  </span>
-  <span class="bg-gradient-to-r from-green-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-    for
-  </span>
-  <span class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 bg-clip-text text-transparent">
-    administrators only
-  </span>
-</p>
+  <!-- Heading Card -->
+  <div class="w-full flex justify-center mt-[3cm] sm:mt-[8rem]">
+    <div
+      class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center"
+      role="banner" aria-label="Admin Login heading card"
+    >
+      <!-- Decorative dots overlay -->
+      <div class="absolute inset-0 pointer-events-none opacity-[.08]"
+           style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+      <!-- Heading & Subheading -->
+      <div class="relative z-10">
+        <h2 class="text-4xl sm:text-5xl font-extrabold text-white mb-3">
+          Admin Login Portal
+        </h2>
+        <p class="mx-auto text-[clamp(0.9rem,2.8vw,1.15rem)] leading-relaxed max-w-2xl px-2 text-center text-blue-100/90">
+          <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+            Secure access
+          </span>
+          <span class="bg-gradient-to-r from-green-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent animate-gradient">
+            for
+          </span>
+          <span class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-400 bg-clip-text text-transparent animate-gradient">
+            administrators only
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  /* Gradient animation utility */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating card animation */
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @keyframes floaty {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-float { animation: none !important; }
+  }
+  </style>
 
   <!-- Login Card -->
-<!-- Login Card -->
+
 <div class="w-full max-w-md md:max-w-lg bg-white/10 backdrop-blur-md shadow-xl rounded-2xl p-8 border border-gray-700
             transition-transform duration-300 transform hover:scale-105 animate-slideFadeIn mt-[2cm]">
 
