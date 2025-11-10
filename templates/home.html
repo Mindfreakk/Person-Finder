@@ -6,12 +6,13 @@
 <div class="hero-container min-h-[35vh] flex flex-col justify-center items-center text-center px-4 pt-[3cm] lg:pt-[3cm] lg:mt-8">
 
   <!-- Hero Image + Heading + Subheading -->
-  <div class="flex flex-col items-center gap-3 sm:gap-4 mb-6">
-    <div class="flex justify-center opacity-0 animate-slide-up-delay-img">
-      <img src="{{ url_for('static', filename='Images/face_index.png') }}"
-           alt="Face Index"
-           class="hero-img mx-auto h-auto max-h-[100px] sm:max-h-[130px] lg:max-h-[150px]">
-    </div>
+<div class="flex flex-col items-center gap-3 sm:gap-4 mb-6">
+  <div class="flex justify-center opacity-0 animate-slide-up-delay-img">
+    <img src="{{ url_for('static', filename='Images/face_index.png') }}"
+         alt="Face Index"
+         class="hero-img mx-auto h-auto max-h-[80px] sm:max-h-[120px] lg:max-h-[150px]">
+  </div>
+</div>
 
     <!-- Heading -->
 <h1 id="wave-heading"
@@ -96,10 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     <!-- Subheading -->
 <p id="wave-sub" hidden
-   class="mx-auto text-[clamp(0.95rem,2.2vw,1.3rem)] sm:text-[clamp(1rem,2.2vw,1.4rem)]
-          lg:text-[clamp(0.85rem,1.8vw,1.1rem)]
-          text-gray-300 max-w-[85vw]
-          px-2 mt-0.5 leading-snug">
+   class="mx-auto text-center text-[clamp(0.9rem,2.2vw,1.25rem)] sm:text-[clamp(1rem,2.2vw,1.35rem)]
+          lg:text-[clamp(0.9rem,1.8vw,1.1rem)]
+          text-gray-300 max-w-[90vw] sm:max-w-[70ch]
+          px-4 sm:px-2 mt-1 leading-relaxed sm:leading-snug tracking-wide">
   <span class="wave-chunk">AI-powered platform to help</span>
   <span class="wave-chunk">
     <span class="text-green-400">locate missing persons</span>
