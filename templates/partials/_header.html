@@ -36,7 +36,7 @@
         </ul>
       </nav>
 
-      <!-- Desktop CTA (with shimmer on appear) -->
+      <!-- Desktop CTA -->
       <div class="hidden md:flex items-center gap-2">
         <a href="{{ url_for('login') }}" class="pf-btn pf-btn-ghost pf-admin-cta">
           <span>Admin Login</span>
@@ -45,7 +45,7 @@
         </a>
       </div>
 
-      <!-- Mobile “Morph” Hamburger -->
+      <!-- Mobile “Chevron/Arrow” Hamburger -->
       <button id="pf-menu-btn"
               type="button"
               aria-expanded="false"
@@ -55,12 +55,13 @@
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 group"
               aria-label="Open menu">
         <span class="pf-press-ring absolute inset-0 rounded-2xl pointer-events-none"></span>
+        <!-- 3 lines + dot, morphs to chevron/arrow on open -->
         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line class="pf-line pf-line-1" x1="5" y1="7" x2="19" y2="7"/>
-          <line class="pf-line pf-line-2" x1="5" y1="12" x2="19" y2="12"/>
-          <line class="pf-line pf-line-3" x1="5" y1="17" x2="19" y2="17"/>
-          <circle class="pf-dot" cx="12" cy="12" r="1.8" fill="currentColor" opacity="0"/>
+             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line class="pf-line pf-line-1" x1="4.5" y1="7" x2="19.5" y2="7"/>
+          <line class="pf-line pf-line-2" x1="7" y1="12" x2="17" y2="12"/>
+          <line class="pf-line pf-line-3" x1="4.5" y1="17" x2="19.5" y2="17"/>
+          <circle class="pf-dot" cx="12" cy="12" r="1.7" fill="currentColor" opacity="0"/>
         </svg>
       </button>
     </div>
@@ -84,12 +85,12 @@
   <nav class="px-4 py-5" aria-label="Mobile Primary">
     <h2 id="pf-mobile-title" class="sr-only">Main Menu</h2>
     <ul class="flex flex-col gap-2">
-      <li><a href="{{ url_for('home') }}" class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %} pf-card"><span class="pf-type">Home</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('register') }}" class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %} pf-card"><span class="pf-type">Register</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('search') }}" class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %} pf-card"><span class="pf-type">Search</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('donate_page') }}" class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %} pf-card"><span class="pf-type">Donate</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('about') }}" class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %} pf-card"><span class="pf-type">About</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('developers') }}" class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %} pf-card"><span class="pf-type">Developers</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('home') }}" class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %} pf-card"{% if request.endpoint == 'home' %} aria-current="page"{% endif %}><span class="pf-type">Home</span></a></li>
+      <li><a href="{{ url_for('register') }}" class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %} pf-card"{% if request.endpoint == 'register' %} aria-current="page"{% endif %}><span class="pf-type">Register</span></a></li>
+      <li><a href="{{ url_for('search') }}" class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %} pf-card"{% if request.endpoint == 'search' %} aria-current="page"{% endif %}><span class="pf-type">Search</span></a></li>
+      <li><a href="{{ url_for('donate_page') }}" class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %} pf-card"{% if request.endpoint == 'donate_page' %} aria-current="page"{% endif %}><span class="pf-type">Donate</span></a></li>
+      <li><a href="{{ url_for('about') }}" class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %} pf-card"{% if request.endpoint == 'about' %} aria-current="page"{% endif %}><span class="pf-type">About</span></a></li>
+      <li><a href="{{ url_for('developers') }}" class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %} pf-card"{% if request.endpoint == 'developers' %} aria-current="page"{% endif %}><span class="pf-type">Developers</span></a></li>
     </ul>
 
     <div class="mt-4 border-t border-white/25 pt-4">
@@ -99,7 +100,6 @@
                 bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 shadow-sm
                 text-white transition-transform duration-400 ease-out backdrop-blur-[2px]">
         <span class="pf-type">Admin Login</span>
-        <span class="pf-sheen"></span>
       </a>
     </div>
   </nav>
@@ -118,25 +118,34 @@
 }
 .pf-link:hover{color:#fff;transform:translateY(-1px);background:rgba(255,255,255,.08);} 
 
-/* Shimmer effect shared */
-@keyframes pf-sheen-scan{
-  0% { transform: translateX(-130%); }
-  100%{ transform: translateX(130%); }
-}
-.pf-link::after{
-  content:""; position:absolute; inset:0;
+/* ===== Shimmer effect (shared) ===== */
+@keyframes pf-sheen-scan{0%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+
+.pf-link::after,
+.pf-admin-cta::after,
+.pf-mobile-item::after,
+.pf-glass-btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
   background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
   transform: translateX(-130%);
   pointer-events:none;
+  z-index: 0; /* behind content */
 }
+
+/* hover shimmer for desktop links */
 .pf-link:hover::after{ animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1); }
 
-/* Run once on load (JS sets --scan-delay) */
-.pf-link.pf-scan-once::after{
-  animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1) var(--scan-delay,0ms) 1 both;
+/* one-shot shimmer (desktop + mobile) */
+.pf-link.pf-scan-once::after,
+.pf-admin-cta.pf-scan-once::after,
+.pf-mobile-item.pf-scan-once::after,
+.pf-glass-btn.pf-scan-once::after{
+  animation: pf-sheen-scan 1.1s cubic-bezier(.22,1,.36,1) var(--scan-delay,0ms) 1 both;
 }
 
-/* Active link */
+/* Active link (desktop) */
 .pf-link.is-active{color:#fff;background:linear-gradient(to right,rgba(255,255,255,.10),rgba(255,255,255,.04));}
 
 /* Buttons (base) */
@@ -178,17 +187,7 @@
   .pf-admin-prep .pf-admin-cta{ transform: translateX(32px); opacity: 0; } /* hidden */
   .pf-admin-in   .pf-admin-cta{ transform: translateX(0);    opacity: 1; } /* visible */
 
-  /* Use the SAME shimmer mechanic as nav links on the CTA */
-  .pf-admin-cta::after{
-    content:""; position:absolute; inset:0;
-    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%);
-    transform: translateX(-130%); pointer-events:none;
-  }
-  .pf-admin-cta.pf-scan-once::after{
-    animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1) var(--cta-scan-delay,0ms) 1 both;
-  }
-
-  /* CTA hover sheen (kept) */
+  /* Optional hover sheen layer (kept) */
   .pf-admin-cta .pf-cta-sheen{
     position:absolute; inset:0;
     background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%);
@@ -216,26 +215,29 @@
     .pf-admin-cta,
     .pf-admin-prep .pf-admin-cta,
     .pf-admin-in .pf-admin-cta{ transition: none !important; transform: none !important; opacity: 1 !important; }
-    .pf-admin-cta .pf-cta-pulse{ animation: none !important; }
     .pf-admin-cta::after,
     .pf-admin-cta .pf-cta-sheen,
-    .pf-link::after{ animation: none !important; }
+    .pf-link::after,
+    .pf-mobile-item::after,
+    .pf-glass-btn::after{ animation: none !important; }
   }
 }
 
 /* ===== Mobile-only ===== */
 @media (max-width:767.98px){
+  /* Chevron/Arrow morph */
   #pf-menu-btn svg{ transition: transform .3s ease; }
-  #pf-menu-btn .pf-line{ transform-origin: 12px 12px; transition: transform 600ms cubic-bezier(0.16,1,0.3,1), opacity 300ms ease, stroke-dasharray .4s ease, stroke-dashoffset .4s ease; }
-  #pf-menu-btn .pf-line-1{ stroke-dasharray: 14 40; }
-  #pf-menu-btn .pf-line-2{ stroke-dasharray: 14 40; }
-  #pf-menu-btn .pf-line-3{ stroke-dasharray: 14 40; }
+  #pf-menu-btn .pf-line{ transform-origin: 12px 12px; transition: transform 600ms cubic-bezier(0.16,1,0.3,1), opacity 320ms ease, stroke-dasharray .4s ease, stroke-dashoffset .4s ease; }
+  #pf-menu-btn .pf-line-1{ stroke-dasharray: 15 40; }
+  #pf-menu-btn .pf-line-2{ stroke-dasharray: 10 40; }
+  #pf-menu-btn .pf-line-3{ stroke-dasharray: 15 40; }
   #pf-menu-btn .pf-dot{ transition: opacity .35s ease, transform .45s ease; transform-origin: 12px 12px; }
 
-  #pf-menu-btn[aria-expanded="true"] .pf-line-1{ transform: translateY(5px) rotate(45deg); stroke-dasharray: 20 40; }
-  #pf-menu-btn[aria-expanded="true"] .pf-line-2{ opacity:0; }
-  #pf-menu-btn[aria-expanded="true"] .pf-line-3{ transform: translateY(-5px) rotate(-45deg); stroke-dasharray: 20 40; }
-  #pf-menu-btn[aria-expanded="true"] .pf-dot{ opacity:1; transform: scale(1.4); }
+  /* Closed vs Open morph */
+  #pf-menu-btn[aria-expanded="true"] .pf-line-1{ transform: translate(2px,5px) rotate(35deg); stroke-dasharray: 20 40; }
+  #pf-menu-btn[aria-expanded="true"] .pf-line-2{ opacity:0; transform: scaleX(0.5); }
+  #pf-menu-btn[aria-expanded="true"] .pf-line-3{ transform: translate(2px,-5px) rotate(-35deg); stroke-dasharray: 20 40; }
+  #pf-menu-btn[aria-expanded="true"] .pf-dot{ opacity:1; transform: translateX(4px) scale(1.35); }
 
   .pf-press-ring{background:radial-gradient(120px 120px at var(--x,50%) var(--y,50%),rgba(255,255,255,.22),transparent 42%);opacity:0;transition:opacity .35s ease;}
   #pf-menu-btn:active .pf-press-ring{opacity:1;}
@@ -270,13 +272,69 @@
   #pf-mobile-drawer.pf-open{animation:pf-panel-open-slow 900ms cubic-bezier(0.16,1,0.3,1) both;}
   #pf-mobile-drawer.pf-closing{animation:pf-panel-close-slow 700ms cubic-bezier(0.4,0,0.2,1) both;}
 
-  #pf-mobile-drawer .pf-mobile-item{opacity:0;transform:translateY(-12px);transition:transform 520ms cubic-bezier(0.16,1,0.3,1),opacity 520ms cubic-bezier(0.16,1,0.3,1);} 
-  #pf-mobile-drawer .pf-item-show{opacity:1;transform:translateY(0);} 
+  /* MOBILE NAV LINK CELL (no overlap, clipped shimmer) */
+  #pf-mobile-drawer .pf-mobile-item{
+    display:block;
+    width:100%;
+    position:relative;
+    z-index:0;
+    overflow:hidden;              /* clip shimmer film to link */
+    contain:paint;                /* prevent shimmer “leak” */
+    border-radius:14px;
+    padding:.9rem 1rem;
+    background:rgba(255,255,255,.06);
+    opacity:0;
+    transform:translateY(-12px);
+    transition:
+      transform 520ms cubic-bezier(0.16,1,0.3,1),
+      opacity   520ms cubic-bezier(0.16,1,0.3,1);
+    will-change:transform,opacity;
+  }
+  #pf-mobile-drawer .pf-item-show{opacity:1;transform:translateY(0);}
+  #pf-mobile-drawer .pf-mobile-item .pf-type{position:relative;z-index:1;}
 
-  .pf-type{display:inline-block;white-space:nowrap;}
-  .pf-type[data-typing="true"]::after{content:"";display:inline-block;width:1px;height:1.1em;vertical-align:-0.15em;background:currentColor;margin-left:2px;animation:pf-caret 900ms steps(1,end) infinite;}
-  @keyframes pf-caret{50%{opacity:0}}
+  /* ACTIVE (selected) mobile nav: live bar + pulsing dot */
+  #pf-mobile-drawer .pf-mobile-item.is-active{
+    background:rgba(255,255,255,.12);
+  }
+  #pf-mobile-drawer .pf-mobile-item.is-active::before{
+    content:"";
+    position:absolute; left:0; top:8px; bottom:8px; width:4px;
+    border-radius:4px;
+    background: linear-gradient(180deg,#60a5fa,#a78bfa,#f472b6);
+    box-shadow: 0 0 10px rgba(255,255,255,.35);
+    z-index:1;
+  }
+  #pf-mobile-drawer .pf-mobile-item.is-active .pf-type::after{
+    content:"";
+    display:inline-block; width:6px; height:6px; margin-left:8px; border-radius:9999px;
+    background:#fff; opacity:.9;
+    animation: pf-live-pulse 1.8s ease-out infinite;
+    vertical-align:middle;
+  }
+  @keyframes pf-live-pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}
+    70%{box-shadow:0 0 0 10px rgba(255,255,255,0)}
+    100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}
+  }
+
+  /* Mobile Admin CTA: slide + shimmer (same timings as items) */
+  #pf-mobile-drawer .pf-glass-btn{
+    position:relative;
+    overflow:hidden;   /* clip shimmer */
+    contain:paint;
+    opacity:0;
+    transform:translateY(-12px);
+    transition:
+      transform 520ms cubic-bezier(0.16,1,0.3,1),
+      opacity   520ms cubic-bezier(0.16,1,0.3,1);
+    will-change:transform,opacity;
+  }
+  #pf-mobile-drawer .pf-glass-btn.pf-item-show{ opacity:1; transform:translateY(0); }
 }
+
+/* Overlay visible state */
+#pf-overlay.pf-visible{ opacity: 1; pointer-events: auto; backdrop-filter: blur(2px); }
 </style>
 
 <!-- ===== Script ===== -->
@@ -309,6 +367,17 @@ document.addEventListener('DOMContentLoaded',()=>{
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mqDesktop = window.matchMedia('(min-width: 768px)');
 
+  /* ===== Shimmer cleanup helper ===== */
+  function cleanupShimmerOnce(el){
+    if (!el) return;
+    const handler = (e)=>{
+      if (e.animationName !== 'pf-sheen-scan') return;
+      el.classList.remove('pf-scan-once');           // remove so film doesn't freeze
+      el.removeEventListener('animationend', handler);
+    };
+    el.addEventListener('animationend', handler);
+  }
+
   /* ========== DESKTOP: slide-up links + CTA slide-in with 0.5s offset and shimmer ========== */
   function initDesktopNav(){
     if (!mqDesktop.matches) return;
@@ -327,32 +396,29 @@ document.addEventListener('DOMContentLoaded',()=>{
     adminCta.classList.remove('pf-scan-once');
 
     if (prefersReduced){
-      // Respect reduced motion: things just appear
       document.documentElement.classList.remove('pf-nav-prep','pf-admin-prep');
       document.documentElement.classList.add('pf-nav-animate','pf-admin-in');
       setupUnderline(nav, underline, links);
       return;
     }
 
-    // 1) Prepare hidden states: nav links hidden, CTA off-screen (pf-admin-prep stays)
-    // (Boot script already added pf-nav-prep & pf-admin-prep)
-
-    // 2) Staggered slide-up for links + one-shot shimmer on each
-    const baseDelay = 220; // ms between each link
+    // 1) Prepare hidden states + one-shot shimmer per link
+    const baseDelay = 220; // ms between links
     links.forEach((a,i)=>{
       const delay = i * baseDelay;
       a.style.transitionDelay = `${delay}ms`;
-      a.style.setProperty('--scan-delay', `${delay + 200}ms`);
+      a.style.setProperty('--scan-delay', `${delay + 200}ms`); // shimmer AFTER slide
       a.classList.add('pf-scan-once');
+      cleanupShimmerOnce(a);
     });
 
-    // 3) Start entrance next frame
+    // 2) Start entrance next frame
     requestAnimationFrame(()=>{
       document.documentElement.classList.add('pf-nav-animate');
       document.documentElement.classList.remove('pf-nav-prep');
     });
 
-    // 4) Timing math (unchanged appear duration)
+    // 3) Timing math
     const appearDur = 1200;         // link slide-up duration
     const lastDelay = (links.length - 1) * baseDelay;
 
@@ -360,17 +426,17 @@ document.addEventListener('DOMContentLoaded',()=>{
     const adminRevealOffset = 500;  // ms after final link finishes
     const adminRevealAt = lastDelay + appearDur + adminRevealOffset;
 
-    // Reveal CTA exactly at computed time
+    // Reveal CTA and shimmer
     setTimeout(()=>{
       adminRoot.classList.add('pf-admin-in');
       adminRoot.classList.remove('pf-admin-prep');
 
-      // Apply the SAME shimmer pattern as nav links (one-shot)
       adminCta.classList.add('pf-scan-once');
-      adminCta.style.setProperty('--cta-scan-delay', '60ms'); // tiny offset so it feels like a handoff
+      adminCta.style.setProperty('--scan-delay','60ms'); // handoff feel
+      cleanupShimmerOnce(adminCta);
     }, adminRevealAt);
 
-    // 5) Underline glide behavior
+    // 4) Underline glide behavior
     setupUnderline(nav, underline, links);
   }
 
@@ -400,8 +466,127 @@ document.addEventListener('DOMContentLoaded',()=>{
     nav.addEventListener('mouseleave', ()=> active && moveUnderlineTo(active, true));
   }
 
+  /* ========== MOBILE: Hamburger toggle logic + mobile slide→shimmer chain ========== */
+  let lastFocusedEl = null;
+
+  function isOpen(){ return btn?.getAttribute('aria-expanded') === 'true'; }
+
+  function lockScroll(lock){
+    document.documentElement.style.overflow = lock ? 'hidden' : '';
+    document.body.style.overscrollBehavior = lock ? 'contain' : '';
+    document.body.style.touchAction = lock ? 'none' : '';
+  }
+
+  function revealItems(stagger=90){
+    const items = drawer?.querySelectorAll('.pf-mobile-item') || [];
+    const slideDur = 520;  // must match CSS transition duration
+    const shimmerLag = 80; // small lag after slide completes
+
+    // Each item: slide in first, then shimmer
+    items.forEach((el,i)=>{
+      const start = i * stagger;
+
+      // slide+fade in
+      el.classList.remove('pf-item-show');
+      setTimeout(()=> el.classList.add('pf-item-show'), start);
+
+      // one-shot shimmer AFTER the slide is done
+      el.classList.remove('pf-scan-once');
+      el.style.setProperty('--scan-delay', `${start + slideDur + shimmerLag}ms`);
+      el.classList.add('pf-scan-once');
+      cleanupShimmerOnce(el);
+    });
+
+    // Mobile Admin CTA: slide in after the last item starts, then shimmer
+    const mCta = drawer.querySelector('.pf-glass-btn');
+    if (mCta){
+      const startCta = (items.length) ? items.length * stagger : 0; // starts after last item begins
+      setTimeout(()=> mCta.classList.add('pf-item-show'), startCta);
+
+      mCta.classList.remove('pf-scan-once');
+      mCta.style.setProperty('--scan-delay', `${startCta + slideDur + shimmerLag}ms`);
+      mCta.classList.add('pf-scan-once');
+      cleanupShimmerOnce(mCta);
+    }
+  }
+
+  function openMenu(){
+    if (!btn || !drawer || !overlay) return;
+    lastFocusedEl = document.activeElement;
+
+    btn.setAttribute('aria-expanded','true');
+    drawer.classList.remove('pf-closing');
+    drawer.classList.add('pf-open');
+    drawer.style.opacity = '1';
+    drawer.style.pointerEvents = 'auto';
+
+    overlay.classList.add('pf-visible');
+
+    lockScroll(true);
+    revealItems();
+
+    const firstLink = drawer.querySelector('a[aria-current="page"], .pf-mobile-item.is-active') || drawer.querySelector('.pf-mobile-item');
+    (firstLink || drawer.querySelector('a, button, [tabindex]:not([tabindex="-1"])'))?.focus();
+  }
+
+  function closeMenu(){
+    if (!btn || !drawer || !overlay) return;
+
+    btn.setAttribute('aria-expanded','false');
+    drawer.classList.remove('pf-open');
+    drawer.classList.add('pf-closing');
+
+    overlay.classList.remove('pf-visible');
+
+    // reset items for next open
+    drawer.querySelectorAll('.pf-mobile-item').forEach(el=>{
+      el.classList.remove('pf-item-show','pf-scan-once');
+      el.style.removeProperty('--scan-delay');
+    });
+    const mCta = drawer.querySelector('.pf-glass-btn');
+    if (mCta){
+      mCta.classList.remove('pf-item-show','pf-scan-once');
+      mCta.style.removeProperty('--scan-delay');
+    }
+
+    const closeAfter = 700; // matches close animation
+    setTimeout(()=>{
+      drawer.style.opacity = '';
+      drawer.style.pointerEvents = 'none';
+      drawer.classList.remove('pf-closing');
+    }, closeAfter);
+
+    lockScroll(false);
+    lastFocusedEl && lastFocusedEl.focus?.();
+  }
+
+  // Events
+  btn?.addEventListener('click', (e)=>{
+    e.preventDefault();
+    isOpen() ? closeMenu() : openMenu();
+  });
+  overlay?.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && isOpen()) closeMenu(); });
+
+  // focus trap while open
+  document.addEventListener('keydown', (e)=>{
+    if (e.key !== 'Tab' || !isOpen()) return;
+    const focusables = drawer.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last  = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first){ last.focus(); e.preventDefault(); }
+    else if (!e.shiftKey && document.activeElement === last){ first.focus(); e.preventDefault(); }
+  });
+
+  // Close if switching to desktop; re-init desktop effects
+  mqDesktop.addEventListener?.('change', (ev)=>{
+    if (ev.matches && isOpen()) closeMenu();
+    if (ev.matches) initDesktopNav();
+  });
+
+  // Init desktop behavior once
   initDesktopNav();
-  mqDesktop.addEventListener?.('change', initDesktopNav);
 });
 </script>
 <!-- ================= END HEADER ================= -->
