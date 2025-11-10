@@ -13,7 +13,7 @@
            class="hero-img mx-auto h-auto max-h-[100px] sm:max-h-[130px] lg:max-h-[150px]">
     </div>
 
-    <!-- Heading: wave plays once on load, and again each time it scrolls into view -->
+    <!-- Heading -->
 <h1 id="wave-heading"
     class="font-extrabold leading-tight text-white whitespace-nowrap overflow-hidden
            text-[clamp(1.6rem,5vw,2.5rem)] sm:text-[clamp(1.8rem,5vw,3rem)] max-w-[95vw] mt-6 text-center">
@@ -36,8 +36,9 @@
 /* Base: no animation until we "play" it */
 #wave-heading .wave-word {
   display: inline-block;
-  margin: 0 0.3ch;
+  margin: 0 0.1ch; /* tightened from 0.3ch to reduce spacing */
   will-change: transform, opacity;
+  vertical-align: baseline;
 }
 
 /* When container gets .wave-play, run wave once with stagger (Welcome → to → PersonFinder) */
@@ -72,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function playWave() {
     if (prefersReduced) return;
-    // Retrigger the one-shot animation by toggling the class
     heading.classList.remove('wave-play');
     // Force reflow so the browser treats the next add as a fresh animation
     // eslint-disable-next-line no-unused-expressions
@@ -95,15 +95,110 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
     <!-- Subheading -->
-    <p class="mx-auto text-[clamp(0.95rem,2.2vw,1.3rem)] sm:text-[clamp(1rem,2.2vw,1.4rem)]
-       lg:text-[clamp(0.85rem,1.8vw,1.1rem)]
-       text-gray-300 max-w-[85vw]
-       opacity-0 animate-slide-up-delay-1 px-2 mt-0.5 leading-snug">
-      AI-powered platform to help
-      <span class="text-green-400">locate missing persons</span>
-      using <span class="text-pink-400">facial recognition</span>
-      and predictive analytics.
-    </p>
+<p id="wave-sub" hidden
+   class="mx-auto text-[clamp(0.95rem,2.2vw,1.3rem)] sm:text-[clamp(1rem,2.2vw,1.4rem)]
+          lg:text-[clamp(0.85rem,1.8vw,1.1rem)]
+          text-gray-300 max-w-[85vw]
+          px-2 mt-0.5 leading-snug">
+  <span class="wave-chunk">AI-powered platform to help</span>
+  <span class="wave-chunk">
+    <span class="text-green-400">locate missing persons</span>
+  </span>
+  <span class="wave-chunk">&nbsp;using&nbsp;</span>
+  <span class="wave-chunk">
+    <span class="text-pink-400">facial recognition</span>
+  </span>
+  <span class="wave-chunk">&nbsp;and predictive analytics.</span>
+</p>
+
+<!-- Subheading CSS -->
+ <style>
+/* Subheading wave */
+@keyframes waveOnceSub {
+  0%   { opacity: 0; transform: translateY(1em); }
+  45%  { opacity: 1; transform: translateY(-0.15em); }
+  75%  { transform: translateY(0.06em); }
+  100% { transform: translateY(0); }
+}
+#wave-sub .wave-chunk { display: inline-block; will-change: transform, opacity; }
+
+/* When revealed, play staggered chunks */
+#wave-sub.wave-play-sub .wave-chunk { animation: waveOnceSub 0.85s ease-out 1 both; }
+#wave-sub.wave-play-sub .wave-chunk:nth-of-type(1){ animation-delay: 0s; }
+#wave-sub.wave-play-sub .wave-chunk:nth-of-type(2){ animation-delay: .12s; }
+#wave-sub.wave-play-sub .wave-chunk:nth-of-type(3){ animation-delay: .24s; }
+#wave-sub.wave-play-sub .wave-chunk:nth-of-type(4){ animation-delay: .36s; }
+#wave-sub.wave-play-sub .wave-chunk:nth-of-type(5){ animation-delay: .48s; }
+
+@media (prefers-reduced-motion: reduce){
+  #wave-sub[hidden] { display: none !important; }
+  #wave-sub .wave-chunk { animation: none !important; opacity: 1 !important; transform: none !important; }
+}
+</style>
+
+<!-- Subheading JS -->
+ <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const heading = document.getElementById('wave-heading');
+  const sub = document.getElementById('wave-sub');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function playWave() {
+    if (prefersReduced) return;
+    heading.classList.remove('wave-play');
+    // Force reflow
+    // eslint-disable-next-line no-unused-expressions
+    heading.offsetWidth;
+    heading.classList.add('wave-play');
+  }
+
+  // Play heading on load
+  playWave();
+
+  // Trigger sub AFTER heading's last word completes
+  const words = heading.querySelectorAll('.wave-word');
+  const lastWord = words[words.length - 1];
+
+  function revealAndPlaySub(){
+    if (!sub) return;
+    // 1) Unhide (no flicker, no slide-up class)
+    sub.hidden = false;
+    // 2) Next frame: start wave animation on sub chunks
+    requestAnimationFrame(() => {
+      sub.classList.remove('wave-play-sub'); // reset if replaying
+      // Force reflow
+      // eslint-disable-next-line no-unused-expressions
+      sub.offsetWidth;
+      sub.classList.add('wave-play-sub');
+    });
+  }
+
+  if (lastWord && !prefersReduced) {
+    lastWord.addEventListener('animationend', revealAndPlaySub, { once: true });
+  } else {
+    // Fallback timing if structure changes or reduced motion
+    setTimeout(revealAndPlaySub, 900);
+  }
+
+  // Replay when heading re-enters viewport
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        playWave();
+        if (lastWord && !prefersReduced) {
+          // Hide sub again until heading finishes, then replay
+          sub.hidden = true;
+          lastWord.addEventListener('animationend', revealAndPlaySub, { once: true });
+        } else {
+          setTimeout(revealAndPlaySub, 900);
+        }
+      }
+    });
+  }, { threshold: 0.6 });
+
+  io.observe(heading);
+});
+</script>
 
     <!-- Hero Divider -->
     <div class="relative w-full flex justify-center my-6 sm:my-8">

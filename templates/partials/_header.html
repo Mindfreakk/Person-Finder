@@ -1,3 +1,4 @@
+<script>(function(){try{var d=document.documentElement;d.classList.add('pf-nav-prep','pf-admin-prep');}catch(e){}})();</script>
 <!-- ================= HEADER (RESPONSIVE, FIXED) ================= -->
 <header id="pf-header"
         class="fixed top-0 inset-x-0 z-[1300]
@@ -20,26 +21,31 @@
 
       <!-- Desktop Nav -->
       <nav class="hidden md:flex flex-1 justify-center pl-12 lg:pl-20">
-        <ul class="flex items-center gap-2 lg:gap-4 relative translate-x-4">
+        <ul id="pf-desktop-nav" class="flex items-center gap-2 lg:gap-4 relative translate-x-4">
+          <!-- Animated underline -->
           <span id="pf-active-underline"
-                class="absolute -bottom-2 h-0.5 bg-white/70 rounded-full transition-all duration-300"
+                class="absolute -bottom-2 h-[2px] rounded-full"
                 style="left:0;width:0;"></span>
 
-          <li><a href="{{ url_for('home') }}" class="pf-link {% if request.endpoint == 'home' %}is-active{% endif %}">Home</a></li>
-          <li><a href="{{ url_for('register') }}" class="pf-link {% if request.endpoint == 'register' %}is-active{% endif %}">Register</a></li>
-          <li><a href="{{ url_for('search') }}" class="pf-link {% if request.endpoint == 'search' %}is-active{% endif %}">Search</a></li>
-          <li><a href="{{ url_for('donate_page') }}" class="pf-link {% if request.endpoint == 'donate_page' %}is-active{% endif %}">Donate</a></li>
-          <li><a href="{{ url_for('about') }}" class="pf-link {% if request.endpoint == 'about' %}is-active{% endif %}">About</a></li>
-          <li><a href="{{ url_for('developers') }}" class="pf-link {% if request.endpoint == 'developers' %}is-active{% endif %}">Developers</a></li>
+          <li><a href="{{ url_for('home') }}" class="pf-link {% if request.endpoint == 'home' %}is-active{% endif %}"><span class="pf-link-label">Home</span></a></li>
+          <li><a href="{{ url_for('register') }}" class="pf-link {% if request.endpoint == 'register' %}is-active{% endif %}"><span class="pf-link-label">Register</span></a></li>
+          <li><a href="{{ url_for('search') }}" class="pf-link {% if request.endpoint == 'search' %}is-active{% endif %}"><span class="pf-link-label">Search</span></a></li>
+          <li><a href="{{ url_for('donate_page') }}" class="pf-link {% if request.endpoint == 'donate_page' %}is-active{% endif %}"><span class="pf-link-label">Donate</span></a></li>
+          <li><a href="{{ url_for('about') }}" class="pf-link {% if request.endpoint == 'about' %}is-active{% endif %}"><span class="pf-link-label">About</span></a></li>
+          <li><a href="{{ url_for('developers') }}" class="pf-link {% if request.endpoint == 'developers' %}is-active{% endif %}"><span class="pf-link-label">Developers</span></a></li>
         </ul>
       </nav>
 
-      <!-- Desktop CTA -->
+      <!-- Desktop CTA (with shimmer on appear) -->
       <div class="hidden md:flex items-center gap-2">
-        <a href="{{ url_for('login') }}" class="pf-btn pf-btn-ghost">Admin Login</a>
+        <a href="{{ url_for('login') }}" class="pf-btn pf-btn-ghost pf-admin-cta">
+          <span>Admin Login</span>
+          <span class="pf-cta-sheen" aria-hidden="true"></span>
+          <span class="pf-cta-pulse" aria-hidden="true"></span>
+        </a>
       </div>
 
-      <!-- Mobile “Morph” Hamburger (SVG, modern) -->
+      <!-- Mobile “Morph” Hamburger -->
       <button id="pf-menu-btn"
               type="button"
               aria-expanded="false"
@@ -48,18 +54,12 @@
                      bg-white/10 border border-white/10 backdrop-blur shadow-lg overflow-hidden
                      focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 group"
               aria-label="Open menu">
-        <!-- soft ripple origin -->
         <span class="pf-press-ring absolute inset-0 rounded-2xl pointer-events-none"></span>
-        <!-- SVG icon that morphs to X -->
         <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <!-- top -->
           <line class="pf-line pf-line-1" x1="5" y1="7" x2="19" y2="7"/>
-          <!-- middle becomes a dot pulse -->
           <line class="pf-line pf-line-2" x1="5" y1="12" x2="19" y2="12"/>
-          <!-- bottom -->
           <line class="pf-line pf-line-3" x1="5" y1="17" x2="19" y2="17"/>
-          <!-- center dot (hidden at rest) -->
           <circle class="pf-dot" cx="12" cy="12" r="1.8" fill="currentColor" opacity="0"/>
         </svg>
       </button>
@@ -67,32 +67,29 @@
   </div>
 </header>
 
-<!-- Overlay (MOBILE-ONLY) — starts BELOW header so it never covers it -->
+<!-- Overlay (MOBILE-ONLY) -->
 <div id="pf-overlay"
      class="fixed left-0 right-0 bottom-0 top-[var(--pf-header-h,0px)]
             bg-black/70 opacity-0 pointer-events-none transition-[opacity,backdrop-filter] duration-700 ease-out
             z-[1150] md:hidden"
      aria-hidden="true"></div>
 
-<!-- Mobile Drawer (anchored BELOW header) -->
+<!-- Mobile Drawer -->
 <aside id="pf-mobile-drawer"
        role="dialog" aria-modal="true" aria-labelledby="pf-mobile-title" tabindex="-1"
        class="fixed left-0 right-0 top-[var(--pf-header-h,0px)] opacity-0 pointer-events-none -translate-y-6
-              z-[1190]  /* < header (1300), > overlay (1150) */
-              text-white border-b border-blue-400 shadow-2xl rounded-b-2xl overflow-hidden
+              z-[1190] text-white border-b border-blue-400 shadow-2xl rounded-b-2xl overflow-hidden
               transition-[transform,opacity] duration-700 ease-out will-change-transform md:hidden">
-  <!-- Animated gradient background -->
   <div class="pf-gradient absolute inset-0 -z-10" aria-hidden="true"></div>
-
   <nav class="px-4 py-5" aria-label="Mobile Primary">
     <h2 id="pf-mobile-title" class="sr-only">Main Menu</h2>
     <ul class="flex flex-col gap-2">
-      <li><a href="{{ url_for('home') }}" class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %} pf-card"> <span class="pf-type">Home</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('register') }}" class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %} pf-card"> <span class="pf-type">Register</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('search') }}" class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %} pf-card"> <span class="pf-type">Search</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('donate_page') }}" class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %} pf-card"> <span class="pf-type">Donate</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('about') }}" class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %} pf-card"> <span class="pf-type">About</span><span class="pf-sheen"></span></a></li>
-      <li><a href="{{ url_for('developers') }}" class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %} pf-card"> <span class="pf-type">Developers</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('home') }}" class="pf-mobile-item {% if request.endpoint == 'home' %}is-active{% endif %} pf-card"><span class="pf-type">Home</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('register') }}" class="pf-mobile-item {% if request.endpoint == 'register' %}is-active{% endif %} pf-card"><span class="pf-type">Register</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('search') }}" class="pf-mobile-item {% if request.endpoint == 'search' %}is-active{% endif %} pf-card"><span class="pf-type">Search</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('donate_page') }}" class="pf-mobile-item {% if request.endpoint == 'donate_page' %}is-active{% endif %} pf-card"><span class="pf-type">Donate</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('about') }}" class="pf-mobile-item {% if request.endpoint == 'about' %}is-active{% endif %} pf-card"><span class="pf-type">About</span><span class="pf-sheen"></span></a></li>
+      <li><a href="{{ url_for('developers') }}" class="pf-mobile-item {% if request.endpoint == 'developers' %}is-active{% endif %} pf-card"><span class="pf-type">Developers</span><span class="pf-sheen"></span></a></li>
     </ul>
 
     <div class="mt-4 border-t border-white/25 pt-4">
@@ -110,37 +107,124 @@
 
 <!-- ===== Styles ===== -->
 <style>
-/* Desktop links */
-.pf-link{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .8rem;border-radius:.65rem;color:rgba(255,255,255,.9);font-weight:600;transition:color .2s ease,transform .2s ease,background .2s ease;}
-.pf-link:hover{color:#fff;transform:translateY(-1px);background:rgba(255,255,255,.08);}
+/* Desktop links (base) */
+.pf-link{
+  position: relative;
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.45rem .9rem;border-radius:.65rem;
+  color:rgba(255,255,255,.9);font-weight:600;
+  transition:color .35s ease,transform .35s ease,background .35s ease, box-shadow .35s ease, opacity .9s, transform .9s;
+  overflow: hidden;
+}
+.pf-link:hover{color:#fff;transform:translateY(-1px);background:rgba(255,255,255,.08);} 
+
+/* Shimmer effect shared */
+@keyframes pf-sheen-scan{
+  0% { transform: translateX(-130%); }
+  100%{ transform: translateX(130%); }
+}
+.pf-link::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%);
+  transform: translateX(-130%);
+  pointer-events:none;
+}
+.pf-link:hover::after{ animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1); }
+
+/* Run once on load (JS sets --scan-delay) */
+.pf-link.pf-scan-once::after{
+  animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1) var(--scan-delay,0ms) 1 both;
+}
+
+/* Active link */
 .pf-link.is-active{color:#fff;background:linear-gradient(to right,rgba(255,255,255,.10),rgba(255,255,255,.04));}
 
-/* Buttons */
-.pf-btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:.75rem;padding:.55rem .95rem;font-weight:600;transition:transform .15s ease,background .2s ease,border-color .2s ease,color .2s ease;}
-.pf-btn:active{transform:translateY(1px);}
+/* Buttons (base) */
+.pf-btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:.75rem;padding:.55rem .95rem;font-weight:600;transition:transform .2s ease,background .25s ease,border-color .25s ease,color .25s ease;}
+.pf-btn:active{transform:translateY(1px);} 
 .pf-btn-ghost{background:transparent;border:1px solid rgba(255,255,255,.25);color:#fff;}
-.pf-btn-ghost:hover{background:rgba(255,255,255,.08);}
+.pf-btn-ghost:hover{background:rgba(255,255,255,.08);} 
 
 /* Title gradient animation */
 @keyframes gradient-move{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 .animate-gradient{background-size:200% 200%;animation:gradient-move 6s ease infinite}
 
-/* Mobile cards + sheen */
-.pf-card{
-  position: relative; display:block; width:100%;
-  border-radius: .9rem; padding:.8rem .9rem; font-weight:600;
-  border:1px solid rgba(255,255,255,.22);
-  background: rgba(255,255,255,.08);
-  color:#fff; overflow:hidden;
-  transition: transform .25s ease, background .25s ease, border-color .25s ease;
-}
-.pf-card:hover{ transform: translateY(-1px); background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.32); }
-.pf-card .pf-sheen{ position:absolute; inset:0; background:linear-gradient(120deg,transparent,rgba(255,255,255,0.75) 45%,transparent 60%); transform:translateX(-120%); transition:transform 1.1s cubic-bezier(0.22,1,0.36,1); }
-.pf-card:hover .pf-sheen{ transform:translateX(120%); }
+/* ===== DESKTOP-ONLY ENHANCEMENTS ===== */
+@media (min-width: 768px){
+  /* Hidden state for nav links (slide up) */
+  html.pf-nav-prep #pf-desktop-nav .pf-link { opacity: 0; transform: translateY(22px); }
+  /* Visible state (smooth slide-up) */
+  html.pf-nav-animate #pf-desktop-nav .pf-link {
+    opacity: 1; transform: translateY(0);
+    transition:
+      opacity 1.2s cubic-bezier(.22,1,.36,1),
+      transform 1.2s cubic-bezier(.22,1,.36,1),
+      color .35s ease, box-shadow .35s ease, background .35s ease;
+  }
 
-/* ===== Mobile only ===== */
+  /* Underline: smooth & glowy */
+  #pf-active-underline{
+    background: linear-gradient(90deg, rgba(255,255,255,.95), rgba(255,255,255,.55));
+    box-shadow: 0 0 18px rgba(255,255,255,.4);
+    transition: left .8s cubic-bezier(.22,1,.36,1), width .8s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* Admin CTA: slide in from right + shimmer on appear */
+  .pf-admin-cta{
+    position: relative; overflow: hidden;
+    transform: translateX(0); opacity: 1;
+    transition: transform .8s cubic-bezier(.22,1,.36,1), opacity .8s cubic-bezier(.22,1,.36,1);
+  }
+  .pf-admin-prep .pf-admin-cta{ transform: translateX(32px); opacity: 0; } /* hidden */
+  .pf-admin-in   .pf-admin-cta{ transform: translateX(0);    opacity: 1; } /* visible */
+
+  /* Use the SAME shimmer mechanic as nav links on the CTA */
+  .pf-admin-cta::after{
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%);
+    transform: translateX(-130%); pointer-events:none;
+  }
+  .pf-admin-cta.pf-scan-once::after{
+    animation: pf-sheen-scan 1.4s cubic-bezier(.22,1,.36,1) var(--cta-scan-delay,0ms) 1 both;
+  }
+
+  /* CTA hover sheen (kept) */
+  .pf-admin-cta .pf-cta-sheen{
+    position:absolute; inset:0;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.5) 50%, transparent 65%);
+    transform: translateX(-130%); pointer-events:none;
+    transition: transform 1.4s cubic-bezier(.22,1,.36,1);
+  }
+  .pf-admin-cta:hover .pf-cta-sheen{ transform: translateX(130%); }
+
+  .pf-admin-cta .pf-cta-pulse{
+    position:absolute; inset:-2px; border-radius: inherit; pointer-events:none;
+    box-shadow: 0 0 0 0 rgba(255,255,255,.18);
+    animation: pf-cta-pulse 3s ease-out infinite;
+  }
+  @keyframes pf-cta-pulse{
+    0%   { box-shadow: 0 0 0 0 rgba(255,255,255,.18); }
+    70%  { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    #pf-desktop-nav.pf-prep .pf-link,
+    #pf-desktop-nav.pf-animate-in .pf-link { transition: none !important; opacity: 1 !important; transform: none !important; }
+    #pf-active-underline{ transition: none !important; }
+    .pf-admin-cta,
+    .pf-admin-prep .pf-admin-cta,
+    .pf-admin-in .pf-admin-cta{ transition: none !important; transform: none !important; opacity: 1 !important; }
+    .pf-admin-cta .pf-cta-pulse{ animation: none !important; }
+    .pf-admin-cta::after,
+    .pf-admin-cta .pf-cta-sheen,
+    .pf-link::after{ animation: none !important; }
+  }
+}
+
+/* ===== Mobile-only ===== */
 @media (max-width:767.98px){
-  /* Modern SVG hamburger */
   #pf-menu-btn svg{ transition: transform .3s ease; }
   #pf-menu-btn .pf-line{ transform-origin: 12px 12px; transition: transform 600ms cubic-bezier(0.16,1,0.3,1), opacity 300ms ease, stroke-dasharray .4s ease, stroke-dashoffset .4s ease; }
   #pf-menu-btn .pf-line-1{ stroke-dasharray: 14 40; }
@@ -148,17 +232,14 @@
   #pf-menu-btn .pf-line-3{ stroke-dasharray: 14 40; }
   #pf-menu-btn .pf-dot{ transition: opacity .35s ease, transform .45s ease; transform-origin: 12px 12px; }
 
-  /* opened -> X, middle dot pulse */
   #pf-menu-btn[aria-expanded="true"] .pf-line-1{ transform: translateY(5px) rotate(45deg); stroke-dasharray: 20 40; }
   #pf-menu-btn[aria-expanded="true"] .pf-line-2{ opacity:0; }
   #pf-menu-btn[aria-expanded="true"] .pf-line-3{ transform: translateY(-5px) rotate(-45deg); stroke-dasharray: 20 40; }
   #pf-menu-btn[aria-expanded="true"] .pf-dot{ opacity:1; transform: scale(1.4); }
 
-  /* ripple */
   .pf-press-ring{background:radial-gradient(120px 120px at var(--x,50%) var(--y,50%),rgba(255,255,255,.22),transparent 42%);opacity:0;transition:opacity .35s ease;}
   #pf-menu-btn:active .pf-press-ring{opacity:1;}
 
-  /* Drawer gradient */
   .pf-gradient{
     background-image:
       radial-gradient(1200px 600px at 0% -20%, rgba(59,130,246,0.55), transparent 60%),
@@ -175,7 +256,6 @@
     100% {background-position: 0% 50%, 100% 50%,   0% 50%;}
   }
 
-  /* Open/close animation */
   @keyframes pf-panel-open-slow{
     0%{opacity:0;transform:translateY(-24px) scaleY(.98);clip-path:inset(0 0 100% 0 round 0 0 16px 16px);}
     60%{opacity:1;transform:translateY(4px) scaleY(1.01);clip-path:inset(0 0 0 0 round 0 0 16px 16px);}
@@ -189,13 +269,10 @@
   }
   #pf-mobile-drawer.pf-open{animation:pf-panel-open-slow 900ms cubic-bezier(0.16,1,0.3,1) both;}
   #pf-mobile-drawer.pf-closing{animation:pf-panel-close-slow 700ms cubic-bezier(0.4,0,0.2,1) both;}
-  .pf-overlay-open{backdrop-filter: blur(4px);}
 
-  /* Staggered items */
-  #pf-mobile-drawer .pf-mobile-item{opacity:0;transform:translateY(-12px);transition:transform 520ms cubic-bezier(0.16,1,0.3,1),opacity 520ms cubic-bezier(0.16,1,0.3,1);}
-  #pf-mobile-drawer .pf-item-show{opacity:1;transform:translateY(0);}
+  #pf-mobile-drawer .pf-mobile-item{opacity:0;transform:translateY(-12px);transition:transform 520ms cubic-bezier(0.16,1,0.3,1),opacity 520ms cubic-bezier(0.16,1,0.3,1);} 
+  #pf-mobile-drawer .pf-item-show{opacity:1;transform:translateY(0);} 
 
-  /* Type-in text */
   .pf-type{display:inline-block;white-space:nowrap;}
   .pf-type[data-typing="true"]::after{content:"";display:inline-block;width:1px;height:1.1em;vertical-align:-0.15em;background:currentColor;margin-left:2px;animation:pf-caret 900ms steps(1,end) infinite;}
   @keyframes pf-caret{50%{opacity:0}}
@@ -210,105 +287,121 @@ document.addEventListener('DOMContentLoaded',()=>{
   const drawer  = document.getElementById('pf-mobile-drawer');
   const overlay = document.getElementById('pf-overlay');
 
-  /* 1) Set CSS var for header height (so overlay & drawer start BELOW header) */
+  /* Header height var for overlay/drawer */
   function setHeaderHeightVar(){
     const h = header ? Math.round(header.getBoundingClientRect().height) : 0;
     document.documentElement.style.setProperty('--pf-header-h', h + 'px');
-    // Max height for drawer body
-    drawer.style.maxHeight = `calc(100vh - ${h}px - env(safe-area-inset-bottom,0px))`;
+    if (drawer) drawer.style.maxHeight = `calc(100vh - ${h}px - env(safe-area-inset-bottom,0px))`;
   }
   setHeaderHeightVar();
   window.addEventListener('resize', setHeaderHeightVar);
 
-  /* 2) Prevent any external spacer from pushing content by ensuring first block isn't offset by drawer */
-  function firstContentEl(){
-    const kids = Array.from(document.body.children)
-      .filter(el => !['SCRIPT','STYLE','LINK'].includes(el.tagName)
-                 && el !== header && el !== overlay && el !== drawer);
-    return kids[0] || null;
-  }
-  function neutralizeGap(){
-    const first = firstContentEl();
-    if (!first) return;
-    // Ensure no margin-top equal to drawer height is added elsewhere
-    first.style.marginTop = '0';
-  }
-  neutralizeGap();
-  window.addEventListener('resize', neutralizeGap);
-
-  /* Typewriter */
-  const typeSpans = () => Array.from(drawer.querySelectorAll('.pf-type'));
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function captureOriginalText(){ typeSpans().forEach(s=>{ if(!s.dataset.text) s.dataset.text = s.textContent.trim(); }); }
-  function typeText(span,text,charDelay,startDelay=0){
-    if (prefersReduced || !text){ span.textContent = text || ''; span.dataset.typing="false"; return; }
-    span.textContent=''; span.dataset.typing="true";
-    let i=0; const tick=()=>{ if(i<text.length){ span.textContent+=text.charAt(i++); setTimeout(tick,charDelay); } else { span.dataset.typing="false"; } };
-    setTimeout(tick,startDelay);
-  }
-  function typeAllLabels(){ typeSpans().forEach((s,i)=>typeText(s,s.dataset.text||s.textContent.trim(),22,i*140)); }
-  function restoreLabels(){ typeSpans().forEach(s=>{ s.textContent=s.dataset.text||s.textContent.trim(); s.dataset.typing="false"; }); }
-  captureOriginalText();
-
-  /* Stagger */
-  function animateItemsIn(){
-    [...drawer.querySelectorAll('.pf-mobile-item')].forEach((el,i)=>{
-      el.style.transitionDelay=(i*120)+'ms';
-      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('pf-item-show')));
-    });
-  }
-  function animateItemsOut(){
-    [...drawer.querySelectorAll('.pf-mobile-item')].reverse().forEach((el,i)=>{
-      el.style.transitionDelay=(i*90)+'ms';
-      el.classList.remove('pf-item-show');
-    });
-  }
-
-  /* Open/Close */
-  function openDrawer(){
-    drawer.classList.remove('pf-closing'); void drawer.offsetWidth;
-    drawer.classList.add('pf-open');
-    drawer.classList.remove('pointer-events-none','opacity-0','-translate-y-6');
-    drawer.classList.add('opacity-100','translate-y-0');
-
-    overlay.classList.remove('pointer-events-none');
-    overlay.classList.add('opacity-100','pf-overlay-open');
-
-    animateItemsIn();
-    typeAllLabels();
-
-    btn.setAttribute('aria-expanded','true');
-    document.body.style.overflow='hidden';
-  }
-  function closeDrawer(){
-    animateItemsOut();
-    drawer.classList.remove('pf-open'); void drawer.offsetWidth;
-    drawer.classList.add('pf-closing');
-    drawer.classList.remove('opacity-100','translate-y-0');
-    drawer.classList.add('opacity-0','-translate-y-6');
-    setTimeout(()=>drawer.classList.add('pointer-events-none'),750);
-
-    overlay.classList.remove('opacity-100','pf-overlay-open');
-    overlay.classList.add('pointer-events-none');
-
-    restoreLabels();
-
-    btn.setAttribute('aria-expanded','false');
-    document.body.style.overflow='';
-  }
-
-  btn.addEventListener('click',()=> (btn.getAttribute('aria-expanded')==='true') ? closeDrawer() : openDrawer());
-  overlay.addEventListener('click',closeDrawer);
-  drawer.addEventListener('click',e=>{ if(e.target.closest('a')) closeDrawer(); });
-
-  /* Ripple origin for hamburger */
+  /* Mobile ripple origin for hamburger */
   function setRing(e){
+    if(!btn) return;
     const rect = btn.getBoundingClientRect();
     const x = (e.touches? e.touches[0].clientX : e.clientX) - rect.left;
     const y = (e.touches? e.touches[0].clientY : e.clientY) - rect.top;
     btn.style.setProperty('--x', x+'px'); btn.style.setProperty('--y', y+'px');
   }
-  ['pointerdown','touchstart','mousemove'].forEach(ev=>btn.addEventListener(ev,setRing,{passive:true}));
+  ['pointerdown','touchstart','mousemove'].forEach(ev=>btn?.addEventListener(ev,setRing,{passive:true}));
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mqDesktop = window.matchMedia('(min-width: 768px)');
+
+  /* ========== DESKTOP: slide-up links + CTA slide-in with 0.5s offset and shimmer ========== */
+  function initDesktopNav(){
+    if (!mqDesktop.matches) return;
+
+    const nav = document.getElementById('pf-desktop-nav');
+    const underline = document.getElementById('pf-active-underline');
+    const adminRoot = document.documentElement; // toggles pf-admin-* classes
+    const adminCta  = document.querySelector('.pf-admin-cta');
+    if (!nav || !underline || !adminCta) return;
+
+    const links = Array.from(nav.querySelectorAll('.pf-link'));
+
+    // Reset states (idempotent)
+    document.documentElement.classList.remove('pf-nav-animate');
+    adminRoot.classList.remove('pf-admin-in');
+    adminCta.classList.remove('pf-scan-once');
+
+    if (prefersReduced){
+      // Respect reduced motion: things just appear
+      document.documentElement.classList.remove('pf-nav-prep','pf-admin-prep');
+      document.documentElement.classList.add('pf-nav-animate','pf-admin-in');
+      setupUnderline(nav, underline, links);
+      return;
+    }
+
+    // 1) Prepare hidden states: nav links hidden, CTA off-screen (pf-admin-prep stays)
+    // (Boot script already added pf-nav-prep & pf-admin-prep)
+
+    // 2) Staggered slide-up for links + one-shot shimmer on each
+    const baseDelay = 220; // ms between each link
+    links.forEach((a,i)=>{
+      const delay = i * baseDelay;
+      a.style.transitionDelay = `${delay}ms`;
+      a.style.setProperty('--scan-delay', `${delay + 200}ms`);
+      a.classList.add('pf-scan-once');
+    });
+
+    // 3) Start entrance next frame
+    requestAnimationFrame(()=>{
+      document.documentElement.classList.add('pf-nav-animate');
+      document.documentElement.classList.remove('pf-nav-prep');
+    });
+
+    // 4) Timing math (unchanged appear duration)
+    const appearDur = 1200;         // link slide-up duration
+    const lastDelay = (links.length - 1) * baseDelay;
+
+    // === Reveal CTA 0.5s after final link settles ===
+    const adminRevealOffset = 500;  // ms after final link finishes
+    const adminRevealAt = lastDelay + appearDur + adminRevealOffset;
+
+    // Reveal CTA exactly at computed time
+    setTimeout(()=>{
+      adminRoot.classList.add('pf-admin-in');
+      adminRoot.classList.remove('pf-admin-prep');
+
+      // Apply the SAME shimmer pattern as nav links (one-shot)
+      adminCta.classList.add('pf-scan-once');
+      adminCta.style.setProperty('--cta-scan-delay', '60ms'); // tiny offset so it feels like a handoff
+    }, adminRevealAt);
+
+    // 5) Underline glide behavior
+    setupUnderline(nav, underline, links);
+  }
+
+  function setupUnderline(nav, underline, links){
+    function moveUnderlineTo(a, animate=true){
+      const rect = a.getBoundingClientRect();
+      const parentRect = nav.getBoundingClientRect();
+      const left = rect.left - parentRect.left;
+      if (!animate){
+        const prev = underline.style.transition;
+        underline.style.transition = 'none';
+        underline.style.left = left + 'px';
+        underline.style.width = rect.width + 'px';
+        underline.offsetHeight; // reflow
+        underline.style.transition = prev || '';
+        return;
+      }
+      underline.style.left = left + 'px';
+      underline.style.width = rect.width + 'px';
+    }
+    const active = links.find(a => a.classList.contains('is-active')) || links[0];
+    if (active) moveUnderlineTo(active, false);
+    links.forEach(a=>{
+      a.addEventListener('mouseenter', ()=> moveUnderlineTo(a, true));
+      a.addEventListener('focus', ()=> moveUnderlineTo(a, true));
+    });
+    nav.addEventListener('mouseleave', ()=> active && moveUnderlineTo(active, true));
+  }
+
+  initDesktopNav();
+  mqDesktop.addEventListener?.('change', initDesktopNav);
 });
 </script>
 <!-- ================= END HEADER ================= -->

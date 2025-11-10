@@ -56,10 +56,12 @@
 
   {% include 'partials/_header.html' %}
 
-  <!-- Flash Messages -->
+  <!-- Flash Messages (positioned below fixed header) -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div id="flash-container" class="fixed top-4 right-4 space-y-3 z-[1201] w-[90%] max-w-sm">
+      <div id="flash-container"
+           class="fixed right-4 space-y-3 z-[1400] w-[90%] max-w-sm"
+           style="top: calc(var(--pf-header-h, 0px) + 12px);">
         {% for category, message in messages %}
           {% set color = 
             'bg-green-500 text-white' if category=='success' else
@@ -125,6 +127,19 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      /* --- Ensure header height CSS var exists so toasts sit below header --- */
+      (function ensureHeaderHeightVar(){
+        var header = document.getElementById('pf-header');
+        function setVar(){
+          if (!header) return;
+          var h = Math.round(header.getBoundingClientRect().height) || 0;
+          document.documentElement.style.setProperty('--pf-header-h', h + 'px');
+        }
+        setVar();
+        window.addEventListener('resize', setVar);
+      })();
+      /* --------------------------------------------------------------------- */
+
       // Initialize AOS after DOM is ready
       if (window.AOS && typeof AOS.init === 'function') {
         AOS.init();
