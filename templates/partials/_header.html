@@ -37,15 +37,15 @@
       </nav>
 
       <!-- Desktop CTA -->
-<div class="hidden md:flex items-center gap-2">
-  <a href="{{ url_for('login') }}"
-     class="pf-btn pf-btn-ghost pf-admin-cta{% if request.endpoint == 'login' %} is-active{% endif %}"
-     {% if request.endpoint == 'login' %} aria-current="page"{% endif %}>
-    <span class="pf-type">Admin Login</span>
-    <span class="pf-cta-sheen" aria-hidden="true"></span>
-    <span class="pf-cta-pulse" aria-hidden="true"></span>
-  </a>
-</div>
+      <div class="hidden md:flex items-center gap-2">
+        <a href="{{ url_for('login') }}"
+           class="pf-btn pf-btn-ghost pf-admin-cta{% if request.endpoint in ('login','admin_dashboard') %} is-active{% endif %}"
+           {% if request.endpoint in ('login','admin_dashboard') %} aria-current="page"{% endif %}>
+          <span class="pf-type">Admin Login</span>
+          <span class="pf-cta-sheen" aria-hidden="true"></span>
+          <span class="pf-cta-pulse" aria-hidden="true"></span>
+        </a>
+      </div>
 
       <!-- Mobile “Chevron/Arrow” Hamburger -->
       <button id="pf-menu-btn"
@@ -98,14 +98,14 @@
     <div class="mt-4 border-t border-white/25 pt-4">
       <!-- Admin button -->
       <a id="pf-admin-mobile"
-   href="{{ url_for('login') }}"
-   class="pf-glass-btn{% if request.endpoint == 'login' %} is-active{% endif %} relative inline-flex w-full items-center justify-center gap-2 overflow-hidden
-          rounded-2xl px-5 py-3 text-center font-semibold tracking-wide
-          bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 shadow-sm
-          text-white transition-transform duration-400 ease-out backdrop-blur-[2px]"
-   {% if request.endpoint == 'login' %} aria-current="page"{% endif %}>
-  <span class="pf-type">Admin Login</span>
-</a>
+         href="{{ url_for('login') }}"
+         class="pf-glass-btn{% if request.endpoint in ('login','admin_dashboard') %} is-active{% endif %} relative inline-flex w-full items-center justify-center gap-2 overflow-hidden
+                rounded-2xl px-5 py-3 text-center font-semibold tracking-wide
+                bg-white/10 hover:bg-white/15 active:bg-white/20 border border-white/20 shadow-sm
+                text-white transition-transform duration-400 ease-out backdrop-blur-[2px]"
+         {% if request.endpoint in ('login','admin_dashboard') %} aria-current="page"{% endif %}>
+        <span class="pf-type">Admin Login</span>
+      </a>
     </div>
   </nav>
 </aside>
@@ -220,71 +220,71 @@
   }
 
   /* ===== Desktop Nav Links — active/live gradient bar + dot ===== */
-#pf-desktop-nav .pf-link.is-active,
-#pf-desktop-nav .pf-link[aria-current="page"] {
-  background: rgba(255,255,255,0.08);
-  box-shadow: 0 0 10px rgba(255,255,255,0.15);
-  position: relative;
-  overflow: hidden;
-}
+  #pf-desktop-nav .pf-link.is-active,
+  #pf-desktop-nav .pf-link[aria-current="page"] {
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 0 10px rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+  }
 
-/* Left gradient bar */
-#pf-desktop-nav .pf-link.is-active::before,
-#pf-desktop-nav .pf-link[aria-current="page"]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 6px;
-  bottom: 6px;
-  width: 4px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #60a5fa, #a78bfa, #f472b6);
-  box-shadow: 0 0 10px rgba(255,255,255,0.35);
-  z-index: 1;
-}
+  /* Left gradient bar */
+  #pf-desktop-nav .pf-link.is-active::before,
+  #pf-desktop-nav .pf-link[aria-current="page"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #60a5fa, #a78bfa, #f472b6);
+    box-shadow: 0 0 10px rgba(255,255,255,0.35);
+    z-index: 1;
+  }
 
-/* Pulsing dot after label */
-#pf-desktop-nav .pf-link.is-active .pf-link-label::after,
-#pf-desktop-nav .pf-link[aria-current="page"] .pf-link-label::after {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 8px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
-  opacity: 0.95;
-  vertical-align: middle;
-  animation: pf-live-pulse 1.8s ease-out infinite;
-  box-shadow: 0 0 8px rgba(255,255,255,0.4);
-  position: relative;
-  z-index: 2;
-}
+  /* Pulsing dot after label */
+  #pf-desktop-nav .pf-link.is-active .pf-link-label::after,
+  #pf-desktop-nav .pf-link[aria-current="page"] .pf-link-label::after {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 8px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
+    opacity: 0.95;
+    vertical-align: middle;
+    animation: pf-live-pulse 1.8s ease-out infinite;
+    box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    position: relative;
+    z-index: 2;
+  }
 
-/* Hover refinement */
-#pf-desktop-nav .pf-link.is-active:hover,
-#pf-desktop-nav .pf-link[aria-current="page"]:hover {
-  background: rgba(255,255,255,0.12);
-  transform: translateY(-1px);
-}
+  /* Hover refinement */
+  #pf-desktop-nav .pf-link.is-active:hover,
+  #pf-desktop-nav .pf-link[aria-current="page"]:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-1px);
+  }
 
-/* ===== Desktop Nav Links — active/live dot only (legacy fallback) ===== */
-#pf-desktop-nav .pf-link.is-active .pf-link-label::after,
-#pf-desktop-nav .pf-link[aria-current="page"] .pf-link-label::after {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin-left: 8px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
-  opacity: 0.95;
-  vertical-align: middle;
-  animation: pf-live-pulse 1.8s ease-out infinite;
-  box-shadow: 0 0 8px rgba(255,255,255,0.4);
-  position: relative;
-  z-index: 2; /* keep above shimmer film */
-}
+  /* ===== Desktop Nav Links — active/live dot only (legacy fallback) ===== */
+  #pf-desktop-nav .pf-link.is-active .pf-link-label::after,
+  #pf-desktop-nav .pf-link[aria-current="page"] .pf-link-label::after {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-left: 8px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
+    opacity: 0.95;
+    vertical-align: middle;
+    animation: pf-live-pulse 1.8s ease-out infinite;
+    box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    position: relative;
+    z-index: 2; /* keep above shimmer film */
+  }
 
   /* Ensure CTA text stays above decorations */
   .pf-admin-cta > span:first-child,
@@ -455,40 +455,40 @@
   #pf-mobile-drawer .pf-glass-btn.pf-item-show{ opacity:1; transform:translateY(0); }
 
   /* --- Admin Login LIVE state — pressed OR active route --- */
-/* Left gradient bar (like active nav links) */
-#pf-mobile-drawer .pf-glass-btn:active::before,
-#pf-mobile-drawer .pf-glass-btn.is-pressed::before,
-#pf-mobile-drawer .pf-glass-btn.is-active::before{
-  content:"";
-  position:absolute; left:0; top:8px; bottom:8px; width:4px;
-  border-radius:4px;
-  background: linear-gradient(180deg,#60a5fa,#a78bfa,#f472b6);
-  box-shadow: 0 0 10px rgba(255,255,255,.35);
-  z-index:1;
-}
+  /* Left gradient bar (like active nav links) */
+  #pf-mobile-drawer .pf-glass-btn:active::before,
+  #pf-mobile-drawer .pf-glass-btn.is-pressed::before,
+  #pf-mobile-drawer .pf-glass-btn.is-active::before{
+    content:"";
+    position:absolute; left:0; top:8px; bottom:8px; width:4px;
+    border-radius:4px;
+    background: linear-gradient(180deg,#60a5fa,#a78bfa,#f472b6);
+    box-shadow: 0 0 10px rgba(255,255,255,.35);
+    z-index:1;
+  }
 
-/* Dot AFTER the text label */
-#pf-mobile-drawer .pf-glass-btn:active .pf-type::after,
-#pf-mobile-drawer .pf-glass-btn.is-pressed .pf-type::after,
-#pf-mobile-drawer .pf-glass-btn.is-active .pf-type::after{
-  content:"";
-  display:inline-block; width:7px; height:7px; margin-left:8px; border-radius:9999px;
-  background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
-  opacity:.95; vertical-align:middle;
-  animation: pf-live-pulse 1.8s ease-out infinite;
-  box-shadow:0 0 8px rgba(255,255,255,0.4);
-}
+  /* Dot AFTER the text label */
+  #pf-mobile-drawer .pf-glass-btn:active .pf-type::after,
+  #pf-mobile-drawer .pf-glass-btn.is-pressed .pf-type::after,
+  #pf-mobile-drawer .pf-glass-btn.is-active .pf-type::after{
+    content:"";
+    display:inline-block; width:7px; height:7px; margin-left:8px; border-radius:9999px;
+    background: radial-gradient(circle, #ffffff 45%, rgba(255,255,255,0.25) 85%);
+    opacity:.95; vertical-align:middle;
+    animation: pf-live-pulse 1.8s ease-out infinite;
+    box-shadow:0 0 8px rgba(255,255,255,0.4);
+  }
 
-/* Slight background lift */
-#pf-mobile-drawer .pf-glass-btn:active,
-#pf-mobile-drawer .pf-glass-btn.is-pressed,
-#pf-mobile-drawer .pf-glass-btn.is-active{
-  background: rgba(255,255,255,0.15);
-  box-shadow: 0 0 12px rgba(255,255,255,0.2);
-}
+  /* Slight background lift */
+  #pf-mobile-drawer .pf-glass-btn:active,
+  #pf-mobile-drawer .pf-glass-btn.is-pressed,
+  #pf-mobile-drawer .pf-glass-btn.is-active{
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 0 12px rgba(255,255,255,0.2);
+  }
 
-/* Overlay visible state */
-#pf-overlay.pf-visible{ opacity: 1; pointer-events: auto; backdrop-filter: blur(2px); }
+  /* Overlay visible state */
+  #pf-overlay.pf-visible{ opacity: 1; pointer-events: auto; backdrop-filter: blur(2px); }
 }
 </style>
 
@@ -628,6 +628,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   function revealItems(stagger=90){
     const items = drawer?.querySelectorAll('.pf-mobile-item') || [];
+    theSlideDur = 520;
     const slideDur = 520;
     const shimmerLag = 80;
 
@@ -761,6 +762,18 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Init desktop behavior once
   initDesktopNav();
+
+  // --- Fallback: mark Admin CTA as active on admin-like URLs (keeps live state on dashboard) ---
+  (function ensureAdminLive(){
+    const adminLikely = /\/admin(?:[_-]dashboard)?|\/dashboard(?:\/admin)?/i.test(location.pathname);
+    if (!adminLikely) return;
+    const desktopAdmin = document.querySelector('.pf-admin-cta');
+    const mobileAdmin  = document.getElementById('pf-admin-mobile');
+    desktopAdmin?.classList.add('is-active');
+    desktopAdmin?.setAttribute('aria-current','page');
+    mobileAdmin?.classList.add('is-active');
+    mobileAdmin?.setAttribute('aria-current','page');
+  })();
 });
 </script>
 <!-- ================= END HEADER ================= -->
