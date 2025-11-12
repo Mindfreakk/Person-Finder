@@ -56,7 +56,7 @@
 
   {% include 'partials/_header.html' %}
 
-  <!-- Flash Messages (positioned below fixed header) -->
+  <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div id="flash-container"
@@ -108,26 +108,8 @@
     </div>
   </div>
 
-  <!-- reCAPTCHA v3 -->
-  {% if RECAPTCHA_SITE_KEY|default('') %}
-  <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      if (window.grecaptcha && typeof grecaptcha.ready === 'function') {
-        grecaptcha.ready(function() {
-          grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action: 'submit'}).then(function(token) {
-            var recaptchaInput = document.getElementById('recaptcha_token');
-            if (recaptchaInput) { recaptchaInput.value = token; }
-          });
-        });
-      }
-    });
-  </script>
-  {% endif %}
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      /* --- Ensure header height CSS var exists so toasts sit below header --- */
       (function ensureHeaderHeightVar(){
         var header = document.getElementById('pf-header');
         function setVar(){
@@ -138,9 +120,7 @@
         setVar();
         window.addEventListener('resize', setVar);
       })();
-      /* --------------------------------------------------------------------- */
 
-      // Initialize AOS after DOM is ready
       if (window.AOS && typeof AOS.init === 'function') {
         AOS.init();
       }
@@ -154,7 +134,7 @@
         });
       }, 4000);
 
-      // Privacy & Terms popup logic
+      // Privacy popup
       var popup = document.getElementById("policy-popup");
       var acceptBtn = document.getElementById("accept-policy");
       var rejectBtn = document.getElementById("reject-policy");
@@ -183,20 +163,20 @@
       var menuLinks = document.querySelectorAll('.menu-link');
 
       function closeMenu(){
-        if(!mobileMenuContainer) { return; }
+        if(!mobileMenuContainer) return;
         mobileMenuContainer.classList.remove('open','pointer-events-auto');
         mobileMenuContainer.classList.add('pointer-events-none');
-        if (openIcon) { openIcon.classList.remove('hidden'); }
-        if (closeIcon) { closeIcon.classList.add('hidden'); }
+        if (openIcon) openIcon.classList.remove('hidden');
+        if (closeIcon) closeIcon.classList.add('hidden');
         menuLinks.forEach(function(l){ l.classList.remove('show'); });
-        if (menuBtn) { menuBtn.setAttribute('aria-expanded','false'); }
+        if (menuBtn) menuBtn.setAttribute('aria-expanded','false');
       }
 
       if (menuBtn && mobileMenuContainer) {
         menuBtn.addEventListener('click', function (){
           var isOpen = mobileMenuContainer.classList.toggle('open');
-          if (openIcon) { openIcon.classList.toggle('hidden'); }
-          if (closeIcon) { closeIcon.classList.toggle('hidden'); }
+          if (openIcon) openIcon.classList.toggle('hidden');
+          if (closeIcon) closeIcon.classList.toggle('hidden');
 
           if(isOpen){
             mobileMenuContainer.classList.remove('pointer-events-none');
@@ -226,7 +206,7 @@
       var currentPath = window.location.pathname.replace(/\/$/,'');
       document.querySelectorAll('nav a').forEach(function (link){
         var href = link.getAttribute('href');
-        if (!href) { return; }
+        if (!href) return;
         var linkPath = href.replace(/\/$/,'');
         if (linkPath && currentPath.endsWith(linkPath)) {
           link.classList.add('active-link');
@@ -249,7 +229,7 @@
           });
         }).then(function (resp){ return resp.json(); })
           .then(function (data){
-            if (data && data.success) { console.log("Subscription saved!"); }
+            if (data && data.success) console.log("Subscription saved!");
           }).catch(function (err){
             console.error("Push subscription failed or save error:", err);
           });
@@ -260,13 +240,10 @@
         var base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
         var rawData = atob(base64);
         var outputArray = new Uint8Array(rawData.length);
-        for (var i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
-        }
+        for (var i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
         return outputArray;
       }
-    }); // end DOMContentLoaded listener
+    });
   </script>
-
 </body>
 </html>
