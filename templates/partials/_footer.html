@@ -1,4 +1,389 @@
-<!-- ================= FOOTER (MODERN, PREMIUM WATER RIPPLE + LIVE GRADIENT) ================= -->
+<!-- ================= CLEAN PROFESSIONAL FOOTER WITH FEEDBACK + ROLES MODAL ================= -->
+<footer class="relative mt-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white/90 shadow-inner">
+  <div class="pointer-events-none absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 lg:py-10 space-y-6">
+
+    <!-- Top layout: Feedback + Admin -->
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-stretch">
+
+      <!-- Feedback Card -->
+      <aside class="w-full">
+        <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/80 p-4 sm:p-5 shadow-lg shadow-black/30 relative overflow-hidden">
+
+          <!-- Subtle glow -->
+          <div class="pointer-events-none absolute -inset-0.5 rounded-3xl opacity-40"
+               style="background: radial-gradient(circle at top left, rgba(56,189,248,0.35), transparent 60%); mix-blend-mode: screen;"></div>
+
+          <div class="relative space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="footer-heading mb-1.5 text-[1.1rem] font-bold flex items-center gap-2">
+  <i data-lucide="message-circle-heart" class="w-5 h-5 text-pink-300"></i>
+  We value your feedback
+</h3>
+                <p class="text-xs sm:text-sm text-white/75">
+                  Share your experience with PersonFinder to help us improve usability, performance, and support.
+                </p>
+              </div>
+              <div class="hidden sm:flex items-center justify-center w-9 h-9 rounded-full bg-cyan-400/10 border border-cyan-300/40">
+                <i data-lucide="message-circle" class="w-4 h-4 text-cyan-200"></i>
+              </div>
+            </div>
+
+            <!-- Feedback Form -->
+            <form id="feedbackForm" class="relative mt-2 space-y-3">
+              <div class="grid gap-3 sm:grid-cols-2">
+                <!-- Name (optional) -->
+                <div class="space-y-1.5">
+                  <label for="feedbackName" class="block text-[0.72rem] font-medium text-slate-200/95 tracking-wide">
+                    Your Name <span class="opacity-60">(optional)</span>
+                  </label>
+                  <input
+                    id="feedbackName"
+                    name="name"
+                    type="text"
+                    class="w-full rounded-xl border border-slate-600/70 bg-slate-950/60 px-3 py-2 text-xs sm:text-sm
+                           text-slate-50 placeholder-slate-400/80 focus:outline-none focus:ring-[1.5px]
+                           focus:ring-cyan-400 focus:border-cyan-400 transition"
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <!-- Email (required) -->
+                <div class="space-y-1.5">
+                  <label for="feedbackEmail" class="block text-[0.72rem] font-medium text-slate-200/95 tracking-wide">
+                    Email <span class="text-rose-300">*</span>
+                  </label>
+                  <input
+                    id="feedbackEmail"
+                    name="email"
+                    type="email"
+                    required
+                    class="w-full rounded-xl border border-slate-600/70 bg-slate-950/60 px-3 py-2 text-xs sm:text-sm
+                           text-slate-50 placeholder-slate-400/80 focus:outline-none focus:ring-[1.5px]
+                           focus:ring-cyan-400 focus:border-cyan-400 transition"
+                    placeholder="you@example.com"
+                  />
+                  <p id="feedbackEmailError" class="mt-1 text-[0.7rem] text-rose-300 hidden">
+                    Please enter a valid email address.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Rating -->
+              <div class="space-y-1.5">
+                <label for="feedbackRating" class="block text-[0.72rem] font-medium text-slate-200/95 tracking-wide">
+                  How was your experience? <span class="text-rose-300">*</span>
+                </label>
+                <div class="grid gap-2 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                  <div>
+                    <select
+                      id="feedbackRating"
+                      name="rating"
+                      required
+                      class="w-full rounded-xl border border-slate-600/70 bg-slate-950/60 px-3 py-2 text-xs sm:text-sm
+                             text-slate-50 focus:outline-none focus:ring-[1.5px] focus:ring-cyan-400
+                             focus:border-cyan-400 transition"
+                    >
+                      <option value="">Select a rating</option>
+                      <option value="1">⭐ – Very Poor</option>
+                      <option value="2">⭐⭐ – Poor</option>
+                      <option value="3">⭐⭐⭐ – Average</option>
+                      <option value="4">⭐⭐⭐⭐ – Good</option>
+                      <option value="5">⭐⭐⭐⭐⭐ – Excellent</option>
+                    </select>
+                    <p id="feedbackRatingError" class="mt-1 text-[0.7rem] text-rose-300 hidden">
+                      Please select a rating.
+                    </p>
+                  </div>
+
+                  <p class="text-[0.7rem] text-slate-300/80 flex items-center gap-1.5">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300/90"></i>
+                    Honest feedback helps us prioritize fixes and new features.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Message (required) -->
+              <div class="space-y-1.5">
+                <label for="feedbackMessage" class="block text-[0.72rem] font-medium text-slate-200/95 tracking-wide">
+                  Feedback details <span class="text-rose-300">*</span>
+                </label>
+                <textarea
+                  id="feedbackMessage"
+                  name="message"
+                  rows="3"
+                  required
+                  class="w-full rounded-xl border border-slate-600/70 bg-slate-950/60 px-3 py-2 text-xs sm:text-sm
+                         text-slate-50 placeholder-slate-400/80 focus:outline-none focus:ring-[1.5px]
+                         focus:ring-cyan-400 focus:border-cyan-400 transition resize-y"
+                  placeholder="Tell us what worked well, and what could be improved…"
+                ></textarea>
+                <p id="feedbackMessageError" class="mt-1 text-[0.7rem] text-rose-300 hidden">
+                  Please describe your experience.
+                </p>
+              </div>
+
+              <!-- Submit + status -->
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 mt-1">
+                <button
+                  type="submit"
+                  class="inline-flex items-center justify-center px-4 py-2.5 rounded-full text-xs sm:text-sm font-semibold
+                         bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-md shadow-cyan-900/50
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-950 focus:ring-cyan-400
+                         active:scale-[0.97] transition gap-1.5"
+                >
+                  Submit Feedback
+                  <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                </button>
+
+                <div class="flex-1 min-h-[1.5rem] text-[0.7rem] space-y-1">
+                  <p id="feedbackSuccess" class="text-emerald-300 hidden">
+                    ✅ Thank you! Your feedback has been submitted.
+                  </p>
+                  <p id="feedbackError" class="text-rose-300 hidden">
+                    ❌ Something went wrong. Please try again.
+                  </p>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Admin Card -->
+      <aside class="w-full">
+        <div class="admin-card rounded-2xl border border-white/10 bg-gradient-to-br 
+                    from-slate-900/80 via-slate-900/60 to-slate-800/80 
+                    p-4 sm:p-5 shadow-lg shadow-black/30 h-full flex flex-col">
+
+          <!-- Header -->
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h3 class="footer-heading mb-1.5 text-[1.1rem] font-bold flex items-center gap-2">
+  <i data-lucide="shield-check" class="w-5 h-5 text-emerald-300"></i>
+  Admin
+</h3>
+              <p class="text-xs sm:text-sm text-white/75">
+                Log in to access administrative tools, user management, and system settings.
+              </p>
+            </div>
+
+            <div class="hidden sm:flex items-center justify-center w-9 h-9 rounded-full 
+                        bg-white/10 border border-white/15">
+              <i data-lucide="shield" class="w-4 h-4 text-white/85"></i>
+            </div>
+          </div>
+
+          <!-- Security Icons Row (centered & shimmering) -->
+          <div class="mt-4 mb-4 flex justify-center pf-admin-icon-section">
+            <div class="pf-admin-icon-row">
+              <div class="pf-admin-icon shimmer-random">
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-300"></i>
+              </div>
+              <div class="pf-admin-icon shimmer-random">
+                <i data-lucide="fingerprint" class="w-5 h-5 text-cyan-300"></i>
+              </div>
+              <div class="pf-admin-icon shimmer-random">
+                <i data-lucide="key-round" class="w-5 h-5 text-blue-300"></i>
+              </div>
+              <div class="pf-admin-icon shimmer-random">
+                <i data-lucide="lock" class="w-5 h-5 text-indigo-300"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="mt-auto flex flex-wrap gap-2">
+            <a href="{{ url_for('login') }}"
+               class="inline-flex items-center justify-center px-3.5 py-2 rounded-full text-xs font-medium 
+                      bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-900/50 transition">
+              Admin Login
+              <i data-lucide="log-in" class="w-3.5 h-3.5 ml-1"></i>
+            </a>
+
+            <!-- note: using id + data attribute, either is fine -->
+            <button id="pf-role-open"
+                    type="button"
+                    data-pf-role-open
+                    class="inline-flex items-center justify-center px-3 py-2 rounded-full text-xs font-medium 
+                           bg-white/5 hover:bg-white/10 border border-white/15 text-white/85 transition">
+              Learn about roles
+              <i data-lucide="info" class="w-3.5 h-3.5 ml-1"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+<!-- ================= ROLES MODAL (SUPER ADMIN / ADMIN / USER) ================= -->
+<div id="pf-role-modal"
+     class="fixed inset-0 z-[80] hidden opacity-0 pointer-events-none items-center justify-center">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-pf-role-backdrop data-pf-role-close></div>
+
+  <!-- Modal Content -->
+  <div class="relative w-full max-w-md mx-4 bg-slate-900/95 border border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50 overflow-hidden">
+    <div class="absolute -inset-1 opacity-40 blur-2xl bg-gradient-to-tr from-blue-500/15 via-purple-500/15 to-pink-500/15 pointer-events-none"></div>
+
+    <div class="relative">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+          <i data-lucide="badge-check" class="w-5 h-5 text-blue-300"></i>
+          User Roles
+        </h3>
+        <button type="button"
+                data-pf-role-close
+                class="text-white/70 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="space-y-3 text-sm leading-relaxed text-white/80">
+        <p>
+          <span class="font-semibold text-emerald-200">Super Admin:</span>
+          Full system-wide control, including critical configuration, role assignment, and security policies.
+        </p>
+        <p>
+          <span class="font-semibold text-blue-200">Admin:</span>
+          Manages cases, reviews and approves reports, handles user accounts, and oversees day-to-day operations.
+        </p>
+        <p>
+          <span class="font-semibold text-purple-200">User:</span>
+          Can register missing persons, submit updates, and search the PersonFinder database.
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-5 flex justify-end">
+        <button type="button"
+                data-pf-role-close
+                class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs border border-white/15">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ================= END ROLES MODAL ================= -->
+
+<script>
+  // Simple, robust wiring for the Roles modal (no DOMContentLoaded issues)
+  (function () {
+    const openBtn = document.getElementById('pf-role-open');
+    const modal = document.getElementById('pf-role-modal');
+    if (!openBtn || !modal) return;
+
+    const closeEls = modal.querySelectorAll('[data-pf-role-close]');
+    const backdrop = modal.querySelector('[data-pf-role-backdrop]') || modal;
+
+    function hydrateIcons() {
+      if (window.pfRefreshIcons) {
+        window.pfRefreshIcons();
+      } else if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    function openModal() {
+      modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+      modal.classList.add('flex');              // center on mobile & desktop
+      modal.setAttribute('aria-hidden', 'false');
+      hydrateIcons();
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+      modal.classList.remove('flex');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    openBtn.addEventListener('click', openModal);
+    closeEls.forEach(el => el.addEventListener('click', closeModal));
+
+    if (backdrop) {
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeModal();
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  })();
+</script>
+
+
+<!-- ================= DESKTOP WATER WAVE DIVIDER (ABOVE FOOTER) ================= -->
+<div class="footer-wave-divider">
+  <svg
+    class="w-full h-full"
+    viewBox="0 0 1440 320"
+    preserveAspectRatio="none"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <defs>
+      <!-- Gradient for subtle depth -->
+      <linearGradient id="footerDividerGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+        <stop offset="100%" stop-color="#f0f0f0" stop-opacity="0.1" />
+      </linearGradient>
+
+      <!-- Soft drop shadow -->
+      <filter id="footerDividerShadow" x="-50%" y="-50%" width="200%" height="200%">
+        <feDropShadow
+          dx="0"
+          dy="4"
+          stdDeviation="6"
+          flood-color="#000"
+          flood-opacity="0.12"
+        />
+      </filter>
+    </defs>
+
+    <!-- Primary strong wave -->
+    <path
+      fill="url(#footerDividerGradient)"
+      filter="url(#footerDividerShadow)"
+      d="M0,120 L60,160 C120,200 240,280 360,260 C480,240 600,160 720,140 C840,120 960,200 1080,220 C1200,240 1320,200 1380,180 L1440,160 L1440,320 L0,320 Z"
+    >
+      <animate
+        attributeName="d"
+        dur="8s"
+        repeatCount="indefinite"
+        values="
+          M0,120 L60,160 C120,200 240,280 360,260 C480,240 600,160 720,140 C840,120 960,200 1080,220 C1200,240 1320,200 1380,180 L1440,160 L1440,320 L0,320 Z;
+          M0,100 L60,140 C120,180 240,260 360,240 C480,220 600,140 720,120 C840,100 960,180 1080,200 C1200,220 1320,180 1380,160 L1440,140 L1440,320 L0,320 Z;
+          M0,120 L60,160 C120,200 240,280 360,260 C480,240 600,160 720,140 C840,120 960,200 1080,220 C1200,240 1320,200 1380,180 L1440,160 L1440,320 L0,320 Z
+        "
+      />
+    </path>
+
+    <!-- Secondary soft wave -->
+    <path
+      fill="url(#footerDividerGradient)"
+      opacity="0.5"
+      d="M0,130 L60,170 C120,210 240,290 360,270 C480,250 600,170 720,150 C840,130 960,210 1080,230 C1200,250 1320,210 1380,190 L1440,170 L1440,320 L0,320 Z"
+    >
+      <animate
+        attributeName="d"
+        dur="12s"
+        repeatCount="indefinite"
+        values="
+          M0,130 L60,170 C120,210 240,290 360,270 C480,250 600,170 720,150 C840,130 960,210 1080,230 C1200,250 1320,210 1380,190 L1440,170 L1440,320 L0,320 Z;
+          M0,110 L60,150 C120,190 240,270 360,250 C480,230 600,150 720,130 C840,110 960,190 1080,210 C1200,230 1320,190 1380,170 L1440,150 L1440,320 L0,320 Z;
+          M0,130 L60,170 C120,210 240,290 360,270 C480,250 600,170 720,150 C840,130 960,210 1080,230 C1200,250 1320,210 1380,190 L1440,170 L1440,320 L0,320 Z
+        "
+      />
+    </path>
+  </svg>
+</div>
+
+<!-- ================= FOOTER (UNCHANGED MAIN BACKGROUND) ================= -->
 <footer class="relative mt-auto bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 text-white/90 shadow-inner">
   <div class="pointer-events-none absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
@@ -22,9 +407,9 @@
         </p>
       </div>
 
-      <!-- Navigation (4 cols so Admin sits beside Legal on desktop; stacks on mobile) -->
+      <!-- Navigation (Explore + Project) -->
       <nav class="md:col-span-5" aria-label="Footer navigation">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-2 gap-6">
           <!-- Explore -->
           <div class="h-full">
             <div class="inline-flex items-center gap-2 mb-3 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
@@ -50,67 +435,12 @@
               <li><a href="{{ url_for('about') }}" class="footer-link-adv"><span>About App</span><i data-lucide="chevron-right" class="link-arrow"></i></a></li>
             </ul>
           </div>
-
-          <!-- Legal -->
-          <div class="h-full">
-            <div class="inline-flex items-center gap-2 mb-3 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
-              <i data-lucide="scale" class="w-3.5 h-3.5 text-white/70"></i>
-              <h3 class="text-[11px] font-semibold tracking-wider text-white/80 uppercase">Legal</h3>
-            </div>
-            <ul class="space-y-2">
-              <li>
-                <a href="{{ url_for('privacy_policy') }}" class="footer-link-adv" aria-label="Read our Privacy Policy">
-                  <span>Privacy Policy</span>
-                  <i data-lucide="chevron-right" class="link-arrow"></i>
-                </a>
-              </li>
-              <li>
-                <a href="{{ url_for('terms') }}" class="footer-link-adv" aria-label="Read our Terms of Service">
-                  <span>Terms of Service</span>
-                  <i data-lucide="chevron-right" class="link-arrow"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Admin (modern CTA beside Legal) -->
-          <div class="h-full">
-            <div class="inline-flex items-center gap-2 mb-3 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10">
-              <i data-lucide="shield" class="w-3.5 h-3.5 text-white/70"></i>
-              <h3 class="text-[11px] font-semibold tracking-wider text-white/80 uppercase">Admin</h3>
-            </div>
-
-            <!-- Uniform card height via min-h and flex -->
-            <div class="admin-card relative rounded-2xl p-3.5 bg-white/[0.04] border border-white/10 overflow-hidden flex flex-col min-h-[112px]">
-              <div class="absolute -inset-1 opacity-30 blur-2xl bg-gradient-to-tr from-cyan-500/10 via-blue-500/10 to-indigo-500/10 pointer-events-none"></div>
-
-              <div class="relative flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2 text-white/80">
-                  <i data-lucide="lock" class="w-4 h-4"></i>
-                  <span class="text-[12.5px]">Secure Access</span>
-                </div>
-
-                <!-- The href will be set to the SAME URL as the header's Admin link (auto-detected by script below) -->
-                <a id="adminCta"
-                   class="admin-cta inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[12.5px] whitespace-nowrap"
-                   href="#"
-                   aria-label="Open Admin Login"
-                   data-fallback="/admin">
-                  <i data-lucide="log-in" class="w-4 h-4"></i>
-                  <span>Login</span>
-                </a>
-              </div>
-
-              <p class="relative mt-2 text-[11.5px] text-white/60 leading-snug">Restricted area for authorized personnel.</p>
-            </div>
-          </div>
-          <!-- /Admin -->
         </div>
       </nav>
 
       <!-- Mission -->
       <section class="md:col-span-3">
-        <div class="relative rounded-2xl p-4 bg-white/[0.04] border border-white/10 overflow-hidden h-full">
+        <div class="relative rounded-2xl p-4 bg-white/[0.04] border border-white/10 overflow-hidden h-full admin-card">
           <div class="absolute -inset-1 opacity-40 blur-2xl bg-gradient-to-tr from-blue-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none"></div>
           <div class="relative">
             <h3 class="text-sm font-semibold text-white/90 flex items-center gap-2">
@@ -138,14 +468,14 @@
 
     <!-- Row 2 -->
     <div class="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-white/60">
-      <!-- Left: tagline + DESKTOP legal under it -->
+      <!-- Left: tagline + Legal -->
       <div class="w-full sm:w-auto">
         <p class="text-center sm:text-left">
           Built for hope, trust, and reconnection. <span class="text-white/75">#HumanFirstAI</span>
         </p>
-        <!-- Desktop-only legal directly under the tagline on the LEFT -->
-        <nav aria-label="Legal links (desktop under tagline)" class="hidden sm:block mt-2">
-          <ul class="flex items-center gap-3">
+        <!-- Visible on mobile + desktop -->
+        <nav aria-label="Legal links" class="mt-2">
+          <ul class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
             <li><a href="{{ url_for('privacy_policy') }}" class="footer-legal-link">Privacy Policy</a></li>
             <li class="opacity-50">•</li>
             <li><a href="{{ url_for('terms') }}" class="footer-legal-link">Terms of Service</a></li>
@@ -170,38 +500,64 @@
         </span>
       </div>
     </div>
-
-    <!-- Mobile-only compact legal (keeps easy access on phones, hidden on desktop) -->
-    <div class="mt-3 sm:hidden flex items-center justify-center gap-2 text-[11.5px] text-white/60">
-      <nav aria-label="Legal links (mobile compact)">
-        <ul class="flex flex-wrap items-center gap-3">
-          <li><a href="{{ url_for('privacy_policy') }}" class="footer-legal-link">Privacy Policy</a></li>
-          <li class="opacity-50">•</li>
-          <li><a href="{{ url_for('terms') }}" class="footer-legal-link">Terms of Service</a></li>
-        </ul>
-      </nav>
-    </div>
-
-    <span class="sr-only">© {{ current_year }} PersonFinder. All rights reserved.</span>
   </div>
-
-  <!-- Back to top (subtle, unobtrusive) -->
-  <button id="backToTop"
-          class="back-to-top fixed bottom-5 right-5 sm:bottom-6 sm:right-6 opacity-0 pointer-events-none transition-all duration-300"
-          aria-label="Back to top"
-          type="button">
-    <span class="sr-only">Back to top</span>
-    <div class="btn-surface">
-      <i data-lucide="arrow-up" class="w-4.5 h-4.5"></i>
-    </div>
-  </button>
 </footer>
 
 <!-- ============== SCRIPTS ============== -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
-  // Initialize icons
-  if (window.lucide) lucide.createIcons();
+  // Lucide icon bootstrap (footer, admin, feedback, modals, etc.)
+  (function initLucide() {
+    function hydrateIcons() {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', hydrateIcons);
+    } else {
+      hydrateIcons();
+    }
+
+    // helper if you later inject HTML dynamically
+    window.pfRefreshIcons = hydrateIcons;
+  })();
+
+  // Roles modal wiring (Admin "Learn about roles" button)
+  document.addEventListener('DOMContentLoaded', function () {
+    const openButtons = document.querySelectorAll('[data-pf-role-open], #pf-role-open');
+    const modal = document.getElementById('pf-role-modal') || document.getElementById('pf-roles-modal');
+
+    if (!openButtons.length || !modal) return;
+
+    const closeButtons = modal.querySelectorAll('[data-pf-role-close], [data-modal-close]');
+    const backdrop = modal.querySelector('[data-pf-role-backdrop]') || modal;
+
+    function openModal() {
+      modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+      modal.setAttribute('aria-hidden', 'false');
+      if (window.pfRefreshIcons) window.pfRefreshIcons();
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    openButtons.forEach(btn => btn.addEventListener('click', openModal));
+    closeButtons.forEach(btn => btn.addEventListener('click', closeModal));
+
+    if (backdrop) {
+      backdrop.addEventListener('click', function (e) {
+        if (e.target === backdrop) closeModal();
+      });
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeModal();
+    });
+  });
 
   // Sync Admin button href with the SAME link used in the header (or fallback to /admin).
   (function syncAdminHref() {
@@ -256,8 +612,144 @@
   })();
 </script>
 
-<!-- ============== FOOTER STYLES ============== -->
+<!-- ============== STYLES (INCLUDING ICON LAYOUT & ANIMATIONS) ============== -->
 <style>
+/* Full-bleed wave above footer, footer stays on main background */
+.footer-wave-divider {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+  height: 110px;
+  overflow: hidden;
+  margin-top: -5px;
+}
+
+/* ---- Admin card icon section: center vertically on desktop ---- */
+.pf-admin-icon-section {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .pf-admin-icon-section {
+    flex: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+/* Icon row layout (horizontal) */
+.pf-admin-icon-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+/* Base icon pill */
+.pf-admin-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 30% 20%, rgba(148,163,184,.35), rgba(15,23,42,1));
+  border: 1px solid rgba(148,163,184,0.7);
+  box-shadow: 0 0 10px rgba(15,23,42,0.8);
+  position: relative;
+  overflow: hidden;
+  animation: adminIconFloat 4s ease-in-out infinite, adminIconGlow 3.5s ease-in-out infinite;
+}
+
+/* Slightly larger on desktop */
+@media (min-width: 1024px) {
+  .pf-admin-icon {
+    width: 3.1rem;
+    height: 3.1rem;
+  }
+  .pf-admin-icon i {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+}
+
+/* Stagger animation timings per icon */
+.pf-admin-icon-row .pf-admin-icon:nth-child(1) {
+  animation-delay: 0s, 0s;
+}
+.pf-admin-icon-row .pf-admin-icon:nth-child(2) {
+  animation-delay: 0.12s, 0.12s;
+}
+.pf-admin-icon-row .pf-admin-icon:nth-child(3) {
+  animation-delay: 0.24s, 0.24s;
+}
+.pf-admin-icon-row .pf-admin-icon:nth-child(4) {
+  animation-delay: 0.36s, 0.36s;
+}
+
+/* Soft float animation */
+@keyframes adminIconFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Glow / pulse animation */
+@keyframes adminIconGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(56,189,248,0.35);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(129,140,248,0.6);
+    opacity: 0.95;
+  }
+}
+
+/* Optional shimmer sweep using existing .shimmer-random class */
+.shimmer-random::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.35) 45%,
+    rgba(255,255,255,0.1) 55%,
+    transparent 100%
+  );
+  transform: translateX(-130%);
+  opacity: 0;
+  pointer-events: none;
+  animation: adminIconShimmer 4.2s ease-in-out infinite;
+}
+
+@keyframes adminIconShimmer {
+  0%, 65% {
+    transform: translateX(-130%);
+    opacity: 0;
+  }
+  70% {
+    opacity: 0.9;
+  }
+  85% {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+}
+
 /* Live gradient animation */
 @keyframes gradient-move {
   0% { background-position: 0% 50%; }
@@ -370,7 +862,7 @@
 .admin-cta:hover::before { opacity: .85; }
 .admin-cta i { opacity: .9; }
 
-/* Back to Top button (subtle, never overshadows content) */
+/* Back to Top button */
 .back-to-top { z-index: 40; }
 .back-to-top .btn-surface{
   display:inline-flex; align-items:center; justify-content:center;
@@ -394,8 +886,11 @@
   .animate-liveDotWater::before,
   .animate-liveDotWater::after,
   .badge-ripple-emerald::before,
-  .badge-ripple-emerald::after { animation:none !important; }
+  .badge-ripple-emerald::after,
+  .pf-admin-icon,
+  .shimmer-random::after { animation:none !important; }
   .back-to-top { transition: none !important; }
 }
 </style>
-<!-- ================= END FOOTER ================= -->
+
+<!-- ================= END FOOTER WITH FEEDBACK + ROLES MODAL ================= -->

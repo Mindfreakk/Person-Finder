@@ -1,4 +1,5 @@
 # app.py
+# app.py
 import os
 import io
 import uuid
@@ -6,48 +7,76 @@ import base64
 import logging
 import json
 import secrets
+import time
+import socket
+import csv
+from flask import Response
 from math import ceil
 from datetime import datetime, timedelta
 from functools import wraps
+from typing import Optional, Tuple, List
+from urllib.parse import urljoin
 
 from dotenv import load_dotenv
 from PIL import Image, ExifTags, ImageOps
 import qrcode
 import requests
-import numpy as np  # ✅ FIX: used in face encoding path
-
+import numpy as np
 import face_recognition
+from werkzeug.routing import BuildError
+
 from flask import (
-    Flask, render_template, request, redirect, url_for,
-    flash, send_file, jsonify, session, current_app
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    flash,
+    send_file,
+    jsonify,
+    session,
+    current_app,
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import (
-    LoginManager, UserMixin, login_user,
-    login_required, logout_user, current_user,
-)
-from flask_mail import Mail, Message
 from werkzeug.exceptions import RequestEntityTooLarge
 
-# SocketIO
+from flask_login import (
+    LoginManager,
+    UserMixin,
+    login_user,
+    login_required,
+    logout_user,
+    current_user,
+)
+from flask_mail import Mail, Message
 from flask_socketio import SocketIO
 
-# Import DB helpers and models from database.py
 from database import (
-    db, initialize_database, Person, SearchLog, PushSubscription, User,
-    register_person_to_db, get_all_registered_people,
-    get_person_by_id, delete_person_by_id,
-    find_person_by_face, log_best_match_search, get_stats as db_get_stats,
-    authenticate_user, debug_find_person_by_image, clear_people_encodings_cache
+    db,
+    initialize_database,
+    Person,
+    SearchLog,
+    PushSubscription,
+    User,
+    Feedback,
+    register_person_to_db,
+    get_all_registered_people,
+    get_person_by_id,
+    delete_person_by_id,
+    find_person_by_face,
+    log_best_match_search,
+    get_stats as db_get_stats,
+    debug_find_person_by_image,
+    clear_people_encodings_cache,
 )
 
 # ----------------- Load environment -----------------
 load_dotenv()
 VAPID_PRIVATE_KEY = os.getenv("VAPID_PRIVATE_KEY", "<YOUR_PRIVATE_KEY>")
-VAPID_PUBLIC_KEY  = os.getenv("VAPID_PUBLIC_KEY", "<YOUR_PUBLIC_KEY>")
-VAPID_CLAIMS      = {"sub": os.getenv("VAPID_SUBJECT", "mailto:you@example.com")}
-DEV_MODE          = str(os.getenv("DEV_MODE", "true")).lower() in ("1", "true", "yes", "on")
+VAPID_PUBLIC_KEY = os.getenv("VAPID_PUBLIC_KEY", "<YOUR_PUBLIC_KEY>")
+VAPID_CLAIMS = {"sub": os.getenv("VAPID_SUBJECT", "mailto:you@example.com")}
+DEV_MODE = str(os.getenv("DEV_MODE", "true")).lower() in ("1", "true", "yes", "on")
 
 # ----------------- Flask App Config -----------------
 app = Flask(__name__)
@@ -56,14 +85,16 @@ app.secret_key = os.getenv("FLASK_SECRET") or os.urandom(24)
 # Ensure database is always inside project root (next to app.py)
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, "personfinder.db")
-db_uri  = os.getenv("DATABASE_URL", f"sqlite:///{db_path}")
+db_uri = os.getenv("DATABASE_URL", f"sqlite:///{db_path}")
+
 
 # ---- Mail defaults / coercion helpers ----
 def _bool_env(name: str, default: str = "false") -> bool:
     return str(os.getenv(name, default)).strip().lower() in ("1", "true", "yes", "on")
 
+
 MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.gmail.com")
-MAIL_PORT   = int(os.getenv("MAIL_PORT", "587"))
+MAIL_PORT = int(os.getenv("MAIL_PORT", "587"))
 MAIL_USE_TLS = _bool_env("MAIL_USE_TLS", "true")
 MAIL_USE_SSL = _bool_env("MAIL_USE_SSL", "false")
 # Ensure only one of TLS/SSL is true; prefer TLS for Gmail: 587/TLS
@@ -77,14 +108,11 @@ MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER") or MAIL_USERNAME
 app.config.update(
     SQLALCHEMY_DATABASE_URI=db_uri,
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-
     # Uploads
     UPLOAD_FOLDER=os.path.join(app.root_path, "static", "uploads"),
-
     # Accept large uploads — upper bound here; your routes handle specifics
     MAX_CONTENT_LENGTH=int(os.getenv("MAX_CONTENT_LENGTH_BYTES", 32 * 1024 * 1024)),
     MAX_FORM_MEMORY_SIZE=int(os.getenv("MAX_FORM_MEMORY_SIZE_BYTES", 32 * 1024 * 1024)),
-
     # Flask-Mail
     MAIL_SERVER=MAIL_SERVER,
     MAIL_PORT=MAIL_PORT,
@@ -95,15 +123,12 @@ app.config.update(
     MAIL_DEFAULT_SENDER=MAIL_DEFAULT_SENDER,
     MAIL_SUPPRESS_SEND=False,
     MAIL_DEBUG=DEV_MODE,
-
     # Push
     VAPID_PUBLIC_KEY=VAPID_PUBLIC_KEY,
     VAPID_PRIVATE_KEY=VAPID_PRIVATE_KEY,
-
     # Admin info
     ADMIN_EMAIL=os.getenv("ADMIN_EMAIL"),
     ADMIN_PHONE=os.getenv("ADMIN_PHONE"),
-
     # reCAPTCHA
     RECAPTCHA_SITE_KEY=os.getenv("RECAPTCHA_SITE_KEY"),
     RECAPTCHA_SECRET_KEY=os.getenv("RECAPTCHA_SECRET_KEY"),
@@ -116,13 +141,10 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 mail = Mail(app)
 
 # ----------------- Version Control (CI-friendly + local auto-bump) -----------------
-import os, time
-basedir = os.path.abspath(os.path.dirname(__file__))
-
 # Prefer CI-managed version.txt; fall back to local VERSION
 _VERSION_CANDIDATES = [
     os.path.join(basedir, "version.txt"),  # written by CI (GitHub Actions)
-    os.path.join(basedir, "VERSION"),      # local/dev fallback
+    os.path.join(basedir, "VERSION"),  # local/dev fallback
 ]
 for _p in _VERSION_CANDIDATES:
     if os.path.exists(_p):
@@ -133,11 +155,13 @@ else:
 
 _version_cache = {"mtime": None, "val": "1.0.0"}
 
+
 def _ensure_file(path: str, default_val: str = "1.0.0") -> None:
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if not os.path.exists(path):
         with open(path, "w", encoding="utf-8") as f:
             f.write(default_val + "\n")
+
 
 def get_app_version() -> str:
     """Return current version string; re-read when file mtime changes."""
@@ -151,10 +175,12 @@ def get_app_version() -> str:
         pass
     return _version_cache["val"]
 
+
 def _write_version(new_val: str) -> None:
     with open(VERSION_FILE, "w", encoding="utf-8") as f:
         f.write(new_val + "\n")
     _version_cache["mtime"] = None  # force re-read on next request
+
 
 def bump_version(which: str = "patch") -> str:
     """
@@ -190,6 +216,7 @@ def bump_version(which: str = "patch") -> str:
     _write_version(newv)
     return newv
 
+
 # ---- Auto-bump on real app start (works with or without reloader & SocketIO) ----
 # Modes:
 #  - Default: If CI's version.txt exists, we DO NOT bump locally. If not, we bump patch once on start.
@@ -198,6 +225,7 @@ def bump_version(which: str = "patch") -> str:
 _FORCE_LOCAL = str(os.getenv("PF_FORCE_LOCAL_BUMP", "false")).lower() in ("1", "true", "yes", "on")
 _LOCAL_BUMP_ENABLED = str(os.getenv("PF_LOCAL_BUMP_ON_START", "true")).lower() in ("1", "true", "yes", "on")
 _USING_CI_VERSION = os.path.basename(VERSION_FILE).lower() == "version.txt"
+
 
 def _should_bump_now() -> bool:
     # If local bumping disabled, no.
@@ -212,6 +240,7 @@ def _should_bump_now() -> bool:
     flag = os.environ.get("WERKZEUG_RUN_MAIN")
     return (flag == "true") or (flag is None)
 
+
 try:
     _ensure_file(VERSION_FILE, default_val="1.0.0")
     if _should_bump_now():
@@ -219,6 +248,7 @@ try:
         print(f"[version] Auto-bump -> {bumped} (file: {VERSION_FILE}, ci_file={_USING_CI_VERSION})")
 except Exception as _e:
     print(f"[version] Warning: could not bump version: {_e}")
+
 
 # ----------------- Context Processor -----------------
 @app.context_processor
@@ -231,10 +261,12 @@ def inject_globals():
         "RECAPTCHA_SITE_KEY": current_app.config.get("RECAPTCHA_SITE_KEY", None),
     }
 
+
 # Optional endpoint to inspect
 @app.get("/__version")
 def __version():
     from flask import jsonify
+
     try:
         st = os.stat(VERSION_FILE)
         meta = {
@@ -265,7 +297,7 @@ def verify_recaptcha(token, action="submit", min_score=0.5):
     try:
         response = requests.post(
             "https://www.google.com/recaptcha/api/siteverify",
-            data={"secret": secret, "response": token}
+            data={"secret": secret, "response": token},
         )
         result = response.json()
         current_app.logger.debug(f"reCAPTCHA result: {json.dumps(result, indent=2)}")
@@ -280,6 +312,7 @@ def verify_recaptcha(token, action="submit", min_score=0.5):
     except Exception as e:
         current_app.logger.error(f"reCAPTCHA verification failed: {e}")
         return DEV_MODE
+
 
 # ----------------- Helper: Auto-correct EXIF orientation -----------------
 def auto_orient_image(image_path):
@@ -303,15 +336,29 @@ def auto_orient_image(image_path):
     except Exception:
         return Image.open(image_path)
 
-# ----------------- Initialize DB -----------------
+
+def _csv_bytes_response(csv_text: str, filename: str):
+    """
+    Wrap CSV text in a BytesIO so send_file works reliably with UTF-8.
+    """
+    buf = io.BytesIO(csv_text.encode("utf-8-sig"))  # BOM helps Excel
+    return send_file(
+        buf,
+        mimetype="text/csv; charset=utf-8",
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
 # ----------------- Initialize DB -----------------
 db.init_app(app)
 with app.app_context():
     initialize_database(app)
     print(f"🔎 Using database at: {db_path}")
 
-    # ---- Ensure `phone_number` column exists (if you ever need to be defensive) ----
-    from sqlalchemy import inspect, text
+    # ---- Ensure `phone_number` column exists (defensive) ----
+    from sqlalchemy import inspect, text, func
+
     insp = inspect(db.engine)
     try:
         has_phone_number = any(col["name"] == "phone_number" for col in insp.get_columns("users"))
@@ -348,11 +395,13 @@ with app.app_context():
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # ----------------- Flask-Login -----------------
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "error"
+
 
 class UserLogin(UserMixin):
     def __init__(self, user: User):
@@ -360,10 +409,12 @@ class UserLogin(UserMixin):
         self.username = user.username
         self.role = getattr(user, "role", "user")
 
+
 @login_manager.user_loader
 def load_user(user_id):
-    user = User.query.get(int(user_id))
+    user = db.session.get(User, int(user_id))
     return UserLogin(user) if user else None
+
 
 def require_role(*roles):
     def wrapper(fn):
@@ -375,8 +426,11 @@ def require_role(*roles):
                 flash("Unauthorized access!", "error")
                 return redirect(url_for("home"))
             return fn(*args, **kwargs)
+
         return inner
+
     return wrapper
+
 
 # ----------------- Helpers -----------------
 def save_uploaded_file(storage_file) -> str:
@@ -387,6 +441,7 @@ def save_uploaded_file(storage_file) -> str:
     storage_file.save(abs_path)
     return abs_path
 
+
 def save_base64_image(data_url: str) -> str:
     encoded = data_url.split(",", 1)[-1]
     img_bytes = io.BytesIO(base64.b64decode(encoded))
@@ -396,16 +451,18 @@ def save_base64_image(data_url: str) -> str:
     img.save(abs_path, format="PNG")
     return abs_path
 
+
 def fix_photo_path(person: dict) -> dict:
     placeholder = "images/no-photo.png"
     raw = person.get("photo_path") or ""
     filename = os.path.basename(raw) if raw else ""
     person["photo_path"] = (
         f"uploads/{filename}"
-        if filename and os.path.exists(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if filename and os.path.exists(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         else placeholder
     )
     return person
+
 
 def save_subscription_to_db(person_id, subscription: dict):
     if not person_id or not subscription:
@@ -419,27 +476,32 @@ def save_subscription_to_db(person_id, subscription: dict):
                 person_id=int(person_id),
                 endpoint=subscription["endpoint"],
                 p256dh=subscription["keys"]["p256dh"],
-                auth=subscription["keys"]["auth"]
+                auth=subscription["keys"]["auth"],
             )
             db.session.add(new_sub)
             db.session.commit()
     except Exception:
         logger.exception("Failed to save push subscription")
 
+
+def pick_largest_face(face_locations):
+    """Shared helper to pick largest detected face by area."""
+    if not face_locations:
+        return None, None
+    areas = [max(0, (b - t)) * max(0, (r - l)) for (t, r, b, l) in face_locations]
+    idx = int(np.argmax(areas))
+    return idx, face_locations[idx]
+
+
 # ----------------- Utility Function -----------------
 def get_stats():
+    """Wrapper around db_get_stats with a defensive fallback."""
     try:
-        registrations = Person.query.count()
-        searches = SearchLog.query.count()
-        searches_traced = SearchLog.query.filter(SearchLog.success == 1).count()
+        return db_get_stats()
     except Exception:
-        registrations = searches = searches_traced = 0
+        logger.exception("Error fetching stats via db_get_stats()")
+        return {"registrations": 0, "searches": 0, "searches_traced": 0}
 
-    return {
-        "registrations": registrations,
-        "searches": searches,
-        "searches_traced": searches_traced,
-    }
 
 # ----------------- Home Route -----------------
 @app.route("/")
@@ -447,11 +509,95 @@ def home():
     stats = get_stats()
     return render_template("home.html", stats=stats)
 
+
 # ----------------- API Route -----------------
 @app.route("/api/stats")
 def api_stats():
     stats = get_stats()
     return jsonify(stats)
+
+    # ----------------- Feedback API -----------------
+@app.post("/api/feedback")
+def api_feedback():
+    """
+    Accepts JSON feedback from the footer form.
+
+    Expected payload:
+      {
+        "name": "optional string",
+        "email": "required string",
+        "rating": 1-5 (int),
+        "message": "required string",
+        "createdAt": "...optional client timestamp..."
+      }
+
+    Returns JSON:
+      { "ok": true } on success
+      { "ok": false, "errors": { ... } } on validation error
+    """
+    try:
+        data = request.get_json(silent=True) or {}
+    except Exception:
+        data = {}
+
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip()
+    rating_raw = data.get("rating")
+    message = (data.get("message") or "").strip()
+
+    errors = {}
+
+    # --- Email (required + basic format) ---
+    if not email:
+        errors["email"] = "Email is required."
+    else:
+        # Very simple email check – enough for our case
+        if "@" not in email or "." not in email.split("@")[-1]:
+            errors["email"] = "Please provide a valid email address."
+
+    # --- Rating (required, 1–5) ---
+    try:
+        rating = int(rating_raw)
+    except Exception:
+        rating = None
+
+    if rating is None:
+        errors["rating"] = "Rating is required."
+    elif rating < 1 or rating > 5:
+        errors["rating"] = "Rating must be between 1 and 5."
+
+    # --- Message (required, minimal length) ---
+    if not message or len(message) < 5:
+        errors["message"] = "Please describe your experience (at least 5 characters)."
+
+    if errors:
+        return jsonify({"ok": False, "errors": errors}), 400
+
+    # Collect some context for admin view/analysis
+    page_url = request.headers.get("X-Feedback-Page") or request.referrer or ""
+    user_agent = request.user_agent.string if request.user_agent else ""
+    ip_address = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or request.remote_addr
+
+    # Save to DB
+    try:
+        fb = Feedback(
+            name=name or None,
+            email=email,
+            rating=rating,
+            message=message,
+            page_url=page_url[:500] if page_url else None,
+            user_agent=user_agent[:500] if user_agent else None,
+            ip_address=ip_address[:100] if ip_address else None,
+        )
+        db.session.add(fb)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.exception("Failed to save feedback: %s", e)
+        return jsonify({"ok": False, "errors": {"server": "Could not save feedback"}}), 500
+
+    return jsonify({"ok": True})
+
 
 # ----------------- Auth Routes -----------------
 @app.route("/login", methods=["GET", "POST"])
@@ -460,13 +606,51 @@ def login():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         user = User.query.filter_by(username=username).first()
+
         if not user or not check_password_hash(user.password_hash, password):
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
+
+        # Block deactivated accounts
+        if hasattr(user, "is_active") and user.is_active is False:
+            flash("This account has been deactivated by an administrator.", "error")
+            return redirect(url_for("login"))
+
+        # Block accounts that still have an active verification/reset token
+        if user.reset_token and user.reset_expiry and datetime.utcnow() <= user.reset_expiry:
+            flash(
+                "This account has a pending verification/reset link. "
+                "Please use the link sent to your email first.",
+                "error",
+            )
+            return redirect(url_for("login"))
+
         login_user(UserLogin(user))
-        flash("Logged in successfully!", "success")
-        return redirect(url_for("admin_dashboard") if user.role == "admin" else url_for("home"))
+
+        # 1) If coming from a protected page, go back there
+        next_url = request.args.get("next")
+
+        # Normalize role
+        role = (getattr(user, "role", "") or "").strip().lower()
+
+        # 2) Admins → admin_dashboard with success flash
+        if role == "admin":
+            flash("Logged in successfully.", "success")
+            if next_url:
+                return redirect(next_url)
+            return redirect(url_for("admin_dashboard"))
+
+        # 3) Normal users → home with warning flash
+        flash(
+            "You logged in with user-level access. Admin dashboard access is restricted to administrator accounts only.",
+            "error",
+        )
+        if next_url:
+            return redirect(next_url)
+        return redirect(url_for("home"))
+
     return render_template("login.html")
+
 
 @app.route("/logout")
 @login_required
@@ -475,10 +659,339 @@ def logout():
     flash("Logged out successfully.", "success")
     return redirect(url_for("login"))
 
-# ----------------- Auto-detect LAN IP & build external URLs -----------------
-import socket
-from urllib.parse import urljoin
 
+# ----------------- Admin Dashboard -----------------
+
+@app.route("/admin/dashboard", methods=["GET"])
+@login_required
+@require_role("admin")
+def admin_dashboard():
+    # People pagination (10 per page)
+    page = request.args.get("page", 1, type=int)
+    per_page = 10
+
+    people_pagination = (
+        Person.query.order_by(Person.id.desc())
+        .paginate(page=page, per_page=per_page, error_out=False)
+    )
+    people = people_pagination.items
+    total_pages = people_pagination.pages or 1
+
+    # Users
+    users = User.query.order_by(User.id.asc()).all()
+
+    # Search logs (recent)
+    search_logs = (
+        SearchLog.query.order_by(SearchLog.ts.desc())
+        .limit(100)
+        .all()
+    )
+
+    # Existing stats helper
+    stats = get_stats() or {}
+
+    # Optional recent events for the Activity section (empty for now)
+    recent_events = []
+
+    # Optional app version (will fall back to default in template if not set)
+    app_version = current_app.config.get("APP_VERSION", "v1.0.0")
+
+    # ---- Feedback stats for dashboard ----
+    try:
+        feedback_total = Feedback.query.count()
+        feedback_avg_rating = db.session.query(func.avg(Feedback.rating)).scalar()
+        feedback_negative_count = Feedback.query.filter(Feedback.rating <= 2).count()
+
+        # Histogram for ratings 1–5
+        feedback_hist = [0, 0, 0, 0, 0]
+        rows = (
+            db.session.query(Feedback.rating, func.count(Feedback.id))
+            .group_by(Feedback.rating)
+            .all()
+        )
+        for rating, count in rows:
+            if 1 <= rating <= 5:
+                feedback_hist[rating - 1] = count
+
+        # Latest feedback entries for dashboard panel
+        recent_feedback = (
+            Feedback.query.order_by(Feedback.created_at.desc())
+            .limit(5)
+            .all()
+        )
+    except Exception:
+        feedback_total = 0
+        feedback_avg_rating = None
+        feedback_negative_count = 0
+        feedback_hist = [0, 0, 0, 0, 0]
+        recent_feedback = []
+
+    return render_template(
+        "admin_dashboard.html",
+        # people
+        people=people,
+        page=page,
+        total_pages=total_pages,
+        # users
+        users=users,
+        # logs
+        search_logs=search_logs,
+        # stats/system
+        stats=stats,
+        app_version=app_version,
+        recent_events=recent_events,
+        # feedback
+        feedback_total=feedback_total,
+        feedback_avg_rating=feedback_avg_rating,
+        feedback_negative_count=feedback_negative_count,
+        feedback_hist=feedback_hist,
+        recent_feedback=recent_feedback,
+    )
+
+
+@app.route("/admin/export-people", methods=["GET"])
+@login_required
+@require_role("admin")
+def export_people_csv():
+    """
+    Export people data as CSV.
+    This is defensive: if the Person model or query fails, it still returns a valid CSV with just a header.
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header row – adjust columns to match your Person model / DB schema
+    writer.writerow([
+        "id",
+        "full_name",
+        "age",
+        "gender",
+        "guardian_name",
+        "phone_number",
+        "address",
+        "last_seen",
+    ])
+
+    try:
+        # If your model is named differently, change Person → your model name
+        people = Person.query.order_by(Person.id.asc()).all()
+        for p in people:
+            writer.writerow([
+                getattr(p, "id", ""),
+                getattr(p, "full_name", ""),
+                getattr(p, "age", ""),
+                getattr(p, "gender", ""),
+                getattr(p, "guardian_name", ""),
+                getattr(p, "phone_number", getattr(p, "phone", "")),
+                getattr(p, "address", ""),
+                getattr(p, "last_seen", ""),
+            ])
+    except Exception:
+        # Fail silently – at least the CSV will contain a header
+        pass
+
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=people.csv"},
+    )
+
+
+@app.route("/admin/export-users", methods=["GET"])
+@login_required
+@require_role("admin")
+def export_users_csv():
+    """
+    Export user accounts as CSV.
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header row – adjust if your User model has different fields
+    writer.writerow([
+        "id",
+        "username",
+        "email",
+        "role",
+        "is_active",
+        "created_at",
+    ])
+
+    try:
+        users = User.query.order_by(User.id.asc()).all()
+        for u in users:
+            writer.writerow([
+                getattr(u, "id", ""),
+                getattr(u, "username", ""),
+                getattr(u, "email", ""),
+                getattr(u, "role", ""),
+                getattr(u, "is_active", ""),
+                getattr(u, "created_at", ""),
+            ])
+    except Exception as e:
+        # Log but still return at least the header
+        logger.exception("Error exporting users CSV: %s", e)
+
+    output.seek(0)
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": "attachment; filename=users.csv"},
+    )
+
+
+@app.route("/admin/export-feedback", methods=["GET"])
+@login_required
+@require_role("admin")
+def export_feedback_csv():
+    """
+    Export feedback as CSV.
+    Honours optional rating filter (?rating=1..5).
+    """
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header row
+    writer.writerow([
+        "id",
+        "name",
+        "email",
+        "rating",
+        "message",
+        "page_url",
+        "user_agent",
+        "ip_address",
+        "created_at",
+    ])
+
+    rating_filter = request.args.get("rating", type=int)
+
+    query = Feedback.query
+    if rating_filter:
+        query = query.filter(Feedback.rating == rating_filter)
+
+    try:
+        rows = query.order_by(Feedback.created_at.desc()).all()
+        for fb in rows:
+            writer.writerow([
+                getattr(fb, "id", ""),
+                getattr(fb, "name", ""),
+                getattr(fb, "email", ""),
+                getattr(fb, "rating", ""),
+                (getattr(fb, "message", "") or "").replace("\n", " ").replace("\r", " "),
+                getattr(fb, "page_url", ""),
+                getattr(fb, "user_agent", ""),
+                getattr(fb, "ip_address", ""),
+                getattr(fb, "created_at", ""),
+            ])
+    except Exception as e:
+        logger.exception("Error exporting feedback CSV: %s", e)
+
+    output.seek(0)
+
+    filename = "feedback.csv"
+    if rating_filter:
+        filename = f"feedback_rating_{rating_filter}.csv"
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@app.route(
+    "/admin/feedback/<int:feedback_id>/delete",
+    methods=["POST"],
+    endpoint="admin_delete_feedback",
+)
+@login_required
+@require_role("admin")
+def admin_delete_feedback(feedback_id):
+    """
+    Delete a feedback entry.
+    Only the primary admin (super admin) – the one matching ADMIN_EMAIL – may delete.
+    """
+    # Who is super admin?
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    current = User.query.get(int(current_user.id))
+
+    if not current:
+        flash("Current user not found.", "error")
+        return redirect(url_for("admin_feedback"))
+
+    if not super_admin_email or (current.email or "").strip().lower() != super_admin_email:
+        flash("Only the primary (super) admin can delete feedback.", "error")
+        # Preserve pagination + rating filter if provided
+        page = request.form.get("page", 1)
+        rating = request.form.get("rating") or None
+        return redirect(url_for("admin_feedback", page=page, rating=rating))
+
+    fb = Feedback.query.get_or_404(feedback_id)
+
+    try:
+        db.session.delete(fb)
+        db.session.commit()
+        flash("Feedback entry deleted.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting feedback: {e}", "error")
+
+    page = request.form.get("page", 1)
+    rating = request.form.get("rating") or None
+    return redirect(url_for("admin_feedback", page=page, rating=rating))
+
+
+# ----------------- Admin: Feedback Listing -----------------
+@app.route("/admin/feedback", methods=["GET"])
+@login_required
+@require_role("admin")  # Admin & super-admin
+def admin_feedback():
+    """
+    Paginated list of user feedback, newest first.
+    Optional rating filter: /admin/feedback?rating=5
+    """
+    page = request.args.get("page", 1, type=int)
+    rating_filter = request.args.get("rating", type=int)
+    per_page = 20
+
+    # Build query with optional rating filter
+    query = Feedback.query
+    if rating_filter:
+        query = query.filter(Feedback.rating == rating_filter)
+
+    pagination = query.order_by(Feedback.created_at.desc()).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False,
+    )
+
+    stats = get_stats()  # reuse your existing stats helper
+
+    # Determine if current user is "super admin" (primary admin email)
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    admin_user = User.query.get(int(current_user.id))
+    is_super_admin = bool(
+        admin_user
+        and super_admin_email
+        and (admin_user.email or "").strip().lower() == super_admin_email
+    )
+
+    return render_template(
+        "admin_feedback.html",
+        feedback_items=pagination.items,
+        feedback_pagination=pagination,
+        total_feedback=pagination.total,
+        current_page=pagination.page,
+        total_pages=pagination.pages,
+        stats=stats,
+        rating_filter=rating_filter,
+        is_super_admin=is_super_admin,
+    )
+
+
+# ----------------- Auto-detect LAN IP & build external URLs -----------------
 def get_local_ip() -> str:
     """Return LAN IP (e.g. 192.168.x.x). Falls back to 127.0.0.1."""
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -490,6 +1003,7 @@ def get_local_ip() -> str:
     finally:
         s.close()
     return ip
+
 
 def build_external_url(endpoint: str, **values) -> str:
     """
@@ -505,10 +1019,15 @@ def build_external_url(endpoint: str, **values) -> str:
     rel = url_for(endpoint, _external=False, **values).lstrip("/")
     return urljoin(base.rstrip("/") + "/", rel)
 
-# ----------------- Mail helper -----------------
-from typing import Optional, Tuple, List
 
-def send_mail(subject: str, recipients: List[str], *, body: str = "", html: Optional[str] = None) -> Tuple[bool, Optional[str]]:
+# ----------------- Mail helper -----------------
+def send_mail(
+    subject: str,
+    recipients: List[str],
+    *,
+    body: str = "",
+    html: Optional[str] = None,
+) -> Tuple[bool, Optional[str]]:
     """
     Unified mail sender with clear error surfacing.
     Returns (ok, error_message).
@@ -526,6 +1045,7 @@ def send_mail(subject: str, recipients: List[str], *, body: str = "", html: Opti
     except Exception as e:
         logger.exception("Flask-Mail send failed")
         return False, str(e)
+
 
 # ---------- Forgot / Reset (uses your combined template) ----------
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -563,7 +1083,7 @@ def forgot_password():
             body=f"Click to reset password (valid 15 minutes): {reset_link}",
             html=f"""<p>You requested an admin password reset.</p>
                      <p><a href="{reset_link}">Reset Password</a></p>
-                     <p>This link expires in 15 minutes.</p>"""
+                     <p>This link expires in 15 minutes.</p>""",
         )
         if not ok:
             # In DEV, print the URL to console to avoid being blocked while testing.
@@ -577,25 +1097,29 @@ def forgot_password():
 
     return render_template("forgot_password.html", token_valid=token_valid)
 
+
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
-    """
-    Uses the same template (forgot_password.html) with token_valid=True to render the set-password form.
-    """
     user = User.query.filter_by(reset_token=token).first()
+
+    # If token is invalid or expired → go back to forgot password page
     if not user or datetime.utcnow() > (user.reset_expiry or datetime.utcnow()):
         flash("Invalid or expired link.", "error")
         return render_template("forgot_password.html", token_valid=False)
 
     if request.method == "POST":
         password = (request.form.get("password") or "").strip()
-        confirm  = (request.form.get("confirm_password") or "").strip()
+        confirm = (request.form.get("confirm_password") or "").strip()
+
         if len(password) < 6:
             flash("Password must be at least 6 characters.", "error")
-            return render_template("forgot_password.html", token_valid=True)
+            # SHOW reset_password.html again with errors
+            return render_template("reset_password.html", token=token)
+
         if password != confirm:
             flash("Passwords do not match.", "error")
-            return render_template("forgot_password.html", token_valid=True)
+            # SHOW reset_password.html again with errors
+            return render_template("reset_password.html", token=token)
 
         user.password_hash = generate_password_hash(password)
         user.reset_token = None
@@ -605,45 +1129,203 @@ def reset_password(token):
         flash("Password updated! Login now.", "success")
         return redirect(url_for("login"))
 
-    return render_template("forgot_password.html", token_valid=True)
+    # GET with valid token → show the reset form (THIS uses your template)
+    return render_template("reset_password.html", token=token)
+
+
+# Verify User
+@app.route("/verify-user/<token>")
+def verify_user(token):
+    user = User.query.filter_by(reset_token=token).first()
+
+    if not user:
+        flash("Invalid verification link.", "error")
+        return redirect(url_for("login"))
+
+    if user.reset_expiry and datetime.utcnow() > user.reset_expiry:
+        flash("Verification link has expired. Ask an admin to resend it.", "error")
+        return redirect(url_for("login"))
+
+    # Mark as verified by clearing token/expiry
+    user.reset_token = None
+    user.reset_expiry = None
+    db.session.commit()
+
+    flash("Your account has been verified. You can now log in.", "success")
+    return redirect(url_for("login"))
+
 
 # ---- Optional: DEV-only test route to verify SMTP quickly ----
 if DEV_MODE:
+
     @app.route("/debug/send-test-email")
     def debug_send_test_email():
         recipient = (os.getenv("ADMIN_EMAIL") or MAIL_USERNAME)
         ok, err = send_mail(
             "PersonFinder Test Email",
             [recipient],
-            body="This is a test email from PersonFinder."
+            body="This is a test email from PersonFinder.",
         )
         if ok:
             return f"✅ Test email sent to {recipient}"
         return f"❌ Failed to send test email: {err}", 500
 
+
 # --- Register Person (no size/resolution limits; stream-safe; largest-face; duplicate short-circuit) ---
 # Disable Pillow decompression bomb checks (accept all megapixels)
 Image.MAX_IMAGE_PIXELS = None
 
-# Ensure upload dir exists
+# Ensure upload dir exists (defensive; config already has one)
 app.config.setdefault("UPLOAD_FOLDER", os.getenv("UPLOAD_FOLDER", "static/uploads"))
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
 
 @app.errorhandler(RequestEntityTooLarge)
 def handle_413(e):
     """If some upstream still throws 413, render the form with a helpful message."""
-    RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
-    errors = {"photo": "The image was rejected by an upstream limit. Please try again now; "
-                       "the server accepts very large images. If it persists, ask the admin to raise proxy limits."}
-    return render_template(
-        "register.html",
-        filename=None,
-        errors=errors,
-        form_data=request.form if request.form else {},
-        focus_field="photo",
-        RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
-    ), 413
+    recaptcha_site_key = os.getenv("RECAPTCHA_SITE_KEY", "")
+    errors = {
+        "photo": "The image was rejected by an upstream limit. Please try again now; "
+        "the server accepts very large images. If it persists, ask the admin to raise proxy limits."
+    }
+    return (
+        render_template(
+            "register.html",
+            filename=None,
+            errors=errors,
+            form_data=request.form if request.form else {},
+            focus_field="photo",
+            RECAPTCHA_SITE_KEY=recaptcha_site_key,
+        ),
+        413,
+    )
 
+
+# Route to create a new user for another person
+@app.route("/admin/create-user", methods=["POST"])
+@login_required
+@require_role("admin")
+def admin_create_user():
+    # Fields coming from the modal
+    username = (request.form.get("new_username") or "").strip()
+    email = (request.form.get("new_email") or "").strip().lower()
+    phone = (request.form.get("new_phone") or "").strip()
+    role = (request.form.get("new_role") or "user").strip().lower()
+    raw_password = (request.form.get("new_password") or "").strip()
+    confirm_password = (request.form.get("new_password_confirm") or "").strip()
+    admin_password = (request.form.get("admin_password") or "").strip()
+
+    if not username or not email:
+        flash("Username and email are required.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    # Verify admin password
+    admin_user = User.query.get(int(current_user.id))
+    if not admin_user or not check_password_hash(admin_user.password_hash, admin_password):
+        flash("Admin password is incorrect. User was not created.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    # Unique username / email
+    existing = User.query.filter(
+        (User.username == username) | (User.email == email)
+    ).first()
+    if existing:
+        flash("A user with this username or email already exists.", "error")
+        return redirect(url_for("admin_dashboard"))
+
+    # Handle password:
+    # - If admin typed one, validate & require confirm
+    # - If left blank, auto-generate a temporary password
+    if raw_password:
+        if len(raw_password) < 6:
+            flash("Password must be at least 6 characters.", "error")
+            return redirect(url_for("admin_dashboard"))
+        if raw_password != confirm_password:
+            flash("Passwords do not match.", "error")
+            return redirect(url_for("admin_dashboard"))
+        chosen_password = raw_password
+    else:
+        chosen_password = secrets.token_urlsafe(8)  # auto temp password
+
+    password_hash = generate_password_hash(chosen_password)
+
+    # Use reset_token/expiry as a "verification token"
+    verification_token = secrets.token_urlsafe(32)
+    verification_expiry = datetime.utcnow() + timedelta(days=2)
+
+    if role not in ("admin", "user"):
+        role = "user"
+
+    # IMPORTANT: do NOT pass phone / phone_number in the constructor
+    new_user = User(
+        username=username,
+        email=email,
+        password_hash=password_hash,
+        role=role,
+    )
+
+    # Now set phone only if the attribute exists on the model
+    # (this avoids 'phone' invalid keyword argument issues completely)
+    try:
+        if hasattr(new_user, "phone"):
+            new_user.phone = phone or None
+        elif hasattr(new_user, "phone_number"):
+            new_user.phone_number = phone or None
+    except Exception:
+        # If anything weird happens here, just ignore the phone update
+        pass
+
+    # Set verification fields only if they exist on the model
+    if hasattr(new_user, "reset_token"):
+        new_user.reset_token = verification_token
+    if hasattr(new_user, "reset_expiry"):
+        new_user.reset_expiry = verification_expiry
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    # Send verification email
+    verify_link = build_external_url("verify_user", token=verification_token)
+    login_link = build_external_url("login")
+
+    subject = "Your PersonFinder admin account"
+    body = f"""Hello {username},
+
+An account has been created for you on PersonFinder.
+
+Login page: {login_link}
+Email: {email}
+Temporary password: {chosen_password}
+
+Before you can log in, you must verify your email by opening this link:
+{verify_link}
+
+This link will expire in 2 days.
+"""
+
+    html = f"""
+    <p>Hello <strong>{username}</strong>,</p>
+    <p>An account has been created for you on <strong>PersonFinder</strong>.</p>
+    <ul>
+      <li><strong>Login page:</strong> <a href="{login_link}">{login_link}</a></li>
+      <li><strong>Email:</strong> {email}</li>
+      <li><strong>Temporary password:</strong> <code>{chosen_password}</code></li>
+    </ul>
+    <p>Before you can log in, please verify your email:</p>
+    <p><a href="{verify_link}">Verify my account</a></p>
+    <p>This link will expire in 2 days.</p>
+    """
+
+    ok, err = send_mail(subject, [email], body=body, html=html)
+    if not ok:
+        flash(f"User created, but failed to send email: {err}", "error")
+    else:
+        flash("User created and verification email sent.", "success")
+
+    return redirect(url_for("admin_dashboard"))
+
+
+# ---------- Register ----------
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """
@@ -654,10 +1336,10 @@ def register():
     - Largest-face selection; duplicate short-circuit.
     - Agreement validation and reCAPTCHA.
     """
-    RECAPTCHA_SITE_KEY = os.getenv("RECAPTCHA_SITE_KEY", "")
+    recaptcha_site_key = os.getenv("RECAPTCHA_SITE_KEY", "")
 
     # Face settings
-    FACE_MODEL = "hog"              # "cnn" requires GPU/dlib-cnn; "hog" is CPU-friendly
+    FACE_MODEL = "hog"  # "cnn" requires GPU/dlib-cnn; "hog" is CPU-friendly
     DUPLICATE_TOLERANCE = 0.45
     DUPLICATE_MIN_CONF = 90.0
 
@@ -666,7 +1348,6 @@ def register():
 
     # ---------- helpers ----------
     def _now_ts():
-        import time
         return int(time.time())
 
     def allowed_file(filename: str) -> bool:
@@ -691,11 +1372,13 @@ def register():
             img = img.convert("RGB")
         return img
 
-    def save_as_jpeg_without_resizing(pil_img: Image.Image, out_abs_path: str, quality: int = 90):
+    def save_as_jpeg_without_resizing(
+        pil_img: Image.Image, out_abs_path: str, quality: int = 90
+    ):
         """Save as JPEG (no resizing), reasonable quality (no size cap enforced)."""
         os.makedirs(os.path.dirname(out_abs_path), exist_ok=True)
         buf = io.BytesIO()
-        pil_img.save(buf, format="JPEG", quality=quality, optimize=True)  # ✅ FIX: use the parameter
+        pil_img.save(buf, format="JPEG", quality=quality, optimize=True)
         with open(out_abs_path, "wb") as f:
             f.write(buf.getvalue())
         return out_abs_path
@@ -752,15 +1435,11 @@ def register():
         max_dim = max(pil.width, pil.height)
         if max_dim > 1600:  # purely for speed during encoding
             scale = 1600 / max_dim
-            pil = pil.resize((int(pil.width * scale), int(pil.height * scale)), Image.Resampling.LANCZOS)
+            pil = pil.resize(
+                (int(pil.width * scale), int(pil.height * scale)),
+                Image.Resampling.LANCZOS,
+            )
         return np.array(pil)
-
-    def pick_largest_face(face_locations):
-        if not face_locations:
-            return None, None
-        areas = [max(0, (b - t)) * max(0, (r - l)) for (t, r, b, l) in face_locations]
-        idx = int(np.argmax(areas))
-        return idx, face_locations[idx]
 
     filename_for_preview = None
     errors = {}
@@ -776,9 +1455,17 @@ def register():
 
         # Keep values to repopulate on error
         for k in [
-            "full_name", "age", "gender", "guardian_name", "phone_number",
-            "address", "last_seen", "registered_by_name",
-            "registered_by_phone", "registered_by_relation", "agreement"
+            "full_name",
+            "age",
+            "gender",
+            "guardian_name",
+            "phone_number",
+            "address",
+            "last_seen",
+            "registered_by_name",
+            "registered_by_phone",
+            "registered_by_relation",
+            "agreement",
         ]:
             form_data[k] = raw_form.get(k, "") or ""
 
@@ -798,7 +1485,7 @@ def register():
             "address": "Address is required.",
             "registered_by_name": "Your name is required.",
             "registered_by_phone": "Your phone number is required.",
-            "registered_by_relation": "Relation is required."
+            "registered_by_relation": "Relation is required.",
         }
         for fid, msg in required_fields.items():
             if (form_data.get(fid) or "").strip() == "":
@@ -817,14 +1504,17 @@ def register():
 
         # Early return on validation errors
         if errors:
-            return render_template(
-                "register.html",
-                filename=None,
-                errors=errors,
-                form_data=form_data,
-                focus_field=focus_field,
-                RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
-            ), 400
+            return (
+                render_template(
+                    "register.html",
+                    filename=None,
+                    errors=errors,
+                    form_data=form_data,
+                    focus_field=focus_field,
+                    RECAPTCHA_SITE_KEY=recaptcha_site_key,
+                ),
+                400,
+            )
 
         # Save photo (NO resize/byte cap), streaming
         photo_abs_path = None
@@ -845,16 +1535,21 @@ def register():
 
         if errors:
             if photo_abs_path:
-                try: os.remove(photo_abs_path)
-                except Exception: pass
-            return render_template(
-                "register.html",
-                filename=None,
-                errors=errors,
-                form_data=form_data,
-                focus_field=focus_field or "photo",
-                RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
-            ), 400
+                try:
+                    os.remove(photo_abs_path)
+                except Exception:
+                    pass
+            return (
+                render_template(
+                    "register.html",
+                    filename=None,
+                    errors=errors,
+                    form_data=form_data,
+                    focus_field=focus_field or "photo",
+                    RECAPTCHA_SITE_KEY=recaptcha_site_key,
+                ),
+                400,
+            )
 
         # Face detection & largest-face encoding (on COPY for speed only)
         try:
@@ -875,21 +1570,26 @@ def register():
             errors["photo"] = "Unable to process the uploaded photo."
 
         if errors:
-            try: os.remove(photo_abs_path)
-            except Exception: pass
-            return render_template(
-                "register.html",
-                filename=None,
-                errors=errors,
-                form_data=form_data,
-                focus_field="photo",
-                RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
-            ), 400
+            try:
+                os.remove(photo_abs_path)
+            except Exception:
+                pass
+            return (
+                render_template(
+                    "register.html",
+                    filename=None,
+                    errors=errors,
+                    form_data=form_data,
+                    focus_field="photo",
+                    RECAPTCHA_SITE_KEY=recaptcha_site_key,
+                ),
+                400,
+            )
 
         # Duplicate short-circuit (if your DB can search by encoding)
         try:
             dup_candidates = find_person_by_face(
-                chosen_encoding, tolerance=0.45, max_results=1, debug=False
+                chosen_encoding, tolerance=DUPLICATE_TOLERANCE, max_results=1, debug=False
             ) or []
         except Exception:
             dup_candidates = []
@@ -900,9 +1600,11 @@ def register():
                 conf = float(c.get("match_confidence", 0.0))
             except Exception:
                 conf = 0.0
-            if conf >= 90.0:
-                try: os.remove(photo_abs_path)
-                except Exception: pass
+            if conf >= DUPLICATE_MIN_CONF:
+                try:
+                    os.remove(photo_abs_path)
+                except Exception:
+                    pass
                 flash("This person appears to be already registered. Showing existing record.", "success")
                 return redirect(url_for("home"))
 
@@ -927,7 +1629,7 @@ def register():
             "registered_by_phone": (form_data.get("registered_by_phone") or "").strip(),
             "registered_by_relation": (form_data.get("registered_by_relation") or "").strip(),
             "detected_faces_count": len(face_locations),
-            "chosen_face_box": [int(v) for v in (chosen_box or (0, 0, 0, 0))]
+            "chosen_face_box": [int(v) for v in (chosen_box or (0, 0, 0, 0))],
         }
 
         # Save to DB
@@ -939,16 +1641,21 @@ def register():
             app.logger.exception("DB insert failed: %s", e)
             flash("Failed to save person to DB.", "error")
             if photo_abs_path:
-                try: os.remove(photo_abs_path)
-                except Exception: pass
-            return render_template(
-                "register.html",
-                filename=None,
-                errors={"server": "DB error"},
-                form_data=form_data,
-                focus_field=None,
-                RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
-            ), 500
+                try:
+                    os.remove(photo_abs_path)
+                except Exception:
+                    pass
+            return (
+                render_template(
+                    "register.html",
+                    filename=None,
+                    errors={"server": "DB error"},
+                    form_data=form_data,
+                    focus_field=None,
+                    RECAPTCHA_SITE_KEY=recaptcha_site_key,
+                ),
+                500,
+            )
 
     # GET
     return render_template(
@@ -957,16 +1664,15 @@ def register():
         form_data={},
         errors={},
         focus_field=None,
-        RECAPTCHA_SITE_KEY=RECAPTCHA_SITE_KEY
+        RECAPTCHA_SITE_KEY=recaptcha_site_key,
     )
 
 
 # --- Search Person (largest-face + optional name/gender filter) ---
-import numpy as np
 @app.route("/search", methods=["GET", "POST"])
 def search():
     # ---------------- Tunables ----------------
-    MATCH_CONFIDENCE_THRESHOLD = 60.0   # only show matches >= this
+    MATCH_CONFIDENCE_THRESHOLD = 60.0  # only show matches >= this
     MAX_RESULTS = 10
 
     # Post-face-match re-ranking / filtering (applies only if user provided fields)
@@ -974,12 +1680,12 @@ def search():
     USE_GENDER_FILTER = True
 
     # Soft vs strict behavior
-    REQUIRE_NAME_AGREEMENT = False     # if True: drop candidates whose name doesn't meet threshold
-    REQUIRE_GENDER_AGREEMENT = False   # if True: drop candidates whose gender mismatches
+    REQUIRE_NAME_AGREEMENT = False  # if True: drop candidates whose name doesn't meet threshold
+    REQUIRE_GENDER_AGREEMENT = False  # if True: drop candidates whose gender mismatches
 
-    NAME_SIM_THRESHOLD = 0.62          # similarity threshold when strict or to get strong bonus
-    NAME_SOFT_BONUS = 10.0             # how many points to add for a good name match (soft mode)
-    GENDER_SOFT_BONUS = 7.0            # how many points to add if genders match (soft mode)
+    NAME_SIM_THRESHOLD = 0.62  # similarity threshold when strict or to get strong bonus
+    NAME_SOFT_BONUS = 10.0  # how many points to add for a good name match (soft mode)
+    GENDER_SOFT_BONUS = 7.0  # how many points to add if genders match (soft mode)
     # -----------------------------------------
 
     results = []
@@ -994,10 +1700,20 @@ def search():
             return dict(p)
         out = {}
         for attr in (
-            "id", "full_name", "age", "gender", "guardian_name",
-            "phone_number", "address", "last_seen", "photo_path",
-            "registered_by_name", "registered_by_phone", "registered_by_relation",
-            "notes", "last_seen_location"
+            "id",
+            "full_name",
+            "age",
+            "gender",
+            "guardian_name",
+            "phone_number",
+            "address",
+            "last_seen",
+            "photo_path",
+            "registered_by_name",
+            "registered_by_phone",
+            "registered_by_relation",
+            "notes",
+            "last_seen_location",
         ):
             val = getattr(p, attr, None)
             if val is not None:
@@ -1005,24 +1721,15 @@ def search():
         created = getattr(p, "created_at", None) or getattr(p, "registration_date", None)
         if created and "registration_date" not in out:
             out["registration_date"] = (
-                created.strftime("%Y-%m-%d %H:%M:%S") if isinstance(created, datetime) else created
+                created.strftime("%Y-%m-%d %H:%M:%S")
+                if isinstance(created, datetime)
+                else created
             )
         return out
 
-    # ---------- helpers for largest-face ----------
-    def pick_largest_face(face_locs):
-        if not face_locs:
-            return None, None
-        areas = []
-        for (t, r, b, l) in face_locs:
-            w = max(0, r - l)
-            h = max(0, b - t)
-            areas.append(w * h)
-        idx = int(np.argmax(areas))
-        return idx, face_locs[idx]
-
     # ---------- helpers for name/gender filtering ----------
-    import re, difflib
+    import re
+    import difflib
 
     def _norm(s: str) -> str:
         s = (s or "").strip().lower()
@@ -1045,9 +1752,9 @@ def search():
         c = (candidate_gender or "").strip().lower()
         if not q or not c:
             return False
-        m = {"m":"male","f":"female","o":"other"}
-        q = m.get(q, q)
-        c = m.get(c, c)
+        mapping = {"m": "male", "f": "female", "o": "other"}
+        q = mapping.get(q, q)
+        c = mapping.get(c, c)
         return q == c
 
     if request.method == "POST":
@@ -1092,19 +1799,21 @@ def search():
                 except Exception:
                     logger.exception("Failed to record/log search")
                 if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                    return jsonify({
-                        "success": True,
-                        "results": [],
-                        "searched": True,
-                        "uploaded_photo": uploaded_photo,
-                        "face_locations": []
-                    })
+                    return jsonify(
+                        {
+                            "success": True,
+                            "results": [],
+                            "searched": True,
+                            "uploaded_photo": uploaded_photo,
+                            "face_locations": [],
+                        }
+                    )
                 return render_template(
                     "search.html",
                     results=[],
                     uploaded_photo=uploaded_photo,
                     searched=True,
-                    face_locations=[]
+                    face_locations=[],
                 )
 
             idx, chosen_box = pick_largest_face(face_locations)
@@ -1116,7 +1825,9 @@ def search():
                 face_encoding = encodings[0]
 
                 # IMPORTANT: ensure your DB encodings are np.float64 (or compatible) and length 128
-                candidates = find_person_by_face(face_encoding, tolerance=0.6, max_results=50, debug=False) or []
+                candidates = find_person_by_face(
+                    face_encoding, tolerance=0.6, max_results=50, debug=False
+                ) or []
 
                 seen_ids = set()
                 for cand in candidates:
@@ -1188,14 +1899,22 @@ def search():
                 else:
                     results = sorted(
                         filtered,
-                        key=lambda x: (x.get("_rank_score", 0.0), x.get("match_confidence", 0.0)),
-                        reverse=True
+                        key=lambda x: (
+                            x.get("_rank_score", 0.0),
+                            x.get("match_confidence", 0.0),
+                        ),
+                        reverse=True,
                     )[:MAX_RESULTS]
             else:
                 results = []
 
             try:
-                uploaded_name_for_log = os.path.basename(tmp_abs_path) if tmp_abs_path else uploaded_photo
+                uploaded_name_for_log = (
+                    os.path.basename(tmp_abs_path) if tmp_abs_path else uploaded_photo
+                )
+            except Exception:
+                uploaded_name_for_log = uploaded_photo
+            try:
                 log_best_match_search(uploaded_name_for_log, results)
             except Exception:
                 logger.exception("Failed to record/log search")
@@ -1203,7 +1922,10 @@ def search():
         except Exception:
             app.logger.exception("Error searching photo")
             try:
-                log_best_match_search(os.path.basename(tmp_abs_path) if tmp_abs_path else None, [])
+                uploaded_name_for_log = (
+                    os.path.basename(tmp_abs_path) if tmp_abs_path else None
+                )
+                log_best_match_search(uploaded_name_for_log, [])
             except Exception:
                 pass
             flash("Error processing uploaded photo.", "error")
@@ -1212,7 +1934,9 @@ def search():
             except Exception:
                 pass
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify({"success": False, "error": "Error processing uploaded photo."}), 500
+                return jsonify(
+                    {"success": False, "error": "Error processing uploaded photo."}
+                ), 500
             return redirect(url_for("search"))
 
         # --- Return JSON if AJAX ---
@@ -1223,155 +1947,320 @@ def search():
                 c2.pop("_rank_score", None)
                 c2.pop("_name_similarity", None)
                 scrubbed.append(c2)
-            return jsonify({
-                "success": True,
-                "results": scrubbed,
-                "searched": searched,
-                "uploaded_photo": uploaded_photo,
-                "face_locations": [list(chosen_box)] if face_locations else []
-            })
+            return jsonify(
+                {
+                    "success": True,
+                    "results": scrubbed,
+                    "searched": searched,
+                    "uploaded_photo": uploaded_photo,
+                    "face_locations": [list(chosen_box)] if face_locations else [],
+                }
+            )
 
     return render_template(
         "search.html",
         results=results,
         uploaded_photo=uploaded_photo,
         searched=searched,
-        face_locations=face_locations
+        face_locations=face_locations,
     )
-
-# --- Admin Dashboard ---
-@app.route("/admin/dashboard")
-@login_required
-@require_role("admin")
-def admin_dashboard():
-    page = int(request.args.get("page", 1))
-    per_page = 10
-    people_query = Person.query.order_by(Person.id.desc())
-    total_people = people_query.count()
-    people = people_query.offset((page - 1) * per_page).limit(per_page).all()
-    total_pages = ceil(total_people / per_page)
-
-    try:
-        all_people_for_util = get_all_registered_people()
-    except Exception:
-        all_people_for_util = []
-
-    stats = get_stats()
-    users = User.query.all()
-    search_logs = SearchLog.query.order_by(SearchLog.ts.desc()).limit(10).all()
 
     return render_template(
-        "admin_dashboard.html",
-        stats=stats,
-        users=users,
-        people=people,
-        search_logs=search_logs,
-        page=page,
-        total_pages=total_pages,
-    )
+    "base.html",
+    system_status="operational",  # or "degraded", "maintenance"
+    app_version=APP_VERSION,
+    current_year=datetime.utcnow().year,
+)
 
-# --- Clear_Search_Logs ---
-@app.route('/clear_search_logs', methods=['POST'])
-@login_required
-def clear_search_logs():
-    if getattr(current_user, "role", None) != 'admin':
-        flash("You do not have permission to perform this action.", "error")
-        return redirect(url_for('admin_dashboard'))
-
-    page = request.form.get("page", 1, type=int)
-
+# --- Admin helpers ----------------------------------------------------------
+def _redirect_back_to_dashboard(default_page: int = 1):
+    """Small helper to keep redirects to the same page if provided."""
     try:
-        SearchLog.query.delete()
-        db.session.commit()
-        flash("All search logs have been cleared.", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error clearing logs: {e}", "error")
-
-    return redirect(url_for('admin_dashboard', page=page))
-
-# --- Delete_Person ---
-@app.route("/delete_person/<int:person_id>", methods=["POST"])
-@login_required
-def delete_person(person_id):
-    page = request.form.get("page", 1, type=int)
-    try:
-        success = delete_person_by_id(person_id, current_user)
-        if not success:
-            flash("Person not found or unauthorized to delete.", "error")
-        else:
-            try:
-                clear_people_encodings_cache()
-            except Exception:
-                pass
-            flash("Person deleted successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error deleting person: {e}", "error")
-
+        page = int(request.form.get("page", default_page))
+    except Exception:
+        page = default_page
     return redirect(url_for("admin_dashboard", page=page))
 
-# --- Delete_Multiple_Persons ---
-@app.route("/delete_multiple_persons", methods=["POST"])
+
+@app.route("/admin/persons/delete-multiple", methods=["POST"])
 @login_required
+@require_role("admin")
 def delete_multiple_persons():
-    page = request.form.get("page", 1, type=int)
-    ids = request.form.getlist("selected_ids")
+    """
+    Delete multiple Person records based on IDs sent from the admin dashboard.
+    Expects a list of person IDs in form field 'person_ids'.
+    """
+    # IDs from checkboxes: <input type="checkbox" name="person_ids" value="{{ person.id }}">
+    raw_ids = request.form.getlist("person_ids")
+
+    if not raw_ids:
+        flash("No persons selected for deletion.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Convert to integers defensively
+    ids = []
+    for v in raw_ids:
+        try:
+            ids.append(int(v))
+        except (TypeError, ValueError):
+            continue
 
     if not ids:
-        flash("No persons selected for deletion.", "warning")
-        return redirect(url_for("admin_dashboard", page=page))
+        flash("No valid persons selected for deletion.", "error")
+        return _redirect_back_to_dashboard()
 
     try:
+        # Adjust 'Person' if your model has a different name
         Person.query.filter(Person.id.in_(ids)).delete(synchronize_session=False)
         db.session.commit()
-        try:
-            clear_people_encodings_cache()
-        except Exception:
-            pass
-        flash(f"Deleted {len(ids)} people successfully!", "success")
+        flash(f"Deleted {len(ids)} person(s).", "success")
     except Exception as e:
         db.session.rollback()
-        flash(f"Error deleting people: {e}", "error")
+        flash(f"Error deleting persons: {e}", "error")
 
-    return redirect(url_for("admin_dashboard", page=page))
+    return _redirect_back_to_dashboard()
+
+@app.route("/admin/clear-search-logs", methods=["POST"])
+@login_required
+@require_role("admin")
+def clear_search_logs():
+    """
+    Clear search logs used by the admin dashboard.
+    Tries, in order:
+      1) db_clear_search_logs() helper if it exists
+      2) SearchLog model if it exists
+    Fails gracefully if neither is present.
+    """
+    cleared = False
+    error = None
+
+    # 1) Try helper function if defined (e.g. in your db utils)
+    fn = globals().get("db_clear_search_logs")
+    if callable(fn):
+        try:
+            fn()
+            cleared = True
+        except Exception as e:
+            error = e
+
+    # 2) Fallback: try a SearchLog model, if it exists
+    if not cleared:
+        SearchLog = globals().get("SearchLog")
+        if SearchLog is not None:
+            try:
+                SearchLog.query.delete()
+                db.session.commit()
+                cleared = True
+            except Exception as e:
+                db.session.rollback()
+                error = e
+
+    if cleared:
+        flash("Search logs cleared.", "success")
+    else:
+        msg = "Could not clear search logs."
+        if DEV_MODE and error:
+            msg += f" ({error})"
+        flash(msg, "error")
+
+    return _redirect_back_to_dashboard()
+
+
+@app.route(
+    "/admin/users/<int:user_id>/reset-password",
+    methods=["POST"],
+    endpoint="admin_reset_user_password",  # 👈 endpoint matches the template
+)
+@login_required
+@require_role("admin")
+def admin_reset_user_password(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if not user.email:
+        flash("User has no email address on file; cannot send reset link.", "error")
+        return _redirect_back_to_dashboard()
+
+    token = secrets.token_urlsafe(32)
+    expiry = datetime.utcnow() + timedelta(minutes=30)
+
+    # Reuse the same reset flow as /reset-password/<token>
+    if hasattr(user, "reset_token"):
+        user.reset_token = token
+    if hasattr(user, "reset_expiry"):
+        user.reset_expiry = expiry
+
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error preparing reset link: {e}", "error")
+        return _redirect_back_to_dashboard()
+
+    reset_link = build_external_url("reset_password", token=token)
+
+    subject = "Your PersonFinder password reset link"
+    body = f"""Hello {user.username},
+
+An admin has requested a password reset for your PersonFinder account.
+
+Click this link to choose a new password (valid for 30 minutes):
+{reset_link}
+"""
+    html = f"""
+    <p>Hello <strong>{user.username}</strong>,</p>
+    <p>An admin has requested a password reset for your PersonFinder account.</p>
+    <p><a href="{reset_link}">Reset my password</a> (valid for 30 minutes)</p>
+    """
+
+    ok, err = send_mail(subject, [user.email], body=body, html=html)
+    if not ok:
+        flash(f"Reset token created, but email failed: {err}", "error")
+    else:
+        flash("Password reset link sent to the user.", "success")
+
+    return _redirect_back_to_dashboard()
+
+
+@app.route(
+    "/admin/toggle-user-role/<int:user_id>",
+    methods=["POST"],
+    endpoint="admin_toggle_user_role",  # 👈 this endpoint matches the template
+)
+@login_required
+@require_role("admin")
+def admin_toggle_user_role(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Toggle the user role (e.g., from admin to user)
+    if user.role == "admin":
+        user.role = "user"
+    else:
+        user.role = "admin"
+
+    try:
+        db.session.commit()
+        flash(f"User role updated to {user.role}.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating role: {e}", "error")
+
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route(
+    "/admin/users/<int:user_id>/toggle-active",
+    methods=["POST"],
+    endpoint="admin_toggle_user_active",  # 👈 this endpoint matches the template
+)
+@login_required
+@require_role("admin")
+def admin_toggle_user_active(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # If your User model does not yet have an `is_active` column/attribute,
+    # fail gracefully instead of crashing.
+    if not hasattr(user, "is_active"):
+        flash("This installation does not yet support enabling/disabling users.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Safety: don't let someone disable themselves
+    if user.id == current_user.id:
+        flash("You cannot disable your own account.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Safety: don't disable primary admin from .env
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
+        flash("You cannot disable the primary admin account.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Toggle active flag
+    user.is_active = not bool(user.is_active)
+
+    try:
+        db.session.commit()
+        state = "activated" if user.is_active else "deactivated"
+        flash(f"User {user.username} has been {state}.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating active status: {e}", "error")
+
+    return _redirect_back_to_dashboard()
+
+
+@app.route(
+    "/admin/users/<int:user_id>/delete",
+    methods=["POST"],
+    endpoint="admin_delete_user",  # 👈 This endpoint matches the template
+)
+@login_required
+@require_role("admin")
+def admin_delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Ensure we don't allow deleting the current admin user
+    if user.id == current_user.id:
+        flash("You cannot delete your own account.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Safety: don't delete the primary admin account
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
+        flash("You cannot delete the primary admin account.", "error")
+        return _redirect_back_to_dashboard()
+
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        flash(f"User {user.username} has been deleted.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting user: {e}", "error")
+
+    return _redirect_back_to_dashboard()
+
 
 # --- Static Pages ---
 @app.route("/privacy-policy")
 def privacy_policy():
     return render_template("privacy-policy.html")
 
+
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
 
-@app.route("/donate")
-def donate_page():
-    return render_template("donate.html")
 
 @app.route("/about")
 def about():
     return render_template("about.html", title="About App - PersonFinder")
 
+
 @app.route("/developers")
 def developers():
     return render_template("developers.html", current_year=datetime.now().year)
 
-@app.route("/donate-qr")
-def donate_qr():
-    payment_link = "upi://pay?pa=yourupiid@upi&pn=PersonFinder&am=500"
-    img = qrcode.make(payment_link)
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    buf.seek(0)
-    return send_file(buf, mimetype="image/png")
 
-@app.route('/save-subscription', methods=['POST'])
+# ✅ Single, canonical donate route
+@app.route("/donate", endpoint="donate_page")
+def donate_page():
+    return render_template(
+        "donate.html",
+        donation_account_holder=os.getenv("DONATION_ACCOUNT_HOLDER"),
+        donation_account_number=os.getenv("DONATION_ACCOUNT_NUMBER"),
+        donation_ifsc=os.getenv("DONATION_IFSC"),
+        donation_bank_name=os.getenv("DONATION_BANK_NAME"),
+        donation_upi_id=os.getenv("DONATION_UPI_ID"),
+    )
+
+
+@app.route("/save-subscription", methods=["POST"])
 def save_subscription():
     subscription_info = request.get_json()
-    person_id = request.args.get('person_id')
+    person_id = request.args.get("person_id")
     save_subscription_to_db(person_id, subscription_info)
     return jsonify({"success": True})
+
 
 # --- Admin debug endpoint ---
 @app.route("/admin/debug-match", methods=["POST"])
@@ -1391,32 +2280,21 @@ def admin_debug_match():
         except Exception:
             pass
 
+
 # ----------------- SocketIO Integration -----------------
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="threading",      # no eventlet/gevent needed
+    async_mode="threading",  # no eventlet/gevent needed
     logger=False,
     engineio_logger=os.getenv("ENGINEIO_LOG", "0") in ("1", "true", "yes", "on"),
     ping_interval=25,
     ping_timeout=60,
 )
 
+
 # ----------------- Run Flask + SocketIO -----------------
 if __name__ == "__main__":
-    import socket
-
-    def get_local_ip():
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        try:
-            s.connect(("8.8.8.8", 80))   # learn the outbound iface
-            ip = s.getsockname()[0]
-        except Exception:
-            ip = "127.0.0.1"
-        finally:
-            s.close()
-        return ip
-
     host_ip = get_local_ip()
     port = int(os.getenv("PORT", "5001"))
 
@@ -1428,8 +2306,9 @@ if __name__ == "__main__":
         app,
         host="0.0.0.0",
         port=port,
-        debug=(str(os.getenv("DEV_MODE", "true")).lower() in ("1", "true", "yes", "on")),
-        use_reloader=False,              # avoid double-start/version bump
-        allow_unsafe_werkzeug=True,     # quiets warnings in dev
-        # ssl_context="adhoc",          # <- optional if you want HTTPS locally
+        debug=DEV_MODE,
+        use_reloader=False,  # avoid double-start/version bump
+        allow_unsafe_werkzeug=True,  # quiets warnings in dev
+        # ssl_context="adhoc",       # <- optional if you want HTTPS locally
     )
+

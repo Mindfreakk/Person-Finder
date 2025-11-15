@@ -11,7 +11,7 @@
       class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center"
       role="banner" aria-label="Privacy Policy heading card"
     >
-      <!-- Decorative dots overlay -->
+      <!-- Decorative Dots -->
       <div class="absolute inset-0 pointer-events-none opacity-[.08]"
            style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
 
@@ -27,73 +27,94 @@
       </div>
     </div>
   </header>
+
   <div class="w-full max-w-4xl">
 
-  <style>
-  /* Gradient animation utility (if needed elsewhere) */
-  .animate-gradient { background-size:200% 200%; animation:gradientShift 6s ease infinite; }
-  @keyframes gradientShift {
-    0% { background-position:0% 50%; }
-    50% { background-position:100% 50%; }
-    100% { background-position:0% 50%; }
-  }
-  /* Floating card effect */
-  .card-float { animation: floaty 6.5s ease-in-out infinite; }
-  @keyframes floaty {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card-float { animation: none !important; }
-  }
-  </style>
+    <!-- Floating Animation -->
+    <style>
+      .animate-gradient { background-size:200% 200%; animation:gradientShift 6s ease infinite; }
+      @keyframes gradientShift {
+        0% { background-position:0% 50%; }
+        50% { background-position:100% 50%; }
+        100% { background-position:0% 50%; }
+      }
+      .card-float { animation: floaty 6.5s ease-in-out infinite; }
+      @keyframes floaty {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .card-float { animation: none !important; }
+      }
+    </style>
 
-  <!-- Divider -->
-  <div class="relative w-full flex justify-center my-12 sm:my-16">
-    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-      Details
-    </span>
-  </div>
-
-</div>
+    <!-- Divider -->
+    <div class="relative w-full flex justify-center my-12 sm:my-16">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Details
+      </span>
+    </div>
 
     <!-- Accordion -->
     <div id="privacy-accordion" class="space-y-3">
 
       {% set sections = [
-        {'title': '1. Information We Collect', 'content': '<p>When you use PersonFinder, we collect the following types of information:</p><ul class="list-disc ml-5 mt-2"><li><strong>Uploaded Photos:</strong> Images you submit to search for missing persons.</li><li><strong>Personal Data:</strong> Names, contact details and addresses of registered persons.</li><li><strong>Usage Data:</strong> Information about how you use the platform (searches, timestamps).</li></ul>'},
-        {'title': '2. How We Use Your Information', 'content': '<p>We use your information to:</p><ul class="list-disc ml-5 mt-2"><li>Match uploaded photos with registered persons using AI.</li><li>Improve and personalize the service.</li><li>Send important updates or support messages.</li><li>Comply with legal obligations and prevent misuse.</li></ul>'},
-        {'title': '3. Data Security', 'content': '<p>We protect your data with encryption, secure servers, and limited access. We regularly review our security measures.</p>'},
-        {'title': '4. Sharing Your Information', 'content': '<p>We do not sell your personal data. We may share information with trusted service providers under confidentiality agreements or when required by law.</p>'},
-        {'title': '5. Your Rights &amp; Choices', 'content': '<p>You can request access, corrections, or deletion of your data. Contact us for data removal or corrections.</p>'},
-        {'title': '6. Cookies &amp; Tracking', 'content': '<p>We use cookies and similar technologies to improve the site and analyze usage. You can manage cookies via your browser.</p>'},
-        {'title': '7. Changes to This Policy', 'content': '<p>We may update this Privacy Policy from time to time to reflect changes in our practices, legal requirements, or technology improvements. Significant updates will be highlighted on this page, and we encourage you to review the policy periodically. Continued use of PersonFinder after changes indicates your acceptance of the updated policy.</p>'}
+        {'title': '1. Information We Collect', 'content': '
+          <p>When you use PersonFinder, we collect the following types of information:</p>
+          <ul class="list-disc ml-5 mt-2">
+            <li><strong>Uploaded Photos:</strong> Images you submit to search for missing persons.</li>
+            <li><strong>Personal Data:</strong> Names, contact details and addresses of registered persons.</li>
+            <li><strong>Usage Data:</strong> Search activity, timestamps, and interactions.</li>
+          </ul>'},
+        {'title': '2. How We Use Your Information', 'content': '
+          <p>We use your information to:</p>
+          <ul class="list-disc ml-5 mt-2">
+            <li>Match uploaded photos with registered persons using face recognition.</li>
+            <li>Improve system accuracy and user experience.</li>
+            <li>Send important updates to registered families.</li>
+            <li>Comply with legal obligations and prevent misuse.</li>
+          </ul>'},
+        {'title': '3. Data Security', 'content': '
+          <p>We protect your data through encryption, secure storage, access controls, and regular security audits.</p>'},
+        {'title': '4. Sharing Your Information', 'content': '
+          <p>We do not sell your personal data. Information may be shared with trusted service providers under strict confidentiality or when legally required.</p>'},
+        {'title': '5. Your Rights & Choices', 'content': '
+          <p>You may request access, updates, or deletion of your data at any time.</p>'},
+        {'title': '6. Cookies & Tracking', 'content': '
+          <p>We use cookies for functionality and analytics. You may adjust your browser settings to manage cookie behavior.</p>'},
+        {'title': '7. Updates to This Policy', 'content': '
+          <p>We may revise this Privacy Policy as our systems evolve. Major updates will be announced, and continued use implies acceptance of changes.</p>'}
       ] %}
 
       {% for section in sections %}
       <article class="accordion-item bg-transparent rounded-lg" id="section-{{ loop.index }}">
-        <header class="w-full">
+        <header>
           <button
             type="button"
             id="accordion-header-{{ loop.index }}"
             class="accordion-header group flex items-start justify-between w-full px-4 py-4 sm:px-5 sm:py-5 text-left rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
             aria-expanded="false"
             aria-controls="section-content-{{ loop.index }}">
+            
             <div class="flex-1 pr-4">
-              <h3 class="text-white font-semibold text-base sm:text-lg">{{ section.title|safe }}</h3>
+              <h3 class="text-white font-semibold text-base sm:text-lg">{{ section.title }}</h3>
             </div>
 
-            <svg class="accordion-icon w-5 h-5 text-white/80 transform transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            <svg class="accordion-icon w-5 h-5 text-white/80 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
         </header>
 
-        <div id="section-content-{{ loop.index }}" class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300" role="region" aria-labelledby="accordion-header-{{ loop.index }}">
+        <div
+          id="section-content-{{ loop.index }}"
+          class="accordion-content max-h-0 overflow-hidden transition-[max-height] duration-300"
+          role="region">
+          
           <div class="accordion-inner px-4 pb-5 pt-3 sm:px-5 sm:pt-4 text-sm text-gray-400 leading-relaxed">
-            {{ section.content|safe }}
+            {{ section.content | safe }}
           </div>
         </div>
       </article>
@@ -102,60 +123,49 @@
   </div>
 </div>
 
+<!-- Accordion Styles -->
 <style>
-  .accordion-header:hover { background-color: rgba(255,255,255,0.02); }
-  .accordion-header:focus { box-shadow: 0 0 0 4px rgba(124,58,237,0.08); outline: none; border-radius: .5rem; }
+  .accordion-header:hover { background-color: rgba(255,255,255,0.03); }
   .accordion-content { transition: max-height 340ms ease; }
   .accordion-icon.rotate-180 { transform: rotate(180deg); }
 </style>
 
+<!-- Accordion Script -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const headers = document.querySelectorAll('.accordion-header');
   const contents = document.querySelectorAll('.accordion-content');
 
-  contents.forEach(c => { c.style.maxHeight = '0px'; c.classList.remove('open'); });
+  contents.forEach(c => { c.style.maxHeight = '0px'; });
 
-  function closePanel(header, content) {
-    content.style.maxHeight = '0px';
-    content.classList.remove('open');
-    header.setAttribute('aria-expanded', 'false');
-    header.querySelector('.accordion-icon')?.classList.remove('rotate-180');
-  }
-  function openPanel(header, content) {
-    const inner = content.querySelector('.accordion-inner') || content;
-    content.style.maxHeight = inner.scrollHeight + 'px';
-    content.classList.add('open');
-    header.setAttribute('aria-expanded', 'true');
-    header.querySelector('.accordion-icon')?.classList.add('rotate-180');
-  }
   function closeAll() {
-    headers.forEach(h => closePanel(h, h.closest('.accordion-item').querySelector('.accordion-content')));
+    headers.forEach(h => {
+      const c = h.closest('.accordion-item').querySelector('.accordion-content');
+      c.style.maxHeight = '0px';
+      c.classList.remove('open');
+      h.setAttribute('aria-expanded', 'false');
+      h.querySelector('.accordion-icon')?.classList.remove('rotate-180');
+    });
   }
 
   headers.forEach(header => {
-    header.addEventListener('click', function () {
+    header.addEventListener('click', () => {
       const content = header.closest('.accordion-item').querySelector('.accordion-content');
-      if (content.classList.contains('open')) {
-        closePanel(header, content);
-      } else {
-        closeAll();
-        openPanel(header, content);
-        if (window.innerWidth < 640) {
-          setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 140);
-        }
-      }
-    });
-  });
+      const isOpen = content.classList.contains('open');
 
-  window.addEventListener('resize', () => {
-    contents.forEach(c => {
-      if (c.classList.contains('open')) {
-        const inner = c.querySelector('.accordion-inner') || c;
-        c.style.maxHeight = inner.scrollHeight + 'px';
+      closeAll();
+      if (!isOpen) {
+        content.style.maxHeight = content.querySelector('.accordion-inner').scrollHeight + 'px';
+        content.classList.add('open');
+        header.setAttribute('aria-expanded', 'true');
+        header.querySelector('.accordion-icon')?.classList.add('rotate-180');
       }
+
+      if (window.innerWidth < 640)
+        setTimeout(() => header.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
     });
   });
 });
 </script>
+
 {% endblock %}

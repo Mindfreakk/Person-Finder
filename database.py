@@ -48,6 +48,18 @@ class User(db.Model):
     phone_number = db.Column(db.String(50), nullable=True)
     reset_token = db.Column(db.String(128), nullable=True)
     reset_expiry = db.Column(db.DateTime, nullable=True)
+    # NEW: allow enabling / disabling accounts
+    is_active = db.Column(db.Boolean, default=True)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Allow legacy `phone=` keyword by mapping it to `phone_number=`.
+        This prevents `TypeError: 'phone' is an invalid keyword argument for User`.
+        """
+        if "phone" in kwargs and "phone_number" not in kwargs:
+            # move phone -> phone_number
+            kwargs["phone_number"] = kwargs.pop("phone")
+        super().__init__(*args, **kwargs)
 
     # --- Password helpers ---
     def set_password(self, password: str):
@@ -121,6 +133,25 @@ class SearchLog(db.Model):
     person_id = db.Column(db.Integer, db.ForeignKey("people.id"))
 
 
+class Feedback(db.Model):
+    __tablename__ = "feedback"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=True)
+    email = db.Column(db.String(200), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # 1–5
+    message = db.Column(db.Text, nullable=False)
+
+    page_url = db.Column(db.String(500), nullable=True)
+    user_agent = db.Column(db.String(500), nullable=True)
+    ip_address = db.Column(db.String(100), nullable=True)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def __repr__(self):
+        return f"<Feedback #{self.id} {self.email} rating={self.rating}>"
+
+
 class PushSubscription(db.Model):
     __tablename__ = "push_subscriptions"
 
@@ -130,6 +161,8 @@ class PushSubscription(db.Model):
     p256dh = db.Column(db.String, nullable=False)
     auth = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 
 
 # ---------------------------------------------------
@@ -690,8 +723,11 @@ def add_missing_user_columns(db_file: str):
             "email": "TEXT",
             "phone_number": "TEXT",
             "reset_token": "TEXT",
-            "reset_expiry": "DATETIME"
+            "reset_expiry": "DATETIME",
+            # 1 = active by default for existing users
+            "is_active": "INTEGER DEFAULT 1"
         }
+
 
         for col, col_type in required_columns.items():
             if col not in existing_cols:
@@ -723,34 +759,64 @@ def ensure_admin_exists():
         tables = inspector.get_table_names()
     except Exception as e:
         logger.debug("ensure_admin_exists: couldn't inspect DB engine: %s", e)
-        tables = []
+        return
 
     if "users" not in tables:
         logger.info("users table not present; skipping ensure_admin_exists for now.")
         return
 
+    # Look up admin by the convention username='admin'
     try:
         admin = User.query.filter_by(username="admin").first()
     except Exception as e:
         logger.exception("ensure_admin_exists: DB query failed: %s", e)
         raise
 
-    if not admin:
+    # --- Create admin if missing ---
+    if admin is None:
         admin = User(
             username="admin",
             email=admin_email,
             phone_number=admin_phone,
             role="admin",
-            password_hash=generate_password_hash("Alhamdulillah@123")  # default password
+            password_hash=generate_password_hash("Alhamdulillah@123"),  # default password
         )
+        # If the model has is_active, force it to True
+        if hasattr(admin, "is_active"):
+            admin.is_active = True
+
         db.session.add(admin)
         db.session.commit()
         logger.info("✅ Created default admin user (username='admin')")
-    else:
-        # Always keep env values up to date
-        admin.email = admin_email
-        admin.phone_number = admin_phone
+        return
+
+    # --- Update existing admin record from environment ---
+    try:
+        if hasattr(admin, "email"):
+            admin.email = admin_email
+        if hasattr(admin, "phone_number"):
+            admin.phone_number = admin_phone
+
+        # 🔥 NEW: always force role back to 'admin' for this account
+        if hasattr(admin, "role") and admin.role != "admin":
+            admin.role = "admin"
+
+        # Make sure admin is not accidentally deactivated
+        if hasattr(admin, "is_active") and admin.is_active is False:
+            admin.is_active = True
+
         db.session.commit()
+        logger.info(
+            "✅ Ensured primary admin exists with email=%s, phone=%s, role=%s, is_active=%s",
+            admin.email,
+            admin.phone_number,
+            admin.role,
+            getattr(admin, "is_active", None),
+        )
+    except Exception as e:
+        db.session.rollback()
+        logger.exception("ensure_admin_exists: failed updating admin fields: %s", e)
+        raise
 
 
 def initialize_database(app):
@@ -880,10 +946,12 @@ if __name__ == "__main__":
 # Public API (for imports)
 # ---------------------------------------------------
 __all__ = [
-    "db", "initialize_database", "Person", "SearchLog", "PushSubscription", "User",
+    "db", "initialize_database",
+    "Person", "SearchLog", "PushSubscription", "User", "Feedback",
     "register_person_to_db", "get_all_registered_people", "get_person_by_id",
     "delete_person_by_id", "find_person_by_face", "log_best_match_search",
     "get_stats", "authenticate_user", "debug_find_person_by_image",
     "clear_people_encodings_cache"
 ]
+
 # End of database.py

@@ -11,7 +11,10 @@
     <div class="w-full flex justify-center mt-16">
       <div class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-3xl text-center">
         <!-- Decorative dots overlay -->
-        <div class="absolute inset-0 pointer-events-none opacity-[.08]" style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
+        <div
+          class="absolute inset-0 pointer-events-none opacity-[.08]"
+          style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"
+        ></div>
 
         <!-- Heading -->
         <div class="relative z-10 max-w-2xl mx-auto mb-2">
@@ -76,7 +79,13 @@
       <!-- Section Heading -->
       <h3 class="text-2xl sm:text-3xl font-extrabold text-center mb-2 flex items-center justify-center gap-2 text-gray-200">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-400 drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87 M16 11a4 4 0 10-8 0 4 4 0 008 0z" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87
+               M16 11a4 4 0 10-8 0 4 4 0 008 0z"
+          />
         </svg>
         Missing Person Details
       </h3>
@@ -100,26 +109,35 @@
         <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
           <div class="flex flex-col items-center gap-2">
             <!-- Upload -->
-            <label for="photo" id="upload_label"
-                   class="cursor-pointer px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
-                          hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md
-                          transition transform hover:scale-105 w-full text-center">
+            <label
+              for="photo"
+              id="upload_label"
+              class="cursor-pointer px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
+                     hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md
+                     transition transform hover:scale-105 w-full text-center"
+            >
               Upload Photo <span class="text-red-400">*</span>
             </label>
 
             <!-- Tooltip trigger (mobile) -->
             <div class="relative flex justify-center sm:hidden">
-              <button type="button" id="search_info_btn_mobile"
-                      aria-label="Upload/Use Webcam Info"
-                      class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative">
+              <button
+                type="button"
+                id="search_info_btn_mobile"
+                aria-label="Upload/Use Webcam Info"
+                class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative"
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                  />
                 </svg>
               </button>
               <!-- Tooltip (will be floated via JS) -->
-              <span id="search_info_tip_mobile" role="tooltip"
-                    class="tooltip theme-dark">
+              <span id="search_info_tip_mobile" role="tooltip" class="tooltip theme-dark">
                 For optimal results, please upload a high-quality, front-facing photo.
               </span>
             </div>
@@ -127,11 +145,19 @@
 
           <!-- Tooltip trigger (desktop) -->
           <div class="relative hidden sm:flex justify-center">
-            <button type="button" id="search_info_btn" aria-label="Upload/Use Webcam Info"
-                    class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative">
+            <button
+              type="button"
+              id="search_info_btn"
+              aria-label="Upload/Use Webcam Info"
+              class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                />
               </svg>
             </button>
             <span id="search_info_tip" role="tooltip" class="tooltip theme-dark">
@@ -140,24 +166,36 @@
           </div>
 
           <!-- Webcam -->
-          <button type="button" id="use_webcam_btn"
-                  class="hidden sm:inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500
-                         hover:from-fuchsia-500 hover:to-violet-500 text-white font-medium shadow-md
-                         transition transform hover:scale-105">
+          <button
+            type="button"
+            id="use_webcam_btn"
+            class="hidden sm:inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500
+                   hover:from-fuchsia-500 hover:to-violet-500 text-white font-medium shadow-md
+                   transition transform hover:scale-105"
+          >
             Use Webcam
           </button>
         </div>
 
         <!-- Webcam Area -->
-        <div id="webcam_container" class="hidden mt-4 w-full max-w-md rounded-xl border border-white/20 p-3 bg-white/5">
+        <div
+          id="webcam_container"
+          class="hidden mt-4 w-full max-w-md rounded-xl border border-white/20 p-3 bg-white/5"
+        >
           <video id="webcam" autoplay playsinline class="w-full rounded-lg bg-black"></video>
           <div class="mt-3 flex gap-3 justify-center">
-            <button type="button" id="capture_btn"
-                    class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow">
+            <button
+              type="button"
+              id="capture_btn"
+              class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow"
+            >
               Capture
             </button>
-            <button type="button" id="close_webcam_btn"
-                    class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow">
+            <button
+              type="button"
+              id="close_webcam_btn"
+              class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow"
+            >
               Close
             </button>
           </div>
@@ -165,13 +203,22 @@
 
         <!-- Photo Preview -->
         <div id="photo_preview_container" class="hidden w-full flex justify-center mt-4 relative">
-          <img id="photo_preview" alt="Photo Preview"
-               class="max-h-56 rounded-xl shadow-md border border-gray-500/30 object-contain"/>
-          <button type="button" onclick="clearPhoto()"
-                  class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md shadow-md">
+          <img
+            id="photo_preview"
+            alt="Photo Preview"
+            class="max-h-56 rounded-xl shadow-md border border-gray-500/30 object-contain"
+          />
+          <button
+            type="button"
+            onclick="clearPhoto()"
+            class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded-md shadow-md"
+          >
             ✕
           </button>
-          <span id="photo_check" class="hidden absolute top-2 left-2 text-green-500 text-2xl font-bold">✔</span>
+          <span
+            id="photo_check"
+            class="hidden absolute top-2 left-2 text-green-500 text-2xl font-bold"
+          >✔</span>
         </div>
 
         <!-- Error Message -->
@@ -187,20 +234,38 @@
         <!-- Full Name -->
         <div class="relative">
           <label for="full_name" class="block font-medium mb-1 text-gray-200">Full Name</label>
-          <input type="text" id="full_name" name="full_name" placeholder="e.g. John Doe" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="full_name_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="full_name"
+            name="full_name"
+            placeholder="e.g. John Doe"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="full_name_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="full_name_error" class="text-red-400 text-xs mt-1 hidden">Full name is required.</p>
         </div>
 
         <!-- Age -->
         <div class="relative">
           <label for="age" class="block font-medium mb-1 text-gray-200">Age</label>
-          <input type="number" id="age" name="age" placeholder="e.g. 30" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="age_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            placeholder="e.g. 30"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="age_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="age_error" class="text-red-400 text-xs mt-1 hidden">Age is required.</p>
         </div>
 
@@ -208,9 +273,13 @@
         <div class="relative">
           <label for="gender" class="block font-medium mb-1 text-gray-200">Gender</label>
           <div class="relative">
-            <select id="gender" name="gender" required
-                    class="w-full appearance-none px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                           focus:ring-2 focus:ring-purple-500 focus:outline-none">
+            <select
+              id="gender"
+              name="gender"
+              required
+              class="w-full appearance-none px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                     focus:ring-2 focus:ring-purple-500 focus:outline-none"
+            >
               <option value="">Select</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -218,47 +287,85 @@
             </select>
             <span class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">▼</span>
           </div>
-          <span id="gender_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <span
+            id="gender_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="gender_error" class="text-red-400 text-xs mt-1 hidden">Please select a gender.</p>
         </div>
 
         <!-- Guardian Name -->
         <div class="relative">
           <label for="guardian_name" class="block font-medium mb-1 text-gray-200">Guardian Name</label>
-          <input type="text" id="guardian_name" name="guardian_name" placeholder="e.g. Jane Doe" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="guardian_name_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="guardian_name"
+            name="guardian_name"
+            placeholder="e.g. Jane Doe"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="guardian_name_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="guardian_name_error" class="text-red-400 text-xs mt-1 hidden">Guardian name is required.</p>
         </div>
 
         <!-- Guardian Phone -->
         <div class="relative">
           <label for="phone_number" class="block font-medium mb-1 text-gray-200">Guardian Phone</label>
-          <input type="text" id="phone_number" name="phone_number" placeholder="e.g. +1234567890" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="phone_number_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="phone_number"
+            name="phone_number"
+            placeholder="e.g. +1234567890"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="phone_number_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="phone_number_error" class="text-red-400 text-xs mt-1 hidden">Phone number is required.</p>
         </div>
 
         <!-- Address -->
         <div class="relative">
           <label for="address" class="block font-medium mb-1 text-gray-200">Address</label>
-          <input type="text" id="address" name="address" placeholder="e.g. City, Country" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="address_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            placeholder="e.g. City, Country"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="address_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="address_error" class="text-red-400 text-xs mt-1 hidden">Address is required.</p>
         </div>
 
         <!-- Last Seen (optional) -->
         <div class="relative md:col-span-2">
           <label for="last_seen" class="block font-medium mb-1 text-gray-200">Last Seen (optional)</label>
-          <input type="text" id="last_seen" name="last_seen" placeholder="e.g. Street, City, DD-MM-YYYY"
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="last_seen_check" class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="last_seen"
+            name="last_seen"
+            placeholder="e.g. Street, City, DD-MM-YYYY"
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="last_seen_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
         </div>
       </div>
 
@@ -273,17 +380,28 @@
 
         <!-- Checkbox + Info -->
         <label class="flex items-center gap-2 text-sm font-normal cursor-pointer relative">
-          <input type="checkbox" id="same_as_guardian"
-                 class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+          <input
+            type="checkbox"
+            id="same_as_guardian"
+            class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+          >
           <span class="text-gray-200">Same as Guardian</span>
 
           <!-- Info button + tooltip -->
           <span class="relative ml-3 inline-flex items-center justify-center">
-            <button type="button" id="info-btn" aria-label="Info about Same as Guardian"
-                    class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none">
+            <button
+              type="button"
+              id="info-btn"
+              aria-label="Info about Same as Guardian"
+              class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                />
               </svg>
             </button>
 
@@ -298,50 +416,84 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="relative">
           <label for="registered_by_name" class="block font-medium mb-1 text-gray-200">Name</label>
-          <input type="text" id="registered_by_name" name="registered_by_name" placeholder="Full Name" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="registered_by_name_check"
-                class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="registered_by_name"
+            name="registered_by_name"
+            placeholder="Full Name"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="registered_by_name_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="registered_by_name_error" class="text-red-400 text-xs mt-1 hidden">Your name is required.</p>
         </div>
 
         <div class="relative">
           <label for="registered_by_phone" class="block font-medium mb-1 text-gray-200">Phone Number</label>
-          <input type="text" id="registered_by_phone" name="registered_by_phone" placeholder="e.g., 9876543210" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="registered_by_phone_check"
-                class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="registered_by_phone"
+            name="registered_by_phone"
+            placeholder="e.g., 9876543210"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="registered_by_phone_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="registered_by_phone_error" class="text-red-400 text-xs mt-1 hidden">Your phone number is required.</p>
         </div>
 
         <div class="relative">
           <label for="registered_by_relation" class="block font-medium mb-1 text-gray-200">Relation</label>
-          <input type="text" id="registered_by_relation" name="registered_by_relation" placeholder="e.g. Parent, Sibling" required
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
-                        focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
-          <span id="registered_by_relation_check"
-                class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
+          <input
+            type="text"
+            id="registered_by_relation"
+            name="registered_by_relation"
+            placeholder="e.g. Parent, Sibling"
+            required
+            class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
+                   focus:ring-2 focus:ring-purple-500 focus:outline-none"
+          />
+          <span
+            id="registered_by_relation_check"
+            class="hidden absolute right-3 top-[46px] -translate-y-1/2 text-green-500 text-xl font-bold"
+          >✔</span>
           <p id="registered_by_relation_error" class="text-red-400 text-xs mt-1 hidden">Relation is required.</p>
         </div>
       </div>
 
-      <!-- Divider before Registered By -->
+      <!-- Divider before Agreement -->
       <div class="w-full border-t border-white/20 my-6"></div>
 
       <!-- Agreement Block -->
       <div class="mt-2 relative">
         <div class="flex items-start gap-3">
-          <input type="checkbox" id="agreement" name="agreement"
-                 class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shrink-0">
+          <input
+            type="checkbox"
+            id="agreement"
+            name="agreement"
+            class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 shrink-0"
+          >
           <label for="agreement" class="flex-1">
             <span class="block text-[0.78rem] sm:text-[0.86rem] md:text-sm leading-6 text-gray-200 font-sans">
               I confirm that the information and photo provided are accurate and may be used for identification and registration purposes,
               in accordance with the
-              <a href="{{ url_for('privacy_policy') }}" class="text-blue-300 hover:text-blue-200 underline underline-offset-2">Privacy Policy</a>
+              <a
+                href="{{ url_for('privacy_policy') }}"
+                class="text-blue-300 hover:text-blue-200 underline underline-offset-2"
+              >Privacy Policy</a>
               and
-              <a href="{{ url_for('terms') }}" class="text-blue-300 hover:text-blue-200 underline underline-offset-2">Terms of Service</a>
+              <a
+                href="{{ url_for('terms') }}"
+                class="text-blue-300 hover:text-blue-200 underline underline-offset-2"
+              >Terms of Service</a>
               of
               <span class="font-extrabold tracking-wider bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
                 PersonFinder
@@ -358,11 +510,14 @@
               aria-label="Agreement info"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fill-rule="evenodd"
-                      d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8
-                         8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
-                         000-2zm-1 4a1 1 0 012 0v4a1 1 0 11-2
-                         0v-4z" clip-rule="evenodd" />
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8
+                     8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
+                     000-2zm-1 4a1 1 0 012 0v4a1 1 0 11-2
+                     0v-4z"
+                  clip-rule="evenodd"
+                />
               </svg>
             </button>
 
@@ -373,19 +528,26 @@
         </div>
 
         <!-- Toast (re-usable) -->
-        <div id="agreement_toast"
-             class="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-[90vw] w-auto px-4 py-3 text-sm
-                    text-white bg-red-600 rounded shadow-md z-50 opacity-0 pointer-events-none
-                    transition-all duration-300 ease-in-out translate-y-8 hidden" role="alert" aria-live="polite">
+        <div
+          id="agreement_toast"
+          class="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-[90vw] w-auto px-4 py-3 text-sm
+                 text-white bg-red-600 rounded shadow-md z-50 opacity-0 pointer-events-none
+                 transition-all duration-300 ease-in-out translate-y-8 hidden"
+          role="alert"
+          aria-live="polite"
+        >
           <span>Please review and accept the terms before submitting the form.</span>
-          <button id="toast_close_btn"
-                  class="absolute top-1 right-2 text-white hover:text-gray-200 text-lg leading-none" aria-label="Close">
+          <button
+            id="toast_close_btn"
+            class="absolute top-1 right-2 text-white hover:text-gray-200 text-lg leading-none"
+            aria-label="Close"
+          >
             ×
           </button>
         </div>
       </div>
 
-      <!-- Divider before Registered By -->
+      <!-- Divider before Submit -->
       <div class="w-full border-t border-white/20 my-6"></div>
 
       <!-- reCAPTCHA v3 response input -->
@@ -394,18 +556,35 @@
       <!-- Submit Button (wrapped in a container card) -->
       <div class="flex justify-center mt-4">
         <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3 shadow-xl">
-          <button type="button" id="register_btn"
-                  class="px-14 py-3 rounded-xl text-white font-semibold text-lg shadow-lg
-                         transform transition hover:scale-105 bg-gradient-to-r from-green-500 to-blue-500
-                         relative overflow-hidden flex items-center justify-center gap-2
-                         w-auto min-w-[220px] max-w-[420px]">
-            <svg id="register_spinner"
-                 class="hidden w-5 h-5 animate-spin spinner-pulse text-white mr-2"
-                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-              <circle class="opacity-25" cx="12" cy="12" r="10"
-                      stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          <button
+            type="button"
+            id="register_btn"
+            class="px-14 py-3 rounded-xl text-white font-semibold text-lg shadow-lg
+                   transform transition hover:scale-105 bg-gradient-to-r from-green-500 to-blue-500
+                   relative overflow-hidden flex items-center justify-center gap-2
+                   w-auto min-w-[220px] max-w-[420px]"
+          >
+            <svg
+              id="register_spinner"
+              class="hidden w-5 h-5 animate-spin spinner-pulse text-white mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
             </svg>
             <span id="register_text">Register</span>
             <span class="absolute inset-0 rounded-xl shimmer pointer-events-none"></span>
@@ -419,15 +598,25 @@
         </p>
       {% endif %}
 
-      <p id="review_note"
-         class="text-xs flex items-center justify-center gap-2 mt-2 opacity-0 transform translate-y-6 transition-all duration-500">
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="h-4 w-4 text-yellow-500"
-             fill="none" viewBox="0 0 24 24"
-             stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9
-                   4.03-9 9-9 9 4.03 9 9z" />
+      <p
+        id="review_note"
+        class="text-xs flex items-center justify-center gap-2 mt-2 opacity-0 transform translate-y-6 transition-all duration-500"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 text-yellow-500"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9
+               4.03-9 9-9 9 4.03 9 9z"
+          />
         </svg>
         Please review details before submitting.
       </p>
@@ -436,735 +625,982 @@
       <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_SITE_KEY }}" async defer></script>
     </form>
 
-  <!-- Note Divider -->
-  <div class="relative w-full flex justify-center my-16 sm:my-20">
-    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-      Note
-    </span>
-  </div>
+    <!-- Note Divider -->
+    <div class="relative w-full flex justify-center my-16 sm:my-20">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Note
+      </span>
+    </div>
 
-  <!-- Info Box with Floating Icon + Pulse Card -->
-<div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-6 shadow-lg
-            max-w-2xl mx-auto text-center mb-20 relative animate-slide-in animate-pulse-slow">
+    <!-- Info Box with Floating Icon + Pulse Card -->
+    <div
+      class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-6 shadow-lg
+             max-w-2xl mx-auto text-center mb-20 relative animate-slide-in animate-pulse-slow"
+    >
+      <!-- Centering wrapper (handles -translate-x-1/2) -->
+      <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+        <!-- Inner animated chip (only translateY so X-centering is preserved) -->
+        <div
+          class="pf-float-chip bg-indigo-800 border border-indigo-400/50 text-yellow-300
+                 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md"
+          aria-hidden="true"
+        >
+          ⚠️
+        </div>
+      </div>
 
-  <!-- Centering wrapper (handles -translate-x-1/2) -->
-  <div class="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-    <!-- Inner animated chip (only translateY so X-centering is preserved) -->
-    <div class="pf-float-chip bg-indigo-800 border border-indigo-400/50 text-yellow-300
-                w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shadow-md"
-         aria-hidden="true">⚠️</div>
-  </div>
+      <p class="mt-7 sm:mt-6 text-xs sm:text-sm leading-relaxed text-gray-200">
+        All information provided will only be used for search and identification purposes within
+        <span class="font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+          PersonFinder
+        </span>.
+        Your data is stored securely and not shared with third parties.
+        Providing accurate details helps us
+        <span class="text-green-300 font-semibold">reunite families faster</span>.
+      </p>
+    </div>
 
-  <p class="mt-7 sm:mt-6 text-xs sm:text-sm leading-relaxed text-gray-200">
-    All information provided will only be used for search and identification purposes within
-    <span class="font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
-      PersonFinder
-    </span>.
-    Your data is stored securely and not shared with third parties.
-    Providing accurate details helps us <span class="text-green-300 font-semibold">reunite families faster</span>.
-  </p>
-</div>
+    <!-- Animations -->
+    <style>
+    /* Slide-in from bottom */
+    @keyframes slideInUp {
+      0%   { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(2px); }
+      60%  { opacity: 1; transform: translateY(-6px) scale(1.01); filter: none; }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: none; }
+    }
 
-<!-- Animations -->
-<style>
-/* Slide-in from bottom */
-@keyframes slideInUp {
-  0%   { opacity: 0; transform: translateY(18px) scale(0.98); filter: blur(2px); }
-  60%  { opacity: 1; transform: translateY(-6px) scale(1.01); filter: none; }
-  100% { opacity: 1; transform: translateY(0) scale(1); filter: none; }
-}
+    /* Gentle pulse for the card */
+    @keyframes pulseInOut {
+      0%   { transform: scale(0.985); opacity: 0.9; }
+      50%  { transform: scale(1.015); opacity: 1; }
+      100% { transform: scale(0.985); opacity: 0.9; }
+    }
 
-/* Gentle pulse for the card */
-@keyframes pulseInOut {
-  0%   { transform: scale(0.985); opacity: 0.9; }
-  50%  { transform: scale(1.015); opacity: 1; }
-  100% { transform: scale(0.985); opacity: 0.9; }
-}
+    /* Float only on Y (so it doesn't fight the -translate-x-1/2 centering) */
+    @keyframes pfTooltipFloatY {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-5px); }
+    }
 
-/* Float only on Y (so it doesn't fight the -translate-x-1/2 centering) */
-@keyframes pfTooltipFloatY {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-5px); }
-}
+    /* Apply animations */
+    .animate-slide-in {
+      animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both;
+      will-change: transform, opacity;
+    }
+    .animate-pulse-slow {
+      animation:
+        slideInUp 700ms cubic-bezier(.22,.61,.36,1) both,
+        pulseInOut 3s ease-in-out 700ms infinite;
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+    .pf-float-chip {
+      animation: pfTooltipFloatY 1.8s ease-in-out infinite;
+      will-change: transform;
+    }
 
-/* Apply animations */
-.animate-slide-in {
-  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both;
-  will-change: transform, opacity;
-}
-.animate-pulse-slow {
-  animation: slideInUp 700ms cubic-bezier(.22,.61,.36,1) both,
-             pulseInOut 3s ease-in-out 700ms infinite;
-  transform-origin: center;
-  will-change: transform, opacity;
-}
-.pf-float-chip {
-  animation: pfTooltipFloatY 1.8s ease-in-out infinite;
-  will-change: transform;
-}
+    /* Mobile polish */
+    @media (max-width: 480px) {
+      .pf-float-chip { box-shadow: 0 6px 14px rgba(0,0,0,.35); }
+    }
 
-/* Mobile polish */
-@media (max-width: 480px) {
-  .pf-float-chip { box-shadow: 0 6px 14px rgba(0,0,0,.35); }
-}
+    /* Reduce motion accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      .animate-slide-in,
+      .animate-pulse-slow,
+      .pf-float-chip {
+        animation: none !important;
+      }
+    }
+    </style>
 
-/* Reduce motion accessibility */
-@media (prefers-reduced-motion: reduce) {
-  .animate-slide-in, .animate-pulse-slow, .pf-float-chip { animation: none !important; }
-}
-</style>
+    <script>
+    /* Add the float class to your tooltip icons (run once after DOM is ready) */
+    (function () {
+      const ids = [
+        'agreement_info_btn',   // consent tooltip icon
+        'info-btn',             // "Same as Guardian" info icon
+        'search_info_btn',      // desktop photo/upload info
+        'search_info_btn_mobile'// mobile photo/upload info
+      ];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('pf-tooltip-float');
+      });
+    })();
+    </script>
 
-<script>
-/* Add the float class to your tooltip icons (run once after DOM is ready) */
-(function () {
-  const ids = [
-    'agreement_info_btn', // consent tooltip icon
-    'info-btn',           // "Same as Guardian" info icon
-    'search_info_btn',    // desktop photo/upload info
-    'search_info_btn_mobile' // mobile photo/upload info
-  ];
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.add('pf-tooltip-float');
-  });
-})();
-</script>
-<!-- Floating Tooltip JS -->
-<script>
-/* Optional: keep or merge with your existing CSS */
-(function ensureTooltipHiddenClass(){
-  if (!document.getElementById('pf-tooltip-style')) {
-    const s = document.createElement('style');
-    s.id = 'pf-tooltip-style';
-    s.textContent = `.tooltip-hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s ease}`;
-    document.head.appendChild(s);
-  }
-})();
+    <!-- Floating Tooltip JS -->
+    <script>
+    (function ensureTooltipHiddenClass() {
+      if (!document.getElementById('pf-tooltip-style')) {
+        const s = document.createElement('style');
+        s.id = 'pf-tooltip-style';
+        s.textContent = '.tooltip-hidden{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s ease}';
+        document.head.appendChild(s);
+      }
+    })();
 
-/* A single fixed overlay that hosts all tooltips to avoid clipping/offset bugs */
-function getTooltipLayer() {
-  let layer = document.getElementById('tooltip-layer');
-  if (!layer) {
-    layer = document.createElement('div');
-    layer.id = 'tooltip-layer';
-    layer.style.position = 'fixed';
-    layer.style.inset = '0';
-    layer.style.zIndex = '9999';
-    layer.style.pointerEvents = 'none';      // each tooltip enables its own pointer events when shown
-    layer.style.contain = 'layout style size';
-    document.body.appendChild(layer);
-  }
-  return layer;
-}
+    /* A single fixed overlay that hosts all tooltips to avoid clipping/offset bugs */
+    function getTooltipLayer() {
+      let layer = document.getElementById('tooltip-layer');
+      if (!layer) {
+        layer = document.createElement('div');
+        layer.id = 'tooltip-layer';
+        layer.style.position = 'fixed';
+        layer.style.inset = '0';
+        layer.style.zIndex = '9999';
+        layer.style.pointerEvents = 'none';      // each tooltip enables its own pointer events when shown
+        layer.style.contain = 'layout style size';
+        document.body.appendChild(layer);
+      }
+      return layer;
+    }
 
-function attachFloatingTooltip(trigger, tooltip, { hover=true, click=true, gap=8 } = {}) {
-  if (!trigger || !tooltip) return;
+    function attachFloatingTooltip(trigger, tooltip, { hover = true, click = true, gap = 8 } = {}) {
+      if (!trigger || !tooltip) return;
 
-  const layer = getTooltipLayer();
+      const layer = getTooltipLayer();
 
-  // Prepare tooltip node
-  tooltip.classList.add('tooltip-hidden');
-  tooltip.style.position = 'absolute';       // inside fixed layer
-  tooltip.style.top = '-9999px';
-  tooltip.style.left = '-9999px';
-  tooltip.style.maxWidth = 'min(320px, calc(100vw - 16px))';
-  tooltip.style.pointerEvents = 'none';      // enabled when visible
-  tooltip.setAttribute('aria-hidden', 'true');
+      // Prepare tooltip node
+      tooltip.classList.add('tooltip-hidden');
+      tooltip.style.position = 'absolute';       // inside fixed layer
+      tooltip.style.top = '-9999px';
+      tooltip.style.left = '-9999px';
+      tooltip.style.maxWidth = 'min(320px, calc(100vw - 16px))';
+      tooltip.style.pointerEvents = 'none';      // enabled when visible
+      tooltip.setAttribute('aria-hidden', 'true');
 
-  // Move into the layer to avoid clipping/transform issues from parents
-  if (!layer.contains(tooltip)) layer.appendChild(tooltip);
+      // Move into the layer to avoid clipping/transform issues from parents
+      if (!layer.contains(tooltip)) layer.appendChild(tooltip);
 
-  // Visual viewport offsets (iOS Safari / zoom / collapsing URL bar)
-  const vv = window.visualViewport || null;
-  const getVV = () => ({
-    ox: vv ? (vv.offsetLeft || 0) : 0,
-    oy: vv ? (vv.offsetTop  || 0) : 0
-  });
+      // Visual viewport offsets (iOS Safari / zoom / collapsing URL bar)
+      const vv = window.visualViewport || null;
+      const getVV = () => ({
+        ox: vv ? (vv.offsetLeft || 0) : 0,
+        oy: vv ? (vv.offsetTop  || 0) : 0
+      });
 
-  // Clamp horizontally inside viewport
-  const clampX = (left, width) => {
-    const vw = window.innerWidth;
-    const min = 8;
-    const max = Math.max(min, vw - width - 8);
-    return Math.max(min, Math.min(left, max));
-  };
+      // Clamp horizontally inside viewport
+      const clampX = (left, width) => {
+        const vw = window.innerWidth;
+        const min = 8;
+        const max = Math.max(min, vw - width - 8);
+        return Math.max(min, Math.min(left, max));
+      };
 
-  const show = () => {
-    const rect = trigger.getBoundingClientRect();
-    const { ox, oy } = getVV();
+      const show = () => {
+        const rect = trigger.getBoundingClientRect();
+        const { ox, oy } = getVV();
 
-    // Make visible for measurement
-    tooltip.classList.remove('tooltip-hidden');
-    tooltip.setAttribute('aria-hidden', 'false');
-    tooltip.style.pointerEvents = 'auto';
+        // Make visible for measurement
+        tooltip.classList.remove('tooltip-hidden');
+        tooltip.setAttribute('aria-hidden', 'false');
+        tooltip.style.pointerEvents = 'auto';
 
-    // Park for measurement
-    tooltip.style.left = '0px';
-    tooltip.style.top  = '-9999px';
+        // Park for measurement
+        tooltip.style.left = '0px';
+        tooltip.style.top  = '-9999px';
 
-    // First pass size
-    const maxW = Math.min(320, window.innerWidth - 16);
-    tooltip.style.maxWidth = maxW + 'px';
-    let tw = Math.min(tooltip.offsetWidth, maxW);
-    let th = tooltip.offsetHeight;
+        // First pass size
+        const maxW = Math.min(320, window.innerWidth - 16);
+        tooltip.style.maxWidth = maxW + 'px';
+        let tw = Math.min(tooltip.offsetWidth, maxW);
+        let th = tooltip.offsetHeight;
 
-    // Prefer above; fall back to below if not enough space
-    let top = rect.top - gap - th;
-    let placement = 'top';
-    if (top < 8) { top = rect.bottom + gap; placement = 'bottom'; }
+        // Prefer above; fall back to below if not enough space
+        let top = rect.top - gap - th;
+        let placement = 'top';
+        if (top < 8) { top = rect.bottom + gap; placement = 'bottom'; }
 
-    // Center horizontally relative to trigger and clamp
-    let left = rect.left + (rect.width / 2) - (tw / 2);
-    left = clampX(left, tw);
+        // Center horizontally relative to trigger and clamp
+        let left = rect.left + (rect.width / 2) - (tw / 2);
+        left = clampX(left, tw);
 
-    // Apply visual viewport offsets so absolute-in-fixed aligns with trigger
-    tooltip.style.left = (left + ox) + 'px';
-    tooltip.style.top  = (top  + oy) + 'px';
-    tooltip.dataset.placement = placement;
+        // Apply visual viewport offsets so absolute-in-fixed aligns with trigger
+        tooltip.style.left = (left + ox) + 'px';
+        tooltip.style.top  = (top  + oy) + 'px';
+        tooltip.dataset.placement = placement;
 
-    // Re-measure in case of reflow after positioning (fonts/wrap)
-    tw = Math.min(tooltip.offsetWidth, maxW);
-    th = tooltip.offsetHeight;
+        // Re-measure in case of reflow after positioning (fonts/wrap)
+        tw = Math.min(tooltip.offsetWidth, maxW);
+        th = tooltip.offsetHeight;
 
-    left = rect.left + (rect.width / 2) - (tw / 2);
-    left = clampX(left, tw);
-    top  = placement === 'top' ? (rect.top - gap - th) : (rect.bottom + gap);
+        left = rect.left + (rect.width / 2) - (tw / 2);
+        left = clampX(left, tw);
+        top  = placement === 'top' ? (rect.top - gap - th) : (rect.bottom + gap);
 
-    tooltip.style.left = (left + ox) + 'px';
-    tooltip.style.top  = (top  + oy) + 'px';
-  };
+        tooltip.style.left = (left + ox) + 'px';
+        tooltip.style.top  = (top  + oy) + 'px';
+      };
 
-  const hide = () => {
-    tooltip.classList.add('tooltip-hidden');
-    tooltip.setAttribute('aria-hidden', 'true');
-    tooltip.style.pointerEvents = 'none';
-  };
+      const hide = () => {
+        tooltip.classList.add('tooltip-hidden');
+        tooltip.setAttribute('aria-hidden', 'true');
+        tooltip.style.pointerEvents = 'none';
+      };
 
-  // Keep positioned while visible on layout/viewport changes
-  const onLayout = () => { if (!tooltip.classList.contains('tooltip-hidden')) show(); };
+      // Keep positioned while visible on layout/viewport changes
+      const onLayout = () => {
+        if (!tooltip.classList.contains('tooltip-hidden')) show();
+      };
 
-  // Hover handlers
-  let hoverHandlers = [];
-  if (hover) {
-    const onEnter = () => show();
-    const onLeave = (e) => {
-      // If moving into tooltip itself, don't hide yet (pointer events are on when visible)
-      if (e && tooltip.contains(e.relatedTarget)) return;
-      hide();
-    };
-    trigger.addEventListener('mouseenter', onEnter, { passive:true });
-    trigger.addEventListener('mouseleave', onLeave, { passive:true });
-    tooltip.addEventListener('mouseleave', hide, { passive:true });
-    hoverHandlers.push(['mouseenter', onEnter], ['mouseleave', onLeave]);
-  }
+      // Hover handlers
+      const hoverHandlers = [];
+      if (hover) {
+        const onEnter = () => show();
+        const onLeave = (e) => {
+          // If moving into tooltip itself, don't hide yet (pointer events are on when visible)
+          if (e && tooltip.contains(e.relatedTarget)) return;
+          hide();
+        };
+        trigger.addEventListener('mouseenter', onEnter, { passive: true });
+        trigger.addEventListener('mouseleave', onLeave, { passive: true });
+        tooltip.addEventListener('mouseleave', hide, { passive: true });
+        hoverHandlers.push(['mouseenter', onEnter], ['mouseleave', onLeave]);
+      }
 
-  // Click / tap handlers
-  let clickHandler = null;
-  let outsideHandler = null;
-  let escHandler = null;
-  if (click) {
-    clickHandler = (e) => {
-      e.stopPropagation();
-      if (tooltip.classList.contains('tooltip-hidden')) show();
-      else hide();
-    };
-    trigger.addEventListener('click', clickHandler);
+      // Click / tap handlers
+      let clickHandler = null;
+      let outsideHandler = null;
+      let escHandler = null;
+      if (click) {
+        clickHandler = (e) => {
+          e.stopPropagation();
+          if (tooltip.classList.contains('tooltip-hidden')) show();
+          else hide();
+        };
+        trigger.addEventListener('click', clickHandler);
 
-    outsideHandler = (e) => {
-      if (e.target !== trigger && !tooltip.contains(e.target)) hide();
-    };
-    document.addEventListener('click', outsideHandler);
+        outsideHandler = (e) => {
+          if (e.target !== trigger && !tooltip.contains(e.target)) hide();
+        };
+        document.addEventListener('click', outsideHandler);
 
-    escHandler = (e) => { if (e.key === 'Escape') hide(); };
-    document.addEventListener('keydown', escHandler);
-  }
+        escHandler = (e) => {
+          if (e.key === 'Escape') hide();
+        };
+        document.addEventListener('keydown', escHandler);
+      }
 
-  // Reposition on scroll/resize and visualViewport changes
-  window.addEventListener('resize', onLayout, { passive:true });
-  window.addEventListener('scroll', onLayout, { passive:true });
-  if (vv) {
-    vv.addEventListener('scroll', onLayout, { passive:true });
-    vv.addEventListener('resize', onLayout, { passive:true });
-  }
-
-  return {
-    show, hide,
-    destroy() {
-      hoverHandlers.forEach(([t, fn]) => trigger.removeEventListener(t, fn));
-      if (clickHandler) trigger.removeEventListener('click', clickHandler);
-      if (outsideHandler) document.removeEventListener('click', outsideHandler);
-      if (escHandler) document.removeEventListener('keydown', escHandler);
-      window.removeEventListener('resize', onLayout);
-      window.removeEventListener('scroll', onLayout);
+      // Reposition on scroll/resize and visualViewport changes
+      window.addEventListener('resize', onLayout, { passive: true });
+      window.addEventListener('scroll', onLayout, { passive: true });
       if (vv) {
-        vv.removeEventListener('scroll', onLayout);
-        vv.removeEventListener('resize', onLayout);
+        vv.addEventListener('scroll', onLayout, { passive: true });
+        vv.addEventListener('resize', onLayout, { passive: true });
       }
-    }
-  };
-}
 
-/* ===== Perf helper ===== */
-const runIdle = (fn) => ('requestIdleCallback' in window)
-  ? requestIdleCallback(fn, { timeout: 800 })
-  : setTimeout(fn, 0);
-
-/* ===== Toast ===== */
-function showServerToast(message, type = "success", opts = {}) {
-  let root = document.getElementById("server_toast_root");
-  if (!root) {
-    root = document.createElement("div");
-    root.id = "server_toast_root";
-    root.setAttribute("aria-hidden", "true");
-    document.body.appendChild(root);
-  }
-  const toast = document.createElement("div");
-  toast.className = "server-toast " + (type === "success" ? "success" : "error");
-  toast.setAttribute("role", "status");
-  toast.innerHTML = `<div class="msg">${String(message)}</div><button class="close-btn" title="Close" aria-label="Close">✕</button>`;
-  root.appendChild(toast);
-  requestAnimationFrame(() => toast.classList.add("show"));
-  const close = () => { toast.classList.remove("show"); setTimeout(() => { try { toast.remove(); } catch (_) {} }, 320); };
-  toast.querySelector(".close-btn").addEventListener("click", close, { passive: true });
-  const timeout = (opts && typeof opts.timeout === "number") ? opts.timeout : 4000;
-  if (timeout > 0) setTimeout(close, timeout);
-}
-
-/* ===== Image compression, webcam, validation, submission ===== */
-/* (unchanged logic from your previous working version; trimmed for brevity) */
-
-const IMG_TARGET_MAX_BYTES = 400 * 1024;
-const IMG_MIN_QUALITY = 0.5;
-const IMG_START_QUALITY = 0.9;
-
-function isHeicLike(type, name='') {
-  const t = (type||'').toLowerCase();
-  const n = (name||'').toLowerCase();
-  return t.includes('heic') || t.includes('heif') || n.endsWith('.heic') || n.endsWith('.heif');
-}
-function blobToDataURL(blob) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => res(fr.result);
-    fr.onerror = rej;
-    fr.readAsDataURL(blob);
-  });
-}
-function fileToDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const fr = new FileReader();
-    fr.onload = () => resolve(fr.result);
-    fr.onerror = reject;
-    fr.readAsDataURL(file);
-  });
-}
-async function fileToOptimizedDataURL(file) {
-  if (!file) return null;
-  if (file.size <= IMG_TARGET_MAX_BYTES) return await fileToDataURL(file);
-  if (isHeicLike(file.type, file.name)) {
-    showServerToast("HEIC/HEIF isn’t supported in browser. Please upload JPG/PNG/WebP.", "error");
-    throw new Error("heic-not-supported");
-  }
-  const bitmap = await createImageBitmap(file).catch(async () => {
-    const dataUrl = await fileToDataURL(file);
-    const img = await new Promise((resolve, reject) => {
-      const i = new Image();
-      i.onload = () => resolve(i);
-      i.onerror = reject;
-      i.decoding = 'async';
-      i.src = dataUrl;
-    });
-    return { _fallbackImage: img, width: img.naturalWidth || img.width, height: img.naturalHeight || img.height };
-  });
-  const drawSource = bitmap.close ? bitmap : bitmap._fallbackImage;
-  const w = bitmap.width, h = bitmap.height;
-  const canvas = document.createElement('canvas');
-  canvas.width = w; canvas.height = h;
-  const ctx = canvas.getContext('2d', { alpha: false });
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(drawSource, 0, 0, w, h);
-  if (bitmap.close) { try { bitmap.close(); } catch(_){} }
-  const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
-  let q = IMG_START_QUALITY;
-  let blob = await toBlobQ(q);
-  while (blob && blob.size > IMG_TARGET_MAX_BYTES && q > IMG_MIN_QUALITY) {
-    q = Math.max(IMG_MIN_QUALITY, q - 0.1);
-    blob = await toBlobQ(q);
-  }
-  return await blobToDataURL(blob);
-}
-async function canvasToTargetJpegNoResize(sourceCanvas, targetBytes) {
-  const canvas = document.createElement('canvas');
-  canvas.width = sourceCanvas.width;
-  canvas.height = sourceCanvas.height;
-  const ctx = canvas.getContext('2d', { alpha: false });
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(sourceCanvas, 0, 0);
-  const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
-  let q = IMG_START_QUALITY;
-  let blob = await toBlobQ(q);
-  while (blob && blob.size > targetBytes && q > IMG_MIN_QUALITY) {
-    q = Math.max(IMG_MIN_QUALITY, q - 0.1);
-    blob = await toBlobQ(q);
-  }
-  return await blobToDataURL(blob);
-}
-
-/* Elements */
-let webcamStream = null;
-const useWebcamBtn = document.getElementById("use_webcam_btn"),
-      webcamContainer = document.getElementById("webcam_container"),
-      webcamVideo = document.getElementById("webcam"),
-      captureBtn = document.getElementById("capture_btn"),
-      closeWebcamBtn = document.getElementById("close_webcam_btn"),
-      photoFileInput = document.getElementById("photo"),
-      photoHiddenInput = document.getElementById("photo_input"),
-      photoPreviewContainer = document.getElementById("photo_preview_container"),
-      photoPreviewImg = document.getElementById("photo_preview"),
-      photoError = document.getElementById("photo_error"),
-      photoCheck = document.getElementById("photo_check"),
-      uploadLabel = document.getElementById("upload_label");
-
-/* File suppress/restore */
-const originalFileNameAttr = photoFileInput ? (photoFileInput.getAttribute('name') || 'photo') : 'photo';
-function suppressFileField() {
-  if (!photoFileInput) return;
-  photoFileInput.value = "";
-  photoFileInput.setAttribute('data-suppressed', '1');
-  photoFileInput.removeAttribute('name');
-}
-function restoreFileField() {
-  if (!photoFileInput) return;
-  if (photoFileInput.getAttribute('data-suppressed') === '1') {
-    photoFileInput.setAttribute('name', originalFileNameAttr);
-    photoFileInput.removeAttribute('data-suppressed');
-  }
-}
-
-/* Webcam */
-function toggleWebcam(){ (webcamContainer && webcamContainer.classList.contains("hidden")) ? openWebcam() : closeWebcam(); }
-function openWebcam(){
-  if (!navigator.mediaDevices || !webcamVideo || !webcamContainer) { showServerToast("Webcam not available.","error"); return; }
-  navigator.mediaDevices.getUserMedia({ video: { width:{max:1920}, height:{max:1080} } })
-    .then(stream => { webcamStream = stream; webcamVideo.srcObject = stream; webcamContainer.classList.remove("hidden"); webcamVideo.play().catch(()=>{}); })
-    .catch(()=> showServerToast("Webcam access denied.","error"));
-}
-function closeWebcam(){
-  if (webcamStream) { try { webcamStream.getTracks().forEach(t=>t.stop()); } catch(_){} }
-  webcamStream = null;
-  webcamContainer && webcamContainer.classList.add("hidden");
-}
-async function capturePhoto(){
-  if (!webcamVideo) return;
-  const tmp = document.createElement("canvas");
-  tmp.width = webcamVideo.videoWidth || 640;
-  tmp.height = webcamVideo.videoHeight || 480;
-  tmp.getContext("2d").drawImage(webcamVideo, 0, 0, tmp.width, tmp.height);
-  try {
-    const dataUrl = await canvasToTargetJpegNoResize(tmp, IMG_TARGET_MAX_BYTES);
-    setOptimizedPreview(dataUrl);
-    suppressFileField();
-  } catch { showServerToast("Failed to process webcam photo.","error"); }
-  closeWebcam();
-}
-if (useWebcamBtn) useWebcamBtn.addEventListener("click", toggleWebcam, { passive:true });
-if (captureBtn) captureBtn.addEventListener("click", capturePhoto);
-if (closeWebcamBtn) closeWebcamBtn.addEventListener("click", closeWebcam, { passive:true });
-
-/* Preview & clear */
-function setOptimizedPreview(dataUrl){
-  if (!dataUrl) return;
-  if (photoHiddenInput) photoHiddenInput.value = dataUrl;
-  if (photoPreviewImg && photoPreviewContainer) {
-    photoPreviewImg.src = dataUrl;
-    photoPreviewContainer.classList.remove("hidden");
-    photoCheck && photoCheck.classList.remove("hidden");
-    photoError && photoError.classList.add("hidden");
-  }
-  updatePhotoValidity(); updateRegisterButtonState();
-}
-function clearPhoto(){
-  if (photoPreviewContainer) photoPreviewContainer.classList.add("hidden");
-  if (photoPreviewImg) photoPreviewImg.src = "";
-  if (photoHiddenInput) photoHiddenInput.value = "";
-  if (photoFileInput) photoFileInput.value = "";
-  restoreFileField();
-  photoCheck && photoCheck.classList.add("hidden");
-  updatePhotoValidity(); updateRegisterButtonState();
-}
-window.clearPhoto = clearPhoto;
-
-/* File input → compress */
-if (photoFileInput) {
-  photoFileInput.addEventListener("change", async (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) { clearPhoto(); return; }
-    try {
-      const dataUrl = await fileToOptimizedDataURL(f);
-      setOptimizedPreview(dataUrl);
-      suppressFileField();
-    } catch (err) {
-      if (String(err && err.message).includes('heic')) return;
-      showServerToast("Could not process the selected image.","error");
-    }
-  });
-}
-
-/* Validation */
-let showErrors = false;
-const fields = [
-  { id: "full_name", errorId: "full_name_error", checkId: "full_name_check" },
-  { id: "age", errorId: "age_error", checkId: "age_check" },
-  { id: "gender", errorId: "gender_error", checkId: "gender_check" },
-  { id: "guardian_name", errorId: "guardian_name_error", checkId: "guardian_name_check" },
-  { id: "phone_number", errorId: "phone_number_error", checkId: "phone_number_check" },
-  { id: "address", errorId: "address_error", checkId: "address_check" },
-  { id: "last_seen", errorId: null, checkId: "last_seen_check" },
-  { id: "registered_by_name", errorId: "registered_by_name_error", checkId: "registered_by_name_check" },
-  { id: "registered_by_phone", errorId: "registered_by_phone_error", checkId: "registered_by_phone_check" },
-  { id: "registered_by_relation", errorId: "registered_by_relation_error", checkId: "registered_by_relation_check" }
-];
-function showCheckById(id){ const el=document.getElementById(id); if (el){ el.classList.remove("hidden"); el.classList.add("text-green-500"); } }
-function hideCheckById(id){ const el=document.getElementById(id); if (el){ el.classList.add("hidden"); el.classList.remove("text-green-500"); } }
-function validateField(fieldId, errorId, checkId){
-  const input=document.getElementById(fieldId); if (!input) return true;
-  let valid=true; const err=errorId && document.getElementById(errorId);
-  valid = !!(input.value?.toString().trim() !== "" && !(input.tagName === "SELECT" && input.value === ""));
-  if (errorId){
-    if (valid){ err && err.classList.add("hidden"); showCheckById(checkId); }
-    else { if (showErrors && err) err.classList.remove("hidden"); hideCheckById(checkId); }
-  } else { input.value?.toString().trim() !== "" ? showCheckById(checkId) : hideCheckById(checkId); }
-  return valid;
-}
-function updatePhotoValidity(){
-  const ok = !!((photoHiddenInput && photoHiddenInput.value.trim() !== "") || (photoFileInput && photoFileInput.files.length > 0));
-  if (photoError) photoError.classList.toggle("hidden", ok || !showErrors);
-  if (photoCheck) photoCheck.classList.toggle("hidden", !ok);
-  return ok;
-}
-window.updatePhotoValidity = updatePhotoValidity;
-fields.forEach(f => {
-  const el=document.getElementById(f.id);
-  if (!el) return;
-  const h=()=>{ validateField(f.id, f.errorId, f.checkId); updateRegisterButtonState(); };
-  (el.tagName === "SELECT" ? el.addEventListener("change", h) : el.addEventListener("input", h));
-  setTimeout(()=>validateField(f.id, f.errorId, f.checkId), 40);
-});
-
-/* Registered By sync */
-const sameAsGuardianCheckbox = document.getElementById("same_as_guardian"),
-      guardianNameInput = document.getElementById("guardian_name"),
-      guardianPhoneInput = document.getElementById("phone_number"),
-      regNameInput = document.getElementById("registered_by_name"),
-      regPhoneInput = document.getElementById("registered_by_phone"),
-      regRelationInput = document.getElementById("registered_by_relation");
-function setRegisteredByReadonly(disable){
-  [regNameInput, regPhoneInput, regRelationInput].forEach(f => { if (!f) return; f.readOnly = !!disable; if (disable) f.classList.add("bg-gray-100","text-gray-700"); else f.classList.remove("bg-gray-100","text-gray-700"); });
-}
-function syncGuardianToRegistered(){
-  if (regNameInput && guardianNameInput) regNameInput.value = guardianNameInput.value || "";
-  if (regPhoneInput && guardianPhoneInput) regPhoneInput.value = guardianPhoneInput.value || "";
-  if (regRelationInput) regRelationInput.value = "Guardian";
-  ["registered_by_name","registered_by_phone","registered_by_relation"].forEach(id => { const f=fields.find(x=>x.id===id); validateField(f.id, f.errorId, f.checkId); });
-  updateRegisterButtonState();
-}
-if (sameAsGuardianCheckbox) sameAsGuardianCheckbox.addEventListener("change", () => {
-  if (sameAsGuardianCheckbox.checked){
-    syncGuardianToRegistered(); setRegisteredByReadonly(true);
-    guardianNameInput?.addEventListener("input", syncGuardianToRegistered);
-    guardianPhoneInput?.addEventListener("input", syncGuardianToRegistered);
-  } else {
-    guardianNameInput?.removeEventListener("input", syncGuardianToRegistered);
-    guardianPhoneInput?.removeEventListener("input", syncGuardianToRegistered);
-    if (regNameInput) regNameInput.value = "";
-    if (regPhoneInput) regPhoneInput.value = "";
-    if (regRelationInput) regRelationInput.value = "";
-    setRegisteredByReadonly(false);
-    ["registered_by_name","registered_by_phone","registered_by_relation"].forEach(id => { const f=fields.find(x=>x.id===id); validateField(f.id, f.errorId, f.checkId); hideCheckById(id+"_check"); });
-    updateRegisterButtonState();
-  }
-}, { passive:true });
-
-/* ===== Tooltips: attach floating behavior ===== */
-const tipBindings = [];
-function bindTips() {
-  // Upload info tips
-  tipBindings.push(
-    attachFloatingTooltip(
-      document.getElementById('search_info_btn'),
-      document.getElementById('search_info_tip'),
-      { hover:true, click:true }
-    )
-  );
-  tipBindings.push(
-    attachFloatingTooltip(
-      document.getElementById('search_info_btn_mobile'),
-      document.getElementById('search_info_tip_mobile'),
-      { hover:true, click:true }
-    )
-  );
-
-  // Same-as-guardian tip
-  tipBindings.push(
-    attachFloatingTooltip(
-      document.getElementById('info-btn'),
-      document.getElementById('info-tooltip'),
-      { hover:true, click:true }
-    )
-  );
-
-  // Agreement tip (ensure it opens)
-  tipBindings.push(
-    attachFloatingTooltip(
-      document.getElementById('agreement_info_btn'),
-      document.getElementById('agreement_tooltip'),
-      { hover:true, click:true }
-    )
-  );
-}
-runIdle(bindTips);
-
-/* ===== Agreement warning toast helpers (unchanged) ===== */
-function showAgreementTooltipIfAvailable(){
-  const t=document.getElementById("agreement_tooltip"); if (!t) return;
-  // Force it open via click-like reveal
-  t.classList.remove('tooltip-hidden');
-  t.setAttribute('aria-hidden','false');
-}
-function showAgreementWarningToast(timeout=3500){
-  const t=document.getElementById("agreement_toast");
-  if (!t){ showServerToast("Please accept the agreement before registering.","error",{timeout}); return; }
-  t._agTimer && clearTimeout(t._agTimer);
-  t.classList.remove("opacity-0","pointer-events-none","hidden");
-  t.classList.add("opacity-100"); t.style.visibility="visible";
-  t._agTimer=setTimeout(()=>{ t.classList.add("opacity-0","pointer-events-none"); t.classList.remove("opacity-100"); setTimeout(()=>{ t.classList.add("hidden"); },320); t._agTimer=null; }, timeout);
-}
-
-/* ===== Submit control ===== */
-const registerForm = document.getElementById("register_form"),
-      registerBtn = document.getElementById("register_btn"),
-      registerSpinner = document.getElementById("register_spinner"),
-      registerText = document.getElementById("register_text");
-
-function allFieldsValid(){ return fields.every(f => validateField(f.id, f.errorId, f.checkId)); }
-function updateRegisterButtonState(){
-  if (!registerBtn) return;
-  const agreement = document.getElementById("agreement");
-  const ok = allFieldsValid() && updatePhotoValidity() && !!(agreement && agreement.checked);
-  if (ok){ registerBtn.classList.remove("opacity-60","cursor-not-allowed"); registerBtn.setAttribute("aria-disabled","false"); }
-  else  { registerBtn.classList.add("opacity-60","cursor-not-allowed"); registerBtn.setAttribute("aria-disabled","true"); }
-}
-window.updateRegisterButtonState = updateRegisterButtonState;
-
-function doSubmitWithRecaptcha(){
-  if (typeof grecaptcha === "undefined"){ showServerToast("Security check failed. Please try again.","error"); return; }
-  if (photoHiddenInput && photoHiddenInput.value.trim() !== "") suppressFileField();
-  registerSpinner && registerSpinner.classList.remove("hidden");
-  registerText && (registerText.textContent = "Checking...");
-  grecaptcha.ready(function(){
-    grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', {action:'register'}).then(function(token){
-      const recaptchaInput = document.getElementById("g-recaptcha-response");
-      if (recaptchaInput) recaptchaInput.value = token || "";
-      const realSubmit = document.createElement('button');
-      realSubmit.type = 'submit'; realSubmit.style.display = 'none';
-      registerForm.appendChild(realSubmit); realSubmit.click(); realSubmit.remove();
-    }).catch(()=>{ showServerToast("reCAPTCHA failed. Try again.","error"); registerSpinner && registerSpinner.classList.add("hidden"); registerText && (registerText.textContent = "Register"); });
-  });
-}
-
-if (registerBtn){
-  registerBtn.addEventListener("click", (ev)=>{
-    ev.preventDefault();
-    let invalid=false;
-
-    if (!updatePhotoValidity()){
-      invalid=true;
-      if (photoError) photoError.classList.remove("hidden");
-      uploadLabel && uploadLabel.scrollIntoView({ behavior:"smooth", block:"center" });
-      uploadLabel && uploadLabel.classList.add("shake");
-      setTimeout(()=> uploadLabel && uploadLabel.classList.remove("shake"), 600);
-    }
-
-    if (!invalid){
-      for (const f of fields){
-        const el=document.getElementById(f.id);
-        if (el && f.errorId && (!el.value || el.value.trim()==="" || (el.tagName==="SELECT" && el.value===""))){
-          invalid=true; el.scrollIntoView({ behavior:"smooth", block:"center" }); el.focus({ preventScroll:true }); break;
+      return {
+        show,
+        hide,
+        destroy() {
+          hoverHandlers.forEach(([t, fn]) => trigger.removeEventListener(t, fn));
+          if (clickHandler) trigger.removeEventListener('click', clickHandler);
+          if (outsideHandler) document.removeEventListener('click', outsideHandler);
+          if (escHandler) document.removeEventListener('keydown', escHandler);
+          window.removeEventListener('resize', onLayout);
+          window.removeEventListener('scroll', onLayout);
+          if (vv) {
+            vv.removeEventListener('scroll', onLayout);
+            vv.removeEventListener('resize', onLayout);
+          }
         }
+      };
+    }
+
+    /* ===== Perf helper ===== */
+    const runIdle = (fn) => ('requestIdleCallback' in window)
+      ? requestIdleCallback(fn, { timeout: 800 })
+      : setTimeout(fn, 0);
+
+    /* ===== Toast ===== */
+    function showServerToast(message, type = 'success', opts = {}) {
+      let root = document.getElementById('server_toast_root');
+      if (!root) {
+        root = document.createElement('div');
+        root.id = 'server_toast_root';
+        root.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(root);
+      }
+      const toast = document.createElement('div');
+      toast.className = 'server-toast ' + (type === 'success' ? 'success' : 'error');
+      toast.setAttribute('role', 'status');
+      toast.innerHTML = `
+        <div class="msg">${String(message)}</div>
+        <button class="close-btn" title="Close" aria-label="Close">✕</button>
+      `;
+      root.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+
+      const close = () => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          try { toast.remove(); } catch (_) {}
+        }, 320);
+      };
+
+      toast.querySelector('.close-btn').addEventListener('click', close, { passive: true });
+
+      const timeout = (opts && typeof opts.timeout === 'number') ? opts.timeout : 4000;
+      if (timeout > 0) setTimeout(close, timeout);
+    }
+
+    /* ===== Image compression, webcam, validation, submission ===== */
+
+    const IMG_TARGET_MAX_BYTES = 400 * 1024;
+    const IMG_MIN_QUALITY = 0.5;
+    const IMG_START_QUALITY = 0.9;
+
+    function isHeicLike(type, name = '') {
+      const t = (type || '').toLowerCase();
+      const n = (name || '').toLowerCase();
+      return t.includes('heic') || t.includes('heif') || n.endsWith('.heic') || n.endsWith('.heif');
+    }
+
+    function blobToDataURL(blob) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onload = () => res(fr.result);
+        fr.onerror = rej;
+        fr.readAsDataURL(blob);
+      });
+    }
+
+    function fileToDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(fr.result);
+        fr.onerror = reject;
+        fr.readAsDataURL(file);
+      });
+    }
+
+    async function fileToOptimizedDataURL(file) {
+      if (!file) return null;
+      if (file.size <= IMG_TARGET_MAX_BYTES) return fileToDataURL(file);
+
+      if (isHeicLike(file.type, file.name)) {
+        showServerToast('HEIC/HEIF isn’t supported in browser. Please upload JPG/PNG/WebP.', 'error');
+        throw new Error('heic-not-supported');
+      }
+
+      const bitmap = await createImageBitmap(file).catch(async () => {
+        const dataUrl = await fileToDataURL(file);
+        const img = await new Promise((resolve, reject) => {
+          const i = new Image();
+          i.onload = () => resolve(i);
+          i.onerror = reject;
+          i.decoding = 'async';
+          i.src = dataUrl;
+        });
+        return {
+          _fallbackImage: img,
+          width: img.naturalWidth || img.width,
+          height: img.naturalHeight || img.height
+        };
+      });
+
+      const drawSource = bitmap.close ? bitmap : bitmap._fallbackImage;
+      const w = bitmap.width;
+      const h = bitmap.height;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(drawSource, 0, 0, w, h);
+
+      if (bitmap.close) {
+        try { bitmap.close(); } catch (_) {}
+      }
+
+      const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
+      let q = IMG_START_QUALITY;
+      let blob = await toBlobQ(q);
+
+      while (blob && blob.size > IMG_TARGET_MAX_BYTES && q > IMG_MIN_QUALITY) {
+        q = Math.max(IMG_MIN_QUALITY, q - 0.1);
+        blob = await toBlobQ(q);
+      }
+
+      return blobToDataURL(blob);
+    }
+
+    async function canvasToTargetJpegNoResize(sourceCanvas, targetBytes) {
+      const canvas = document.createElement('canvas');
+      canvas.width = sourceCanvas.width;
+      canvas.height = sourceCanvas.height;
+
+      const ctx = canvas.getContext('2d', { alpha: false });
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(sourceCanvas, 0, 0);
+
+      const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
+      let q = IMG_START_QUALITY;
+      let blob = await toBlobQ(q);
+
+      while (blob && blob.size > targetBytes && q > IMG_MIN_QUALITY) {
+        q = Math.max(IMG_MIN_QUALITY, q - 0.1);
+        blob = await toBlobQ(q);
+      }
+
+      return blobToDataURL(blob);
+    }
+
+    /* Elements */
+    let webcamStream = null;
+    const useWebcamBtn = document.getElementById('use_webcam_btn'),
+          webcamContainer = document.getElementById('webcam_container'),
+          webcamVideo = document.getElementById('webcam'),
+          captureBtn = document.getElementById('capture_btn'),
+          closeWebcamBtn = document.getElementById('close_webcam_btn'),
+          photoFileInput = document.getElementById('photo'),
+          photoHiddenInput = document.getElementById('photo_input'),
+          photoPreviewContainer = document.getElementById('photo_preview_container'),
+          photoPreviewImg = document.getElementById('photo_preview'),
+          photoError = document.getElementById('photo_error'),
+          photoCheck = document.getElementById('photo_check'),
+          uploadLabel = document.getElementById('upload_label');
+
+    /* File suppress/restore */
+    const originalFileNameAttr = photoFileInput ? (photoFileInput.getAttribute('name') || 'photo') : 'photo';
+    function suppressFileField() {
+      if (!photoFileInput) return;
+      photoFileInput.value = '';
+      photoFileInput.setAttribute('data-suppressed', '1');
+      photoFileInput.removeAttribute('name');
+    }
+    function restoreFileField() {
+      if (!photoFileInput) return;
+      if (photoFileInput.getAttribute('data-suppressed') === '1') {
+        photoFileInput.setAttribute('name', originalFileNameAttr);
+        photoFileInput.removeAttribute('data-suppressed');
       }
     }
 
-    const agreementEl=document.getElementById("agreement");
-    if (!invalid && agreementEl && !agreementEl.checked){
-      invalid=true;
-      agreementEl.scrollIntoView({ behavior:"smooth", block:"center" });
-      agreementEl.focus({ preventScroll:true });
-      showAgreementTooltipIfAvailable();
-      showAgreementWarningToast(3500);
-      agreementEl.classList.add("border-red-500","ring-red-300","ring-1");
-      const clearWarning=()=>{ agreementEl.classList.remove("border-red-500","ring-red-300","ring-1"); agreementEl.removeEventListener("change", clearWarning); };
-      agreementEl.addEventListener("change", clearWarning, { passive:true });
+    /* Webcam */
+    function toggleWebcam() {
+      if (webcamContainer && webcamContainer.classList.contains('hidden')) openWebcam();
+      else closeWebcam();
+    }
+    function openWebcam() {
+      if (!navigator.mediaDevices || !webcamVideo || !webcamContainer) {
+        showServerToast('Webcam not available.', 'error');
+        return;
+      }
+      navigator.mediaDevices.getUserMedia({ video: { width: { max: 1920 }, height: { max: 1080 } } })
+        .then(stream => {
+          webcamStream = stream;
+          webcamVideo.srcObject = stream;
+          webcamContainer.classList.remove('hidden');
+          webcamVideo.play().catch(() => {});
+        })
+        .catch(() => showServerToast('Webcam access denied.', 'error'));
+    }
+    function closeWebcam() {
+      if (webcamStream) {
+        try { webcamStream.getTracks().forEach(t => t.stop()); } catch (_) {}
+      }
+      webcamStream = null;
+      if (webcamContainer) webcamContainer.classList.add('hidden');
+    }
+    async function capturePhoto() {
+      if (!webcamVideo) return;
+      const tmp = document.createElement('canvas');
+      tmp.width = webcamVideo.videoWidth || 640;
+      tmp.height = webcamVideo.videoHeight || 480;
+      tmp.getContext('2d').drawImage(webcamVideo, 0, 0, tmp.width, tmp.height);
+      try {
+        const dataUrl = await canvasToTargetJpegNoResize(tmp, IMG_TARGET_MAX_BYTES);
+        setOptimizedPreview(dataUrl);
+        suppressFileField();
+      } catch {
+        showServerToast('Failed to process webcam photo.', 'error');
+      }
+      closeWebcam();
+    }
+    if (useWebcamBtn) useWebcamBtn.addEventListener('click', toggleWebcam, { passive: true });
+    if (captureBtn) captureBtn.addEventListener('click', capturePhoto);
+    if (closeWebcamBtn) closeWebcamBtn.addEventListener('click', closeWebcam, { passive: true });
+
+    /* Preview & clear */
+    function setOptimizedPreview(dataUrl) {
+      if (!dataUrl) return;
+      if (photoHiddenInput) photoHiddenInput.value = dataUrl;
+      if (photoPreviewImg && photoPreviewContainer) {
+        photoPreviewImg.src = dataUrl;
+        photoPreviewContainer.classList.remove('hidden');
+        if (photoCheck) photoCheck.classList.remove('hidden');
+        if (photoError) photoError.classList.add('hidden');
+      }
+      updatePhotoValidity();
+      updateRegisterButtonState();
+    }
+    function clearPhoto() {
+      if (photoPreviewContainer) photoPreviewContainer.classList.add('hidden');
+      if (photoPreviewImg) photoPreviewImg.src = '';
+      if (photoHiddenInput) photoHiddenInput.value = '';
+      if (photoFileInput) photoFileInput.value = '';
+      restoreFileField();
+      if (photoCheck) photoCheck.classList.add('hidden');
+      updatePhotoValidity();
+      updateRegisterButtonState();
+    }
+    window.clearPhoto = clearPhoto;
+
+    /* File input → compress */
+    if (photoFileInput) {
+      photoFileInput.addEventListener('change', async (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) {
+          clearPhoto();
+          return;
+        }
+        try {
+          const dataUrl = await fileToOptimizedDataURL(f);
+          setOptimizedPreview(dataUrl);
+          suppressFileField();
+        } catch (err) {
+          if (String(err && err.message).includes('heic')) return;
+          showServerToast('Could not process the selected image.', 'error');
+        }
+      });
     }
 
-    if (invalid){ registerSpinner && registerSpinner.classList.add("hidden"); registerText && (registerText.textContent="Register"); return; }
-    doSubmitWithRecaptcha();
-  });
-}
+    /* Validation */
+    let showErrors = false;
+    const fields = [
+      { id: 'full_name', errorId: 'full_name_error', checkId: 'full_name_check' },
+      { id: 'age', errorId: 'age_error', checkId: 'age_check' },
+      { id: 'gender', errorId: 'gender_error', checkId: 'gender_check' },
+      { id: 'guardian_name', errorId: 'guardian_name_error', checkId: 'guardian_name_check' },
+      { id: 'phone_number', errorId: 'phone_number_error', checkId: 'phone_number_check' },
+      { id: 'address', errorId: 'address_error', checkId: 'address_check' },
+      { id: 'last_seen', errorId: null, checkId: 'last_seen_check' },
+      { id: 'registered_by_name', errorId: 'registered_by_name_error', checkId: 'registered_by_name_check' },
+      { id: 'registered_by_phone', errorId: 'registered_by_phone_error', checkId: 'registered_by_phone_check' },
+      { id: 'registered_by_relation', errorId: 'registered_by_relation_error', checkId: 'registered_by_relation_check' }
+    ];
 
-runIdle(updateRegisterButtonState);
-</script>
+    function showCheckById(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.remove('hidden');
+        el.classList.add('text-green-500');
+      }
+    }
+    function hideCheckById(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add('hidden');
+        el.classList.remove('text-green-500');
+      }
+    }
 
-<!-- ================= CSS ================= -->
-<style>
-html, body { overflow-x: hidden; }
+    function validateField(fieldId, errorId, checkId) {
+      const input = document.getElementById(fieldId);
+      if (!input) return true;
 
-/* Reusable tooltip base (theme + hidden state) */
-.tooltip {
-  position: fixed;
-  top: -9999px;
-  left: -9999px;
-  z-index: 9999;
-  padding: 0.5rem 0.625rem;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  border-radius: 0.375rem;
-  max-width: min(320px, calc(100vw - 16px));
-  word-wrap: break-word;
-  white-space: normal;
-  pointer-events: auto;
-  transition: opacity 0.18s ease;
-}
-.tooltip.theme-dark {
-  background: #1f2937; /* gray-800 */
-  color: #fff;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-}
-.tooltip-hidden {
-  opacity: 0;
-  pointer-events: none !important;
-}
+      let valid = true;
+      const err = errorId && document.getElementById(errorId);
 
-/* Animations & misc from earlier */
-@keyframes pageFadeSlide {0%{opacity:0;transform:translateY(14px) scale(0.98);filter:blur(2px);}100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0);}}
-.animate-page-enter{animation:pageFadeSlide .7s cubic-bezier(.22,.61,.36,1) both;}
-@keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
-.shimmer{background:linear-gradient(120deg,rgba(255,255,255,0.30) 0%,rgba(255,255,255,0.12) 40%,transparent 100%);animation:shimmer 2.5s infinite linear;}
-@keyframes subtle-bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
-.animate-subtle-bounce{animation:subtle-bounce 1s infinite ease-in-out;}
-@keyframes shake { 0% { transform: translateX(0);} 25% { transform: translateX(-6px);} 50% { transform: translateX(6px);} 75% { transform: translateX(-6px);} 100% { transform: translateX(0);} }
-.shake { animation: shake 0.42s ease; }
+      valid = !!(
+        input.value?.toString().trim() !== '' &&
+        !(input.tagName === 'SELECT' && input.value === '')
+      );
 
-.server-toast{position:fixed;right:1rem;bottom:1rem;max-width:min(92vw,420px);padding:0.6rem 0.9rem;border-radius:0.6rem;box-shadow:0 8px 20px rgba(0,0,0,0.35);display:flex;gap:0.75rem;align-items:center;z-index:9999;transform:translateY(12px);opacity:0;transition:all 320ms ease;}
-.server-toast.show{transform:translateY(0);opacity:1;}
-.server-toast .msg{flex:1;font-size:0.92rem;color:#fff;}
-.server-toast.success{background:#16a34a;}
-.server-toast.error{background:#dc2626;}
-.server-toast .close-btn{cursor:pointer;background:rgba(255,255,255,0.12);padding:0.2rem 0.45rem;border-radius:6px;color:#fff;font-weight:700;}
-</style>
+      if (errorId) {
+        if (valid) {
+          if (err) err.classList.add('hidden');
+          showCheckById(checkId);
+        } else {
+          if (showErrors && err) err.classList.remove('hidden');
+          hideCheckById(checkId);
+        }
+      } else {
+        if (input.value?.toString().trim() !== '') showCheckById(checkId);
+        else hideCheckById(checkId);
+      }
 
-<!-- reCAPTCHA loader (kept once) -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+      return valid;
+    }
+
+    function updatePhotoValidity() {
+      const ok = !!(
+        (photoHiddenInput && photoHiddenInput.value.trim() !== '') ||
+        (photoFileInput && photoFileInput.files.length > 0)
+      );
+      if (photoError) photoError.classList.toggle('hidden', ok || !showErrors);
+      if (photoCheck) photoCheck.classList.toggle('hidden', !ok);
+      return ok;
+    }
+    window.updatePhotoValidity = updatePhotoValidity;
+
+    fields.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const handler = () => {
+        validateField(f.id, f.errorId, f.checkId);
+        updateRegisterButtonState();
+      };
+      if (el.tagName === 'SELECT') el.addEventListener('change', handler);
+      else el.addEventListener('input', handler);
+      setTimeout(() => validateField(f.id, f.errorId, f.checkId), 40);
+    });
+
+    /* Registered By sync */
+    const sameAsGuardianCheckbox = document.getElementById('same_as_guardian'),
+          guardianNameInput = document.getElementById('guardian_name'),
+          guardianPhoneInput = document.getElementById('phone_number'),
+          regNameInput = document.getElementById('registered_by_name'),
+          regPhoneInput = document.getElementById('registered_by_phone'),
+          regRelationInput = document.getElementById('registered_by_relation');
+
+    function setRegisteredByReadonly(disable) {
+      [regNameInput, regPhoneInput, regRelationInput].forEach(f => {
+        if (!f) return;
+        f.readOnly = !!disable;
+        if (disable) f.classList.add('bg-gray-100', 'text-gray-700');
+        else f.classList.remove('bg-gray-100', 'text-gray-700');
+      });
+    }
+
+    function syncGuardianToRegistered() {
+      if (regNameInput && guardianNameInput) regNameInput.value = guardianNameInput.value || '';
+      if (regPhoneInput && guardianPhoneInput) regPhoneInput.value = guardianPhoneInput.value || '';
+      if (regRelationInput) regRelationInput.value = 'Guardian';
+
+      ['registered_by_name', 'registered_by_phone', 'registered_by_relation'].forEach(id => {
+        const f = fields.find(x => x.id === id);
+        if (f) validateField(f.id, f.errorId, f.checkId);
+      });
+      updateRegisterButtonState();
+    }
+
+    if (sameAsGuardianCheckbox) {
+      sameAsGuardianCheckbox.addEventListener('change', () => {
+        if (sameAsGuardianCheckbox.checked) {
+          syncGuardianToRegistered();
+          setRegisteredByReadonly(true);
+          guardianNameInput?.addEventListener('input', syncGuardianToRegistered);
+          guardianPhoneInput?.addEventListener('input', syncGuardianToRegistered);
+        } else {
+          guardianNameInput?.removeEventListener('input', syncGuardianToRegistered);
+          guardianPhoneInput?.removeEventListener('input', syncGuardianToRegistered);
+          if (regNameInput) regNameInput.value = '';
+          if (regPhoneInput) regPhoneInput.value = '';
+          if (regRelationInput) regRelationInput.value = '';
+          setRegisteredByReadonly(false);
+
+          ['registered_by_name', 'registered_by_phone', 'registered_by_relation'].forEach(id => {
+            const f = fields.find(x => x.id === id);
+            if (f) {
+              validateField(f.id, f.errorId, f.checkId);
+              hideCheckById(id + '_check');
+            }
+          });
+          updateRegisterButtonState();
+        }
+      }, { passive: true });
+    }
+
+    /* ===== Tooltips: attach floating behavior ===== */
+    const tipBindings = [];
+    function bindTips() {
+      tipBindings.push(
+        attachFloatingTooltip(
+          document.getElementById('search_info_btn'),
+          document.getElementById('search_info_tip'),
+          { hover: true, click: true }
+        )
+      );
+      tipBindings.push(
+        attachFloatingTooltip(
+          document.getElementById('search_info_btn_mobile'),
+          document.getElementById('search_info_tip_mobile'),
+          { hover: true, click: true }
+        )
+      );
+      tipBindings.push(
+        attachFloatingTooltip(
+          document.getElementById('info-btn'),
+          document.getElementById('info-tooltip'),
+          { hover: true, click: true }
+        )
+      );
+      tipBindings.push(
+        attachFloatingTooltip(
+          document.getElementById('agreement_info_btn'),
+          document.getElementById('agreement_tooltip'),
+          { hover: true, click: true }
+        )
+      );
+    }
+    runIdle(bindTips);
+
+    /* ===== Agreement warning toast helpers ===== */
+    function showAgreementTooltipIfAvailable() {
+      const t = document.getElementById('agreement_tooltip');
+      if (!t) return;
+      t.classList.remove('tooltip-hidden');
+      t.setAttribute('aria-hidden', 'false');
+    }
+
+    function showAgreementWarningToast(timeout = 3500) {
+      const t = document.getElementById('agreement_toast');
+      if (!t) {
+        showServerToast('Please accept the agreement before registering.', 'error', { timeout });
+        return;
+      }
+      if (t._agTimer) clearTimeout(t._agTimer);
+      t.classList.remove('opacity-0', 'pointer-events-none', 'hidden');
+      t.classList.add('opacity-100');
+      t.style.visibility = 'visible';
+
+      t._agTimer = setTimeout(() => {
+        t.classList.add('opacity-0', 'pointer-events-none');
+        t.classList.remove('opacity-100');
+        setTimeout(() => {
+          t.classList.add('hidden');
+        }, 320);
+        t._agTimer = null;
+      }, timeout);
+    }
+
+    /* ===== Submit control ===== */
+    const registerForm = document.getElementById('register_form'),
+          registerBtn = document.getElementById('register_btn'),
+          registerSpinner = document.getElementById('register_spinner'),
+          registerText = document.getElementById('register_text');
+
+    function allFieldsValid() {
+      return fields.every(f => validateField(f.id, f.errorId, f.checkId));
+    }
+
+    function updateRegisterButtonState() {
+      if (!registerBtn) return;
+      const agreement = document.getElementById('agreement');
+      const ok = allFieldsValid() &&
+                 updatePhotoValidity() &&
+                 !!(agreement && agreement.checked);
+
+      if (ok) {
+        registerBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+        registerBtn.setAttribute('aria-disabled', 'false');
+      } else {
+        registerBtn.classList.add('opacity-60', 'cursor-not-allowed');
+        registerBtn.setAttribute('aria-disabled', 'true');
+      }
+    }
+    window.updateRegisterButtonState = updateRegisterButtonState;
+
+    function doSubmitWithRecaptcha() {
+      if (typeof grecaptcha === 'undefined') {
+        showServerToast('Security check failed. Please try again.', 'error');
+        return;
+      }
+      if (photoHiddenInput && photoHiddenInput.value.trim() !== '') {
+        suppressFileField();
+      }
+      if (registerSpinner) registerSpinner.classList.remove('hidden');
+      if (registerText) registerText.textContent = 'Checking...';
+
+      grecaptcha.ready(function () {
+        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'register' })
+          .then(function (token) {
+            const recaptchaInput = document.getElementById('g-recaptcha-response');
+            if (recaptchaInput) recaptchaInput.value = token || '';
+
+            const realSubmit = document.createElement('button');
+            realSubmit.type = 'submit';
+            realSubmit.style.display = 'none';
+            registerForm.appendChild(realSubmit);
+            realSubmit.click();
+            realSubmit.remove();
+          })
+          .catch(() => {
+            showServerToast('reCAPTCHA failed. Try again.', 'error');
+            if (registerSpinner) registerSpinner.classList.add('hidden');
+            if (registerText) registerText.textContent = 'Register';
+          });
+      });
+    }
+
+    if (registerBtn) {
+      registerBtn.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        let invalid = false;
+
+        if (!updatePhotoValidity()) {
+          invalid = true;
+          if (photoError) photoError.classList.remove('hidden');
+          if (uploadLabel) {
+            uploadLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            uploadLabel.classList.add('shake');
+            setTimeout(() => uploadLabel.classList.remove('shake'), 600);
+          }
+        }
+
+        if (!invalid) {
+          for (const f of fields) {
+            const el = document.getElementById(f.id);
+            if (
+              el &&
+              f.errorId &&
+              (!el.value || el.value.trim() === '' ||
+                (el.tagName === 'SELECT' && el.value === ''))
+            ) {
+              invalid = true;
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.focus({ preventScroll: true });
+              break;
+            }
+          }
+        }
+
+        const agreementEl = document.getElementById('agreement');
+        if (!invalid && agreementEl && !agreementEl.checked) {
+          invalid = true;
+          agreementEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          agreementEl.focus({ preventScroll: true });
+          showAgreementTooltipIfAvailable();
+          showAgreementWarningToast(3500);
+          agreementEl.classList.add('border-red-500', 'ring-red-300', 'ring-1');
+
+          const clearWarning = () => {
+            agreementEl.classList.remove('border-red-500', 'ring-red-300', 'ring-1');
+            agreementEl.removeEventListener('change', clearWarning);
+          };
+          agreementEl.addEventListener('change', clearWarning, { passive: true });
+        }
+
+        if (invalid) {
+          if (registerSpinner) registerSpinner.classList.add('hidden');
+          if (registerText) registerText.textContent = 'Register';
+          return;
+        }
+
+        doSubmitWithRecaptcha();
+      });
+    }
+
+    runIdle(updateRegisterButtonState);
+    </script>
+
+    <!-- ================= CSS ================= -->
+    <style>
+    html, body { overflow-x: hidden; }
+
+    /* Reusable tooltip base (theme + hidden state) */
+    .tooltip {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      z-index: 9999;
+      padding: 0.5rem 0.625rem;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      border-radius: 0.375rem;
+      max-width: min(320px, calc(100vw - 16px));
+      word-wrap: break-word;
+      white-space: normal;
+      pointer-events: auto;
+      transition: opacity 0.18s ease;
+    }
+    .tooltip.theme-dark {
+      background: #1f2937; /* gray-800 */
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .tooltip-hidden {
+      opacity: 0;
+      pointer-events: none !important;
+    }
+
+    /* Animations & misc */
+    @keyframes pageFadeSlide {
+      0%   { opacity: 0; transform: translateY(14px) scale(0.98); filter: blur(2px); }
+      100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    .animate-page-enter {
+      animation: pageFadeSlide 0.7s cubic-bezier(.22,.61,.36,1) both;
+    }
+
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .shimmer {
+      background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.30) 0%,
+        rgba(255,255,255,0.12) 40%,
+        transparent 100%
+      );
+      animation: shimmer 2.5s infinite linear;
+    }
+
+    @keyframes subtle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-3px); }
+    }
+    .animate-subtle-bounce {
+      animation: subtle-bounce 1s infinite ease-in-out;
+    }
+
+    @keyframes shake {
+      0%   { transform: translateX(0); }
+      25%  { transform: translateX(-6px); }
+      50%  { transform: translateX(6px); }
+      75%  { transform: translateX(-6px); }
+      100% { transform: translateX(0); }
+    }
+    .shake {
+      animation: shake 0.42s ease;
+    }
+
+    .server-toast {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: min(92vw, 420px);
+      padding: 0.6rem 0.9rem;
+      border-radius: 0.6rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      z-index: 9999;
+      transform: translateY(12px);
+      opacity: 0;
+      transition: all 320ms ease;
+    }
+    .server-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .server-toast .msg {
+      flex: 1;
+      font-size: 0.92rem;
+      color: #fff;
+    }
+    .server-toast.success { background: #16a34a; }
+    .server-toast.error   { background: #dc2626; }
+    .server-toast .close-btn {
+      cursor: pointer;
+      background: rgba(255,255,255,0.12);
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: 700;
+    }
+    </style>
+  </div>
+</div>
 {% endblock %}

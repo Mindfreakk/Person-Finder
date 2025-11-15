@@ -33,43 +33,42 @@
     </div>
   </header>
   
+  <!-- Main content wrapper -->
   <div class="w-full max-w-3xl">
 
-  <style>
-  /* Gradient animation utility */
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradientShift 6s ease infinite;
-  }
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+    <style>
+    /* Gradient animation utility */
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradientShift 6s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-  /* Floating card effect */
-  .card-float {
-    animation: floaty 6.5s ease-in-out infinite;
-  }
-  @keyframes floaty {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card-float { animation: none !important; }
-  }
-  </style>
+    /* Floating card effect */
+    .card-float {
+      animation: floaty 6.5s ease-in-out infinite;
+    }
+    @keyframes floaty {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card-float { animation: none !important; }
+    }
+    </style>
 
-  <!-- Divider -->
-  <div class="relative w-full flex justify-center my-12 sm:my-16">
-    <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
-      Details
-    </span>
-  </div>
-
-</div>
+    <!-- Divider -->
+    <div class="relative w-full flex justify-center my-12 sm:my-16">
+      <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+      <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+        Details
+      </span>
+    </div>
 
     <!-- Accordion -->
     <div id="tos-accordion" class="space-y-3">
@@ -110,8 +109,9 @@
       </article>
       {% endfor %}
     </div>
-  </div>
-</div>
+
+  </div> <!-- end max-w-3xl -->
+</div> <!-- end outer flex container -->
 
 <style>
   .accordion-header:hover { background-color: rgba(255,255,255,0.02); }
@@ -141,7 +141,10 @@ document.addEventListener('DOMContentLoaded', function () {
     header.querySelector('.accordion-icon')?.classList.add('rotate-180');
   }
   function closeAll() {
-    headers.forEach(h => closePanel(h, h.closest('.accordion-item').querySelector('.accordion-content')));
+    headers.forEach(h => {
+      const c = h.closest('.accordion-item').querySelector('.accordion-content');
+      closePanel(h, c);
+    });
   }
 
   headers.forEach(header => {

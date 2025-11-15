@@ -6,188 +6,403 @@
 
 <!-- Full-bleed header -->
 <div class="w-full bg-blue-900 text-white p-6 shadow-md mt-16 sm:mt-[3cm] fade-in">
-  <div class="w-full flex flex-col sm:flex-row justify-between items-center">
-    <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-    <div class="flex items-center gap-4 mt-4 sm:mt-0">
-      <span>Hello, {{ current_user.username }}</span>
-      <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition-colors">Logout</a>
+  <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div>
+      <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+      <p class="text-xs sm:text-sm text-blue-100/90 mt-1">
+        Secure area for managing <span class="font-semibold">people, logs, users, and feedback</span>. Changes here affect real data.
+      </p>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-sm sm:text-base">
+        Hello, <span class="font-semibold">{{ current_user.username }}</span>
+      </span>
+      <a href="{{ url_for('logout') }}"
+         class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded text-sm sm:text-base transition-colors shadow-sm">
+        Logout
+      </a>
     </div>
   </div>
 </div>
 
+<div class="logout-container"></div>
+
+<!-- Section nav tabs (with gap and floating style) -->
+<nav class="w-full mt-3 mb-2 sticky top-0 z-40">
+  <div class="section-nav-container">
+    <button type="button"
+            class="section-nav-pill section-nav-pill-active"
+            data-jump="#peopleSection">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
+        <span>People</span>
+      </span>
+    </button>
+    <button type="button"
+            class="section-nav-pill"
+            data-jump="#logsSection">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-2 w-2 rounded-full bg-sky-400"></span>
+        <span>Search Logs</span>
+      </span>
+    </button>
+    <!-- NEW: Feedback nav -->
+    <button type="button"
+            class="section-nav-pill"
+            data-jump="#feedbackSection">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+        <span>Feedback</span>
+      </span>
+    </button>
+    <button type="button"
+            class="section-nav-pill"
+            data-jump="#activitySection">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-2 w-2 rounded-full bg-purple-400"></span>
+        <span>Recent Activity</span>
+      </span>
+    </button>
+    <button type="button"
+            class="section-nav-pill"
+            data-jump="#usersSectionHeader">
+      <span class="inline-flex items-center gap-1">
+        <span class="h-2 w-2 rounded-full bg-teal-400"></span>
+        <span>Users</span>
+      </span>
+    </button>
+  </div>
+</nav>
+
 <!-- Full-width page wrapper -->
 <div class="min-h-screen text-gray-900 w-full">
 
-  <!-- Stats -->
+  <!-- Stats + System Info -->
   <section class="w-full p-4 sm:p-6 fade-in delay-100">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6">
+      <!-- Total Users -->
       <div class="bg-white rounded-2xl shadow p-5 flex items-center justify-between animate-float">
         <div>
-          <p class="text-gray-500">Total Users</p>
+          <p class="text-gray-500 text-sm">Total Users</p>
           <p class="text-2xl font-bold" data-target="{{ users|length }}">0</p>
+          <p class="text-xs text-gray-400 mt-1">Registered accounts in the system.</p>
         </div>
-        <svg class="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 15c2.94 0 5.657.955 7.879 2.804M12 3v12m0 0l-3-3m3 3l3-3"/></svg>
+        <svg class="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5.121 17.804A13.937 13.937 0 0112 15c2.94 0 5.657.955 7.879 2.804M12 3v12m0 0l-3-3m3 3l3-3"/>
+        </svg>
       </div>
 
+      <!-- Registered People -->
       <div class="bg-white rounded-2xl shadow p-5 flex items-center justify-between animate-float delay-100">
         <div>
-          <p class="text-gray-500">Registered People</p>
+          <p class="text-gray-500 text-sm">Registered People</p>
           <p class="text-2xl font-bold" data-target="{{ stats.get('registrations', 0) }}">0</p>
+          <p class="text-xs text-gray-400 mt-1">Profiles indexed for PersonFinder.</p>
         </div>
-        <svg class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <svg class="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4v16m8-8H4"/>
+        </svg>
       </div>
 
+      <!-- Searches -->
       <div class="bg-white rounded-2xl shadow p-5 flex items-center justify-between animate-float delay-200">
         <div>
-          <p class="text-gray-500">Searches</p>
+          <p class="text-gray-500 text-sm">Searches</p>
           <p class="text-2xl font-bold" data-target="{{ stats.get('searches', 0) }}">0</p>
+          <p class="text-xs text-gray-400 mt-1">Total AI-powered face searches.</p>
         </div>
-        <svg class="h-10 w-10 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <svg class="h-10 w-10 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
       </div>
 
+      <!-- Recent Logs -->
       <div class="bg-white rounded-2xl shadow p-5 flex items-center justify-between animate-float delay-300">
         <div>
-          <p class="text-gray-500">Recent Logs</p>
+          <p class="text-gray-500 text-sm">Recent Logs</p>
           <p class="text-2xl font-bold" data-target="{{ search_logs|length }}">0</p>
+          <p class="text-xs text-gray-400 mt-1">Latest search audit entries.</p>
         </div>
-        <svg class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 3C7.029 3 3 7.029 3 12s4.029 9 9 9 9-4.029 9-9-4.029-9-9-9z"/></svg>
+        <svg class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M12 3C7.029 3 3 7.029 3 12s4.029 9 9 9 9-4.029 9-9-4.029-9-9-9z"/>
+        </svg>
+      </div>
+
+      <!-- System Info + Feedback quick glance -->
+      {% set app_version = app_version|default('v1.0.0') %}
+      <div class="bg-white rounded-2xl shadow p-5 flex flex-col justify-between animate-float delay-300">
+        <div>
+          <p class="text-gray-500 text-sm">System Info</p>
+          <p class="text-xl font-semibold text-gray-900">{{ app_version }}</p>
+          <p class="text-xs text-gray-500 mt-1">
+            Status: <span class="font-medium text-green-600">Online</span>
+          </p>
+        </div>
+        <div class="mt-3 space-y-1 text-[11px] text-gray-600">
+          <p class="flex items-center justify-between gap-2">
+            <span>Total feedback</span>
+            <span class="font-semibold">{{ feedback_total or 0 }}</span>
+          </p>
+          <p class="text-2xl font-semibold text-amber-100">
+  {% if feedback_avg_rating is defined and feedback_avg_rating is not none %}
+    {{ '%.1f'|format(feedback_avg_rating) }} ★
+  {% else %}
+    —
+  {% endif %}
+</p>
+          <a href="{{ url_for('admin_feedback') }}"
+             class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+            Open feedback inbox
+          </a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Divider -->
-  <div class="relative w-full flex justify-center my-8 fade-in delay-150">
+  <!-- ===== Overview Charts ===== -->
+  <section class="w-full px-4 sm:px-6 fade-in delay-150">
+    <div class="bg-white rounded-3xl shadow p-5 sm:p-6 flex flex-col lg:flex-row gap-6 overview-card">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-sm sm:text-base font-semibold text-gray-800">Overview</h2>
+          <p class="text-xs text-gray-500">High-level stats at a glance.</p>
+        </div>
+        <div class="h-52 sm:h-64 lg:h-56">
+          <canvas id="overviewChart"></canvas>
+        </div>
+      </div>
+
+      <div class="w-full lg:w-72 bg-gray-50 rounded-2xl p-4 flex flex-col justify-between">
+        <h3 class="text-sm font-semibold text-gray-800 mb-2">Today’s Snapshot</h3>
+        <ul class="space-y-2 text-xs sm:text-sm text-gray-700">
+          <li class="flex justify-between gap-4">
+            <span>New registrations</span>
+            <span class="font-semibold">
+              {{ stats.get('today_registrations', 0) }}
+            </span>
+          </li>
+          <li class="flex justify-between gap-4">
+            <span>Searches today</span>
+            <span class="font-semibold">
+              {{ stats.get('today_searches', 0) }}
+            </span>
+          </li>
+          <li class="flex justify-between gap-4">
+            <span>Unique users today</span>
+            <span class="font-semibold">
+              {{ stats.get('today_unique_users', 0) }}
+            </span>
+          </li>
+        </ul>
+        <p class="mt-3 text-[11px] text-gray-500">
+          The data displayed in the chart is updated regularly to reflect the latest insights.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider: People -->
+  <div id="peopleSection" class="relative w-full flex justify-center my-8 fade-in delay-150">
     <div class="h-px w-11/12 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">People</span>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      People
+    </span>
   </div>
 
+  <!-- People Filters / Toolbar -->
+  <section class="w-full px-4 sm:px-6 fade-in delay-200">
+    <div class="bg-white rounded-2xl shadow p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between edge-card">
+      <div>
+        <h2 class="text-sm sm:text-base font-semibold text-gray-800">Manage Registered People</h2>
+        <p class="text-xs text-gray-500 mt-1">
+          Use the search box and checkboxes to filter and bulk-delete records.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2 sm:items-center w-full md:w-auto">
+        <input id="peopleSearch"
+               type="text"
+               class="w-full sm:w-64 px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+               placeholder="Search by name, guardian, or phone…"
+               autocomplete="off">
+        <div class="flex gap-2">
+          <button type="button"
+                  data-delete-selected
+                  class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all transform hover:-translate-y-0.5 w-full sm:w-auto">
+            Delete Selected
+          </button>
+          <!-- Export CSV button -->
+          <a href="{{ url_for('export_people_csv') }}"
+             class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-xl text-sm font-semibold border border-gray-300 w-full sm:w-auto text-center">
+            Export CSV
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- People (Mobile cards) -->
-  <section class="w-full px-4 sm:px-6 fade-in delay-200 md:hidden">
-    <form id="multiDeleteForm" method="POST" action="{{ url_for('delete_multiple_persons') }}">
-      <div class="space-y-3">
-        {% for person in people %}
-        <div class="bg-white rounded-2xl shadow p-4">
-          <div class="flex items-start gap-3">
-            <input type="checkbox" name="selected_ids" value="{{ person.id }}" class="mt-1 h-4 w-4 text-blue-500">
-            <img src="{{ url_for('static', filename=person.photo_path) }}" class="h-12 w-12 object-cover rounded-full" alt="Photo">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 break-words">{{ person.full_name }}</h3>
-                <span class="text-xs text-gray-500">#{{ loop.index + (page-1)*10 }}</span>
-              </div>
-              <p class="text-xs text-gray-600 mt-1 break-words">
-                Age: {{ person.age }} • {{ person.gender }}
-              </p>
-              <p class="text-xs text-gray-600 mt-1 break-words">Guardian: {{ person.guardian_name }}</p>
-              <p class="text-xs text-gray-600 mt-1 break-all">Phone: {{ person.phone_number }}</p>
-              <p class="text-xs text-gray-600 mt-1 break-words">Last seen: {{ person.last_seen }}</p>
-              <form method="POST" action="{{ url_for('delete_person', person_id=person.id) }}" class="individualDeleteForm mt-3">
-                <input type="hidden" name="page" value="{{ page }}">
-                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all transform hover:-translate-y-0.5">
-                  Delete
-                </button>
-              </form>
+  <section class="w-full px-4 sm:px-6 fade-in delay-200 md:hidden mt-4">
+    <div id="peopleMobileList" class="space-y-3">
+      {% for person in people %}
+      <div class="bg-white rounded-2xl shadow p-4 people-item text-center"
+           data-name="{{ person.full_name|lower }}"
+           data-guardian="{{ person.guardian_name|lower }}"
+           data-phone="{{ person.phone_number|lower }}">
+        <div class="flex flex-col items-center gap-3">
+          <input type="checkbox" value="{{ person.id }}" class="h-4 w-4 text-blue-500 person-checkbox">
+          <img src="{{ url_for('static', filename=person.photo_path) }}"
+               class="h-16 w-16 object-cover rounded-full" alt="Photo">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-center gap-2">
+              <h3 class="font-semibold text-gray-900 break-words">{{ person.full_name }}</h3>
+              <span class="text-xs text-gray-500">#{{ loop.index + (page-1)*10 }}</span>
             </div>
+            <p class="text-xs text-gray-600 mt-1 break-words">
+              Age: {{ person.age }} • {{ person.gender }}
+            </p>
+            <p class="text-xs text-gray-600 mt-1 break-words">Guardian: {{ person.guardian_name }}</p>
+            <p class="text-xs text-gray-600 mt-1 break-all">Phone: {{ person.phone_number }}</p>
+            <p class="text-xs text-gray-600 mt-1 break-words">{{ person.last_seen }}</p>
+
+            <!-- Individual delete (JS-confirmed) -->
+            <form method="POST" action="{{ url_for('delete_person', person_id=person.id) }}"
+                  class="individualDeleteForm mt-3">
+              <input type="hidden" name="page" value="{{ page }}">
+              <button type="submit"
+                      class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs sm:text-sm transition-all transform hover:-translate-y-0.5">
+                Delete
+              </button>
+            </form>
           </div>
         </div>
-        {% else %}
-        <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow">No records found.</div>
-        {% endfor %}
       </div>
+      {% else %}
+      <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow">No records found.</div>
+      {% endfor %}
+    </div>
 
-      {% if people|length > 0 %}
-      <div class="bg-white shadow rounded-2xl p-4 mt-4 flex flex-col sm:flex-row justify-between items-center fade-in delay-300">
-        <button type="button" id="deleteSelectedBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5">Delete Selected</button>
-        <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">Select multiple people using checkboxes above.</span>
-      </div>
-      {% endif %}
-    </form>
+    {% if people|length > 0 %}
+    <div class="bg-white shadow rounded-2xl p-4 mt-4 flex flex-col sm:flex-row justify-between items-center fade-in delay-300 edge-card">
+      <span class="text-gray-700 text-sm sm:text-base mt-1 sm:mt-0 text-center sm:text-left">
+        Select multiple people using checkboxes above and click <span class="font-semibold">Delete Selected</span> from the toolbar.
+      </span>
+    </div>
+    {% endif %}
   </section>
 
   <!-- People (Desktop table) -->
-  <section class="w-full px-4 sm:px-6 fade-in delay-200 hidden md:block">
-    <form id="multiDeleteForm" method="POST" action="{{ url_for('delete_multiple_persons') }}">
-      <div class="w-full">
-        <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700 border-separate border-spacing-0">
-          <thead class="bg-gray-200 text-gray-600 uppercase text-xs sm:text-sm leading-normal">
-            <tr>
-              <th class="py-3 px-3 w-10"><input type="checkbox" id="selectAll" class="h-4 w-4 text-blue-500"></th>
-              <th class="py-3 px-3 w-12">#</th>
-              <th class="py-3 px-3 w-16">Photo</th>
-              <th class="py-3 px-3">Full Name</th>
-              <th class="py-3 px-3 w-16">Age</th>
-              <th class="py-3 px-3 w-24">Gender</th>
-              <th class="py-3 px-3">Guardian</th>
-              <th class="py-3 px-3">Phone Number</th>
-              <th class="py-3 px-3">Last Seen</th>
-              <th class="py-3 px-3 w-28">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="text-sm">
-            {% for person in people %}
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors {% if person.is_recent %}bg-green-50{% endif %}">
-              <td class="py-3 px-3">
-                <input type="checkbox" name="selected_ids" value="{{ person.id }}" class="h-4 w-4 text-blue-500">
-              </td>
-              <td class="py-3 px-3">{{ loop.index + (page-1)*10 }}</td>
-              <td class="py-3 px-3">
-                <img src="{{ url_for('static', filename=person.photo_path) }}" class="h-12 w-12 object-cover rounded-full mx-auto" alt="Photo">
-              </td>
-              <td class="py-3 px-3 whitespace-normal break-words leading-snug">{{ person.full_name }}</td>
-              <td class="py-3 px-3">{{ person.age }}</td>
-              <td class="py-3 px-3">{{ person.gender }}</td>
-              <td class="py-3 px-3 whitespace-normal break-words">{{ person.guardian_name }}</td>
-              <td class="py-3 px-3 whitespace-normal break-all">{{ person.phone_number }}</td>
-              <td class="py-3 px-3 whitespace-normal break-words">{{ person.last_seen }}</td>
-              <td class="py-3 px-3">
-                <form method="POST" action="{{ url_for('delete_person', person_id=person.id) }}" class="individualDeleteForm inline">
-                  <input type="hidden" name="page" value="{{ page }}">
-                  <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-all transform hover:-translate-y-0.5">
-                    Delete
-                  </button>
-                </form>
-              </td>
-            </tr>
-            {% else %}
-            <tr>
-              <td colspan="10" class="text-center py-4 text-gray-500">No records found.</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+  <section class="w-full px-4 sm:px-6 fade-in delay-200 hidden md:block mt-4">
+    <div class="w-full">
+      <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700 border-separate border-spacing-0">
+        <thead class="bg-gray-200 text-gray-600 uppercase text-xs sm:text-sm leading-normal">
+          <tr>
+            <th class="py-3 px-3 w-10">
+              <input type="checkbox" id="selectAll" class="h-4 w-4 text-blue-500">
+            </th>
+            <th class="py-3 px-3 w-12">#</th>
+            <th class="py-3 px-3 w-16">Photo</th>
+            <th class="py-3 px-3">Full Name</th>
+            <th class="py-3 px-3 w-16">Age</th>
+            <th class="py-3 px-3 w-24">Gender</th>
+            <th class="py-3 px-3">Guardian</th>
+            <th class="py-3 px-3">Phone Number</th>
+            <th class="py-3 px-3">Last Seen</th>
+            <th class="py-3 px-3 w-28">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="peopleDesktopBody" class="text-sm">
+          {% for person in people %}
+          <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors people-item
+                     {% if person.is_recent %}bg-green-50{% endif %}"
+              data-name="{{ person.full_name|lower }}"
+              data-guardian="{{ person.guardian_name|lower }}"
+              data-phone="{{ person.phone_number|lower }}">
+            <td class="py-3 px-3 text-center">
+              <input type="checkbox" value="{{ person.id }}" class="h-4 w-4 text-blue-500 person-checkbox">
+            </td>
+            <td class="py-3 px-3 text-center">{{ loop.index + (page-1)*10 }}</td>
+            <td class="py-3 px-3">
+              <img src="{{ url_for('static', filename=person.photo_path) }}"
+                   class="h-12 w-12 object-cover rounded-full mx-auto" alt="Photo">
+            </td>
+            <td class="py-3 px-3 whitespace-normal break-words leading-snug">{{ person.full_name }}</td>
+            <td class="py-3 px-3 text-center">{{ person.age }}</td>
+            <td class="py-3 px-3 text-center">{{ person.gender }}</td>
+            <td class="py-3 px-3 whitespace-normal break-words">{{ person.guardian_name }}</td>
+            <td class="py-3 px-3 whitespace-normal break-all">{{ person.phone_number }}</td>
+            <td class="py-3 px-3 whitespace-normal break-words">{{ person.last_seen }}</td>
+            <td class="py-3 px-3 text-center">
+              <form method="POST" action="{{ url_for('delete_person', person_id=person.id) }}"
+                    class="individualDeleteForm inline-block">
+                <input type="hidden" name="page" value="{{ page }}">
+                <button type="submit"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs sm:text-sm transition-all transform hover:-translate-y-0.5">
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="10" class="text-center py-4 text-gray-500">No records found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-      {% if people|length > 0 %}
-      <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300">
-        <button type="button" id="deleteSelectedBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5">Delete Selected</button>
-        <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">Select multiple people using checkboxes above.</span>
-      </div>
-      {% endif %}
+    {% if people|length > 0 %}
+    <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300 edge-card">
+      <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">
+        Use the <span class="font-semibold">search bar</span> and <span class="font-semibold">checkboxes</span> above to manage people records.
+      </span>
+    </div>
+    {% endif %}
 
-      {% if total_pages > 1 %}
-      <div class="flex justify-center items-center gap-2 mt-6 flex-wrap fade-in delay-300">
-        <a href="{{ url_for('admin_dashboard', page=page-1) }}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 {% if page <= 1 %}pointer-events-none opacity-50{% endif %}">Previous</a>
-        {% for p in range(1, total_pages+1) %}
-          <a href="{{ url_for('admin_dashboard', page=p) }}" class="px-3 py-1 rounded {% if p == page %}bg-blue-500 text-white{% else %}bg-gray-200 hover:bg-gray-300 text-gray-700{% endif %}">{{ p }}</a>
-        {% endfor %}
-        <a href="{{ url_for('admin_dashboard', page=page+1) }}" class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 {% if page >= total_pages %}pointer-events-none opacity-50{% endif %}">Next</a>
-      </div>
-      {% endif %}
-    </form>
+    {% if total_pages > 1 %}
+    <div class="flex justify-center items-center gap-2 mt-6 flex-wrap fade-in delay-300">
+      <a href="{{ url_for('admin_dashboard', page=page-1) }}"
+         class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 {% if page <= 1 %}pointer-events-none opacity-50{% endif %}">
+        Previous
+      </a>
+      {% for p in range(1, total_pages+1) %}
+        <a href="{{ url_for('admin_dashboard', page=p) }}"
+           class="px-3 py-1 rounded {% if p == page %}bg-blue-500 text-white{% else %}bg-gray-200 hover:bg-gray-300 text-gray-700{% endif %}">
+          {{ p }}
+        </a>
+      {% endfor %}
+      <a href="{{ url_for('admin_dashboard', page=page+1) }}"
+         class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 text-gray-700 {% if page >= total_pages %}pointer-events-none opacity-50{% endif %}">
+        Next
+      </a>
+    </div>
+    {% endif %}
   </section>
 
-  <!-- Divider -->
-  <div class="relative w-full flex justify-center my-8 fade-in delay-150">
+  <!-- Global multi-delete form (built dynamically via JS, not visible) -->
+  <form id="multiDeleteForm" method="POST" action="{{ url_for('delete_multiple_persons') }}" class="hidden">
+    <input type="hidden" name="page" value="{{ page }}">
+  </form>
+
+  <!-- Divider: Search Logs -->
+  <div id="logsSection" class="relative w-full flex justify-center my-8 fade-in delay-150">
     <div class="h-px w-11/12 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">Search Logs</span>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Search Logs
+    </span>
   </div>
 
   <!-- Search Logs (Mobile cards) -->
   <section class="w-full px-4 sm:px-6 fade-in delay-200 md:hidden">
     <div class="space-y-3">
       {% for log in search_logs %}
-      <div class="bg-white rounded-2xl shadow p-4">
-        <div class="flex items-start justify-between">
+      <div class="bg-white rounded-2xl shadow p-4 edge-card text-center">
+        <div class="flex flex-col items-center justify-center gap-1">
           <span class="text-xs text-gray-500">#{{ loop.index }}</span>
           <span class="text-xs text-gray-500 break-all">{{ log.ts.strftime('%Y-%m-%d %H:%M:%S') }}</span>
         </div>
@@ -195,16 +410,26 @@
         <p class="mt-1 text-sm text-gray-700"><strong>Matches:</strong> {{ log.matches }}</p>
       </div>
       {% else %}
-      <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow">No logs available.</div>
+      <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow edge-card">No logs available.</div>
       {% endfor %}
     </div>
 
     {% if search_logs|length > 0 %}
-    <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300">
-      <button type="button" id="clearLogsBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5">
-        Clear Search Logs
-      </button>
-      <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">This will remove all search history.</span>
+    <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300 edge-card">
+      <div class="flex gap-2">
+        <button type="button" data-clear-logs
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5 text-sm">
+          Clear Search Logs
+        </button>
+        <!-- Export logs CSV -->
+        <a href="{{ url_for('export_search_logs_csv') }}"
+           class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded text-sm font-semibold border border-gray-300">
+          Export CSV
+        </a>
+      </div>
+      <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0 text-center sm:text-left">
+        This will remove all search history from the dashboard.
+      </span>
     </div>
     {% endif %}
   </section>
@@ -212,7 +437,7 @@
   <!-- Search Logs (Desktop table) -->
   <section class="w-full px-4 sm:px-6 fade-in delay-200 hidden md:block">
     <div class="w-full">
-      <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700">
+      <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700 edge-card">
         <thead class="bg-gray-200 text-gray-600 uppercase text-xs sm:text-sm leading-normal">
           <tr>
             <th class="py-3 px-3 w-12">#</th>
@@ -224,10 +449,10 @@
         <tbody class="text-sm">
           {% for log in search_logs %}
           <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-            <td class="py-3 px-3">{{ loop.index }}</td>
+            <td class="py-3 px-3 text-center">{{ loop.index }}</td>
             <td class="py-3 px-3 whitespace-normal break-words">{{ log.ts.strftime('%Y-%m-%d %H:%M:%S') }}</td>
             <td class="py-3 px-3 whitespace-normal break-words">{{ log.uploaded_name }}</td>
-            <td class="py-3 px-3">{{ log.matches }}</td>
+            <td class="py-3 px-3 text-center">{{ log.matches }}</td>
           </tr>
           {% else %}
           <tr>
@@ -239,58 +464,381 @@
     </div>
 
     {% if search_logs|length > 0 %}
-    <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300">
-      <button type="button" id="clearLogsBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5">
-        Clear Search Logs
-      </button>
-      <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">This will remove all search history.</span>
+    <div class="bg-white shadow rounded-2xl p-4 mt-6 flex flex-col sm:flex-row justify-between items-center fade-in delay-300 edge-card">
+      <div class="flex gap-2">
+        <button type="button" data-clear-logs
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-all transform hover:-translate-y-0.5 text-sm">
+          Clear Search Logs
+        </button>
+        <!-- Export logs CSV -->
+        <a href="{{ url_for('export_search_logs_csv') }}"
+           class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded text-sm font-semibold border border-gray-300">
+          Export CSV
+        </a>
+      </div>
+      <span class="text-gray-700 text-sm sm:text-base mt-2 sm:mt-0">
+        This will permanently remove all search logs.
+      </span>
     </div>
     {% endif %}
+  </section>
 
-    <!-- Modal -->
-    <div id="clearLogsModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 opacity-0 transition-opacity duration-300">
-      <div class="bg-white rounded-2xl p-6 w-80 max-w-full shadow-lg transform scale-95 transition-transform duration-300">
-        <h2 class="text-lg font-semibold mb-4">Confirm Action</h2>
-        <p class="mb-6 text-gray-700">Are you sure you want to clear all search logs?</p>
-        <div class="flex justify-end gap-3">
-          <button id="cancelClearLogs" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors">Cancel</button>
-          <form method="POST" action="{{ url_for('clear_search_logs') }}">
-            <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">Clear Logs</button>
-          </form>
+  <!-- Divider: Feedback -->
+  <div id="feedbackSection" class="relative w-full flex justify-center my-8 fade-in delay-150">
+    <div class="h-px w-11/12 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Feedback
+    </span>
+  </div>
+
+  <!-- Feedback summary section -->
+  <section class="w-full px-4 sm:px-6 fade-in delay-200">
+    <div class="bg-white rounded-2xl shadow p-5 edge-card grid gap-5 lg:grid-cols-3">
+      <!-- Stats + CTA -->
+      <div class="space-y-3 lg:col-span-1">
+        <h2 class="text-sm sm:text-base font-semibold text-gray-800 flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+          Feedback Summary
+        </h2>
+        <p class="text-xs text-gray-500">
+          Get a quick pulse on how people feel about PersonFinder. For detailed filters, CSV export, and delete actions, open the full feedback inbox.
+        </p>
+
+        <div class="grid grid-cols-2 gap-3 mt-2">
+          <div class="rounded-xl border border-gray-200 bg-amber-50/60 px-3 py-2.5">
+            <p class="text-[11px] text-gray-500">Total Feedback</p>
+            <p class="text-xl font-semibold text-amber-700">{{ feedback_total or 0 }}</p>
+          </div>
+          <div class="rounded-xl border border-gray-200 bg-slate-50 px-3 py-2.5">
+            <p class="text-[11px] text-gray-500">Average Rating</p>
+            <p class="text-xl font-semibold text-slate-900">
+  {% if feedback_avg_rating is defined and feedback_avg_rating is not none %}
+    {{ '%.1f'|format(feedback_avg_rating) }} <span class="text-sm text-yellow-500 align-middle">★</span>
+  {% else %}
+    —
+  {% endif %}
+</p>
+          </div>
+        </div>
+
+        <div class="mt-2 flex flex-wrap gap-2 text-[11px]">
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            Healthy ratings if average ≥ 4.0
+          </span>
+          <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
+            Low ratings (≤ 2★): {{ feedback_negative_count or 0 }}
+          </span>
+        </div>
+
+        <div class="pt-3">
+          <a href="{{ url_for('admin_feedback') }}"
+             class="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 shadow-sm">
+            Open Feedback Inbox
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0L16 7.586a1 1 0 010 1.414l-4.293 4.293a1 1 0 01-1.414-1.414L12.586 9H4a1 1 0 110-2h8.586L10.293 4.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+          <p class="mt-2 text-[11px] text-gray-500">
+            Full feedback page includes: rating filter, CSV export, and super-admin-only delete.
+          </p>
+        </div>
+      </div>
+
+      <!-- Rating distribution chart -->
+      <div class="space-y-3 lg:col-span-1">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-800">Rating Distribution</h3>
+          <p class="text-[11px] text-gray-500">
+            Across all submitted feedback.
+          </p>
+        </div>
+        <div class="h-40">
+          <canvas id="feedbackChart"></canvas>
+        </div>
+        <p class="text-[11px] text-gray-500">
+          Bars show how many responses each star rating received (1★–5★).
+        </p>
+      </div>
+
+      <!-- Recent feedback list -->
+      <div class="space-y-3 lg:col-span-1">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-800">Latest Comments</h3>
+          <span class="text-[11px] text-gray-500">
+            {{ (recent_feedback|length) or 0 }} shown
+          </span>
+        </div>
+        <div class="max-h-56 overflow-y-auto space-y-2 text-xs">
+          {% if recent_feedback %}
+            {% for fb in recent_feedback %}
+              <article class="border border-gray-200 rounded-xl p-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div>
+                    <p class="font-semibold text-gray-900 text-[0.8rem]">
+                      {% if fb.name %}{{ fb.name }}{% else %}Anonymous{% endif %}
+                    </p>
+                    {% if fb.email %}
+                      <p class="text-[0.7rem] text-gray-500 break-all">
+                        {{ fb.email }}
+                      </p>
+                    {% endif %}
+                  </div>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[0.7rem]
+                    {% if fb.rating >= 4 %}
+                      bg-emerald-50 text-emerald-700 border border-emerald-200
+                    {% elif fb.rating == 3 %}
+                      bg-amber-50 text-amber-700 border border-amber-200
+                    {% else %}
+                      bg-rose-50 text-rose-700 border border-rose-200
+                    {% endif %}
+                  ">
+                    {{ fb.rating }}/5 ★
+                  </span>
+                </div>
+                <p class="mt-1.5 text-[0.7rem] text-gray-700 whitespace-pre-wrap break-words">
+                  {{ fb.message }}
+                </p>
+                <p class="mt-1 text-[0.65rem] text-gray-400">
+                  {% if fb.created_at %}
+                    {{ fb.created_at.strftime("%Y-%m-%d %H:%M") }}
+                  {% endif %}
+                </p>
+              </article>
+            {% endfor %}
+          {% else %}
+            <p class="text-[0.8rem] text-gray-500">
+              No feedback submitted yet. Once users send feedback from the footer, the most recent comments will show up here.
+            </p>
+          {% endif %}
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Divider -->
-  <div class="relative w-full flex justify-center my-8 fade-in delay-150">
+  <!-- Divider: Activity -->
+  <div id="activitySection" class="relative w-full flex justify-center my-8 fade-in delay-150">
     <div class="h-px w-11/12 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
-    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">Users</span>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Recent Activity
+    </span>
+  </div>
+
+  <!-- Activity Audit Panel -->
+  <section class="w-full px-4 sm:px-6 fade-in delay-200">
+    <div class="bg-white rounded-2xl shadow p-5 edge-card">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-sm sm:text-base font-semibold text-gray-800">Admin & System Activity</h2>
+        <p class="text-xs text-gray-500">Last few important actions.</p>
+      </div>
+      {% set events = recent_events|default([], true) %}
+      <ul class="space-y-2 text-xs sm:text-sm text-gray-700 max-h-64 overflow-y-auto">
+        {% for ev in events %}
+          <li class="flex items-start gap-2 border-b border-gray-100 pb-2 last:border-b-0">
+            <span class="mt-1 h-2 w-2 rounded-full {% if ev.level == 'error' %}bg-red-500{% elif ev.level == 'warning' %}bg-amber-500{% else %}bg-emerald-500{% endif %}"></span>
+            <div class="flex-1">
+              <div class="flex justify-between gap-2">
+                <span class="font-medium text-gray-900">{{ ev.title }}</span>
+                <span class="text-[11px] text-gray-500 whitespace-nowrap">
+                  {{ ev.ts.strftime('%Y-%m-%d %H:%M') if ev.ts is defined else '' }}
+                </span>
+              </div>
+              <p class="text-xs text-gray-600 mt-0.5">
+                {{ ev.description }}
+              </p>
+            </div>
+          </li>
+        {% else %}
+          <li class="text-gray-500 text-sm">No recent activity events configured yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Divider: Users -->
+  <div id="usersSectionHeader" class="relative w-full flex justify-center my-8 fade-in delay-150">
+    <div class="h-px w-11/12 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
+    <span class="absolute -top-3 bg-blue-900 text-white text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
+      Users
+    </span>
   </div>
 
   <!-- Users (Mobile cards) -->
-  <section class="w-full px-4 sm:px-6 pb-10 fade-in delay-200 md:hidden">
-    <div class="space-y-3">
-      {% for user in users %}
-      <div class="bg-white rounded-2xl shadow p-4">
-        <div class="flex items-start justify-between">
-          <h3 class="font-semibold text-gray-900 break-words">{{ user.username }}</h3>
-          <span class="text-xs text-gray-500">#{{ loop.index }}</span>
+  <section class="w-full px-4 sm:px-6 pb-4 fade-in delay-200 md:hidden">
+    <!-- User toolbar (mobile) -->
+    <div class="bg-white rounded-2xl shadow p-4 mb-3 edge-card">
+      <div class="flex flex-col gap-2">
+        <input id="userSearchMobile"
+               type="text"
+               class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+               placeholder="Search users by name or email…"
+               autocomplete="off">
+        <div class="flex items-center gap-2">
+          <select id="userRoleFilterMobile"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="">All roles</option>
+            <option value="admin">Admins</option>
+            <option value="user">Users</option>
+          </select>
+          <button type="button"
+                  data-open-create-user
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-xs font-semibold text-center">
+            + New User
+          </button>
         </div>
-        <p class="mt-1 text-sm text-gray-700 break-all">{{ user.email }}</p>
-        <p class="mt-1 text-sm text-gray-700 break-all">Phone: {{ user.phone }}</p>
-        <p class="mt-1 text-sm text-gray-700">Role: {{ user.role }}</p>
+      </div>
+    </div>
+
+    <div class="space-y-3" id="usersMobileList">
+      {% for user in users %}
+      {% set is_super_admin = user.email|lower == 'ammehz09@gmail.com' %}
+      <div class="bg-white rounded-2xl shadow p-4 user-item text-center"
+           data-username="{{ user.username|lower }}"
+           data-email="{{ user.email|lower }}"
+           data-phone="{{ (user.phone or user.phone_number or '')|lower }}"
+           data-role="{{ user.role|lower }}">
+        <div class="flex flex-col items-center gap-2">
+          <span class="text-xs text-gray-500 self-end">#{{ loop.index }}</span>
+          <div class="min-w-0">
+            <h3 class="font-semibold text-gray-900 break-words">{{ user.username }}</h3>
+            <p class="mt-1 text-sm text-gray-700 break-all">{{ user.email }}</p>
+            <p class="mt-1 text-sm text-gray-700 break-all">
+              Phone: {{ user.phone or user.phone_number or '—' }}
+            </p>
+            <p class="mt-1 text-sm text-gray-700">
+              Role:
+              {% if is_super_admin %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-700">
+                  Super Admin
+                </span>
+              {% elif user.role|lower == 'admin' %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700">
+                  Admin
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700">
+                  User
+                </span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <!-- User actions (mobile) -->
+        <div class="mt-3 flex flex-wrap gap-2 justify-center">
+          {% if is_super_admin %}
+            <span class="px-3 py-1 rounded text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+              Super Admin
+            </span>
+            <!-- Allow only password reset for super admin -->
+            <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
+              <button type="submit"
+                      class="px-3 py-1 rounded text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                Reset Password
+              </button>
+            </form>
+          {% else %}
+            <!-- Reset password -->
+            <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
+              <button type="submit"
+                      class="px-3 py-1 rounded text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                Reset Password
+              </button>
+            </form>
+
+            <!-- Toggle role: admin <-> user -->
+            <form method="POST" action="{{ url_for('admin_toggle_user_role', user_id=user.id) }}">
+              <button type="submit"
+                      class="px-3 py-1 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                {% if user.role|lower == 'admin' %}
+                  Make User
+                {% else %}
+                  Make Admin
+                {% endif %}
+              </button>
+            </form>
+
+            <!-- Activate / Deactivate -->
+            <form method="POST" action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}">
+              <button type="submit"
+                      class="px-3 py-1 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                {% if user.is_active is defined and not user.is_active %}
+                  Activate
+                {% else %}
+                  Deactivate
+                {% endif %}
+              </button>
+            </form>
+
+            <!-- Delete user -->
+            <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}"
+                  class="userDeleteForm inline"
+                  onsubmit="return false;">
+              <button type="submit"
+                      class="px-3 py-1 rounded text-xs font-semibold bg-red-500 text-white hover:bg-red-600">
+                Delete
+              </button>
+            </form>
+          {% endif %}
+        </div>
       </div>
       {% else %}
-      <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow">No users found.</div>
+      <div class="text-center text-gray-500 py-4 bg-white rounded-2xl shadow edge-card">No users found.</div>
       {% endfor %}
     </div>
+
+    {% if users|length > 0 %}
+    <div class="bg-white shadow rounded-2xl p-4 mt-4 flex justify-end edge-card">
+      <!-- Export users CSV -->
+      <a href="{{ url_for('export_users_csv') }}"
+         class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded text-sm font-semibold border border-gray-300">
+        Export Users CSV
+      </a>
+    </div>
+    {% endif %}
   </section>
 
   <!-- Users (Desktop table) -->
-  <section class="w-full px-4 sm:px-6 pb-10 fade-in delay-200 hidden md:block">
+  <section id="usersSection" class="relative w-full px-4 sm:px-6 pb-10 fade-in delay-200 hidden md:block">
     <div class="w-full">
-      <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700">
+      <!-- Users toolbar (desktop) -->
+      <div class="bg-blue-900 rounded-2xl p-4 mb-3 flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between edge-card">
+        <div>
+          <h2 class="text-sm sm:text-base font-semibold text-white">Registered Users</h2>
+          <p class="text-xs text-blue-100 mt-1">
+            Search, filter by role, and manage user accounts.
+          </p>
+        </div>
+        <div class="flex flex-col md:flex-row gap-2 md:items-center w-full lg:w-auto">
+          <div class="flex gap-2 w-full md:w-auto">
+            <input id="userSearch"
+                   type="text"
+                   class="w-full md:w-64 px-3 py-2 rounded-xl border border-blue-200 text-sm text-gray-900 placeholder-gray-200 focus:ring-2 focus:ring-blue-300 focus:outline-none bg-white"
+                   placeholder="Search by username, email, or phone…"
+                   autocomplete="off">
+            <select id="userRoleFilter"
+                    class="px-3 py-2 rounded-xl border border-blue-200 text-sm bg-white text-gray-800 focus:ring-2 focus:ring-blue-300 focus:outline-none">
+              <option value="">All roles</option>
+              <option value="admin">Admins</option>
+              <option value="user">Users</option>
+            </select>
+          </div>
+          <div class="flex gap-2 justify-end">
+            <button type="button"
+                    data-open-create-user
+                    class="bg-white hover:bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-semibold border border-blue-200 text-center">
+              + New User
+            </button>
+            {% if users|length > 0 %}
+            <a href="{{ url_for('export_users_csv') }}"
+               class="bg-blue-800 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold border border-blue-700 text-center">
+              Export Users CSV
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <table class="w-full table-auto bg-white rounded-2xl shadow text-gray-700 edge-card">
         <thead class="bg-gray-200 text-gray-600 uppercase text-xs sm:text-sm leading-normal">
           <tr>
             <th class="py-3 px-3 w-12">#</th>
@@ -298,20 +846,89 @@
             <th class="py-3 px-3">Email</th>
             <th class="py-3 px-3 w-[12rem]">Phone</th>
             <th class="py-3 px-3 w-28">Role</th>
+            <th class="py-3 px-3 w-56">Actions</th>
           </tr>
         </thead>
-        <tbody class="text-sm">
+        <tbody class="text-sm" id="usersDesktopBody">
           {% for user in users %}
-          <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-            <td class="py-3 px-3">{{ loop.index }}</td>
+          {% set is_super_admin = user.email|lower == 'ammehz09@gmail.com' %}
+          <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors user-item"
+              data-username="{{ user.username|lower }}"
+              data-email="{{ user.email|lower }}"
+              data-phone="{{ (user.phone or user.phone_number or '')|lower }}"
+              data-role="{{ user.role|lower }}">
+            <td class="py-3 px-3 text-center">{{ loop.index }}</td>
             <td class="py-3 px-3 whitespace-normal break-words">{{ user.username }}</td>
             <td class="py-3 px-3 whitespace-normal break-all">{{ user.email }}</td>
-            <td class="py-3 px-3 whitespace-normal break-all">{{ user.phone }}</td>
-            <td class="py-3 px-3 whitespace-normal break-words">{{ user.role }}</td>
+            <td class="py-3 px-3 whitespace-normal break-all">{{ user.phone or user.phone_number or '—' }}</td>
+            <td class="py-3 px-3 whitespace-normal break-words text-center">
+              {% if is_super_admin %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-700">
+                  Super Admin
+                </span>
+              {% elif user.role|lower == 'admin' %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-100 text-red-700">
+                  Admin
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-700">
+                  User
+                </span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-3">
+              <div class="flex flex-wrap gap-2 justify-center">
+                {% if is_super_admin %}
+                  <span class="px-3 py-1 rounded text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
+                    Super Admin (protected)
+                  </span>
+                  <!-- Only allow password reset for super admin -->
+                  <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
+                    <button type="submit"
+                            class="px-3 py-1 rounded text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                      Reset Password
+                    </button>
+                  </form>
+                {% else %}
+                  <!-- Toggle role -->
+                  <form method="POST" action="{{ url_for('admin_toggle_user_role', user_id=user.id) }}">
+                    <button type="submit"
+                            class="px-3 py-1 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                      {% if user.role|lower == 'admin' %}Make User{% else %}Make Admin{% endif %}
+                    </button>
+                  </form>
+
+                  <!-- Toggle active -->
+                  <form method="POST" action="{{ url_for('admin_toggle_user_active', user_id=user.id) }}">
+                    <button type="submit"
+                            class="px-3 py-1 rounded text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                      {% if user.is_active is defined and not user.is_active %}Activate{% else %}Deactivate{% endif %}
+                    </button>
+                  </form>
+
+                  <!-- Reset password -->
+                  <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
+                    <button type="submit"
+                            class="px-3 py-1 rounded text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                      Reset Password
+                    </button>
+                  </form>
+
+                  <!-- Delete user (confirmed with modal) -->
+                  <form method="POST" action="{{ url_for('admin_delete_user', user_id=user.id) }}"
+                        class="userDeleteForm inline-block">
+                    <button type="submit"
+                            class="px-3 py-1 rounded text-xs font-semibold bg-red-500 text-white hover:bg-red-600">
+                      Delete
+                    </button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
           </tr>
           {% else %}
           <tr>
-            <td colspan="5" class="text-center py-4 text-gray-500">No users found.</td>
+            <td colspan="6" class="text-center py-4 text-gray-500">No users found.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -322,23 +939,240 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-<div id="deleteModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 opacity-0 transition-opacity duration-300">
-  <div class="bg-white rounded-2xl p-6 w-80 max-w-full shadow-lg transform scale-95 transition-transform duration-300">
-    <h2 class="text-lg font-semibold mb-4">Confirm Deletion</h2>
+<div id="deleteModal"
+     class="fixed inset-0 z-[3000] hidden items-center justify-center bg-black/50 transition-opacity duration-300 opacity-0">
+  <div class="bg-white rounded-2xl p-6 w-80 max-w-full shadow-lg transform transition-transform duration-300 scale-95">
+    <h2 class="text-lg font-semibold mb-4 text-gray-900">Confirm Deletion</h2>
     <p class="mb-6 text-gray-700" id="modalMessage">Are you sure you want to delete?</p>
     <div class="flex justify-end gap-3">
-      <button id="cancelDelete" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors">Cancel</button>
-      <button id="confirmDelete" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">Delete</button>
+      <button id="cancelDelete"
+              class="px-4 py-2 bg-gray-200 rounded-xl text-sm text-gray-900 hover:bg-gray-300 transition-colors">
+        Cancel
+      </button>
+      <button id="confirmDelete"
+              class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm hover:bg-red-600 transition-colors">
+        Delete
+      </button>
     </div>
   </div>
 </div>
 
+<!-- Clear Logs Modal (shared for mobile + desktop) -->
+<div id="clearLogsModal"
+     class="fixed inset-0 z-[3000] hidden items-center justify-center bg-black/50 transition-opacity duration-300 opacity-0">
+  <div class="bg-white rounded-2xl p-6 w-80 max-w-full shadow-lg transform transition-transform duration-300 scale-95">
+    <h2 class="text-lg font-semibold mb-4 text-gray-900">Confirm Action</h2>
+    <p class="mb-6 text-gray-700">Are you sure you want to clear all search logs?</p>
+    <div class="flex justify-end gap-3">
+      <button id="cancelClearLogs"
+              class="px-4 py-2 bg-gray-200 rounded-xl text-sm text-gray-900 hover:bg-gray-300 transition-colors">
+        Cancel
+      </button>
+      <form method="POST" action="{{ url_for('clear_search_logs') }}">
+        <button type="submit"
+                class="px-4 py-2 bg-red-500 text-white rounded-xl text-sm hover:bg-red-600 transition-colors">
+          Clear Logs
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Create User Modal -->
+<div id="createUserModal"
+     class="fixed inset-0 z-[3000] hidden bg-slate-950/60 backdrop-blur-sm transition-opacity duration-200 opacity-0 flex items-center justify-center">
+  <div class="w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh] transform transition-transform duration-200 scale-95">
+    <!-- Modal header -->
+    <div class="flex items-start justify-between gap-4 px-6 pt-5 pb-3 border-b border-slate-100">
+      <div>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-blue-50 text-blue-700">
+          New user
+        </span>
+        <h2 class="mt-2 text-lg font-semibold text-slate-900">Create account</h2>
+        <p class="mt-1 text-xs text-slate-500">
+          Invite a new admin or standard user to PersonFinder.
+        </p>
+      </div>
+      <button type="button"
+              class="ml-2 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+              aria-label="Close create user modal"
+              data-close-create-user>
+        <span class="text-xl leading-none">&times;</span>
+      </button>
+    </div>
+
+    <!-- Modal form: body scrolls, footer unified -->
+    <form method="POST" action="{{ url_for('admin_create_user') }}" class="flex flex-col flex-1">
+      <!-- Body -->
+      <div class="px-6 pt-4 pb-3 space-y-3 overflow-y-auto text-sm">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Username</label>
+          <input name="new_username" type="text" required
+                 class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                 placeholder="e.g. johndoe">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">Email</label>
+          <input name="new_email" type="email" required
+                 class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                 placeholder="user@example.com">
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Phone (optional)</label>
+            <input name="new_phone" type="text"
+                   class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                   placeholder="+1 555 123 4567">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Role</label>
+            <select name="new_role"
+                    class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="user" selected>User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Password + Confirm password -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Password</label>
+            <div class="relative">
+              <input name="new_password" type="password" required
+                     class="w-full px-3 py-2 pr-10 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                     placeholder="Set a password">
+              <button type="button"
+                      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      data-toggle-password>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+            <p class="mt-1 text-[11px] text-gray-500">
+              Use at least 8 characters with a mix of letters and numbers.
+            </p>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Confirm Password</label>
+            <div class="relative">
+              <input name="new_password_confirm" type="password" required
+                     class="w-full px-3 py-2 pr-10 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white"
+                     placeholder="Re-type password">
+              <button type="button"
+                      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      data-toggle-password>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin password -->
+        <div class="mt-2">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Enter Super Admin Password</label>
+          <input name="admin_password" type="password" required
+                 class="w-full px-3 py-2 rounded-xl border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:outline-none bg-white"
+                 placeholder="Confirm your admin password">
+          <p class="mt-1 text-[11px] text-gray-500">
+            Required to authorize creating new accounts.
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 flex items-center justify-between gap-3 border-t border-slate-100">
+        <p class="hidden sm:block text-[11px] text-slate-500">
+          New users will be able to sign in immediately unless their account is later deactivated.
+        </p>
+        <div class="flex justify-end gap-3 w-full sm:w-auto">
+          <button type="button"
+                  data-close-create-user
+                  class="px-4 py-2 bg-gray-200 rounded-xl text-sm text-gray-800 hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit"
+                  class="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-sm">
+            Create User
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Chart.js (only for this page) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // Count-up
+  // Global smooth scroll helper for modals
+  const scrollToTopForModal = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Tabs navigation (smooth scroll)
+  document.querySelectorAll("[data-jump]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetSelector = btn.getAttribute("data-jump");
+      const target = document.querySelector(targetSelector);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  });
+
+  // Active state for section nav (click + scroll)
+  const sectionButtons = document.querySelectorAll("[data-jump]");
+  const sectionMap = new Map();
+
+  sectionButtons.forEach(btn => {
+    const targetSelector = btn.getAttribute("data-jump");
+    const sectionEl = document.querySelector(targetSelector);
+    if (sectionEl) sectionMap.set(sectionEl, btn);
+
+    // Immediate active state on click
+    btn.addEventListener("click", () => {
+      sectionButtons.forEach(b => b.classList.remove("section-nav-pill-active"));
+      btn.classList.add("section-nav-pill-active");
+    });
+  });
+
+  if (sectionMap.size && "IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          const btn = sectionMap.get(entry.target);
+          if (!btn) return;
+          if (entry.isIntersecting) {
+            sectionButtons.forEach(b => b.classList.remove("section-nav-pill-active"));
+            btn.classList.add("section-nav-pill-active");
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: "0px 0px -60% 0px",
+        threshold: 0.25
+      }
+    );
+
+    sectionMap.forEach((_, sectionEl) => observer.observe(sectionEl));
+  }
+
+  // --------- Count-up for stats ---------
   const counters = document.querySelectorAll("[data-target]");
   counters.forEach(counter => {
-    const target = +counter.getAttribute("data-target");
+    const target = +counter.getAttribute("data-target") || 0;
     let count = 0;
     const step = Math.max(1, Math.ceil(target / 40));
     const tick = () => {
@@ -349,91 +1183,484 @@ document.addEventListener("DOMContentLoaded", () => {
     requestAnimationFrame(tick);
   });
 
-  // Select all
+  // --------- Overview Chart ---------
+  function initOverviewChart() {
+    const ctx = document.getElementById("overviewChart");
+    if (!ctx || !window.Chart) return;
+
+    const labels = JSON.parse(
+      '{{ (stats.get("chart_labels") or ["Registered People", "Searches", "Users"]) | tojson | safe }}'
+    );
+
+    const values = JSON.parse(
+      '{{ (stats.get("chart_values") or [stats.get("registrations", 0), stats.get("searches", 0), users|length]) | tojson | safe }}'
+    );
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Counts",
+          data: values,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode: "index", intersect: false }
+        },
+        layout: {
+          padding: {
+            top: 4,
+            right: 8,
+            bottom: 4,
+            left: 4
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 0,
+              minRotation: 0,
+              autoSkip: true
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  }
+
+  // --------- Feedback Chart (rating distribution) ---------
+  function initFeedbackChart() {
+    const ctx = document.getElementById("feedbackChart");
+    if (!ctx || !window.Chart) return;
+
+    const labels = ["1★", "2★", "3★", "4★", "5★"];
+    const data = JSON.parse(
+      '{{ feedback_hist|default([0,0,0,0,0], true) | tojson | safe }}'
+    );
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "Responses",
+          data: data,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode: "index", intersect: false }
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxRotation: 0,
+              minRotation: 0
+            }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { precision: 0 }
+          }
+        }
+      }
+    });
+  }
+
+  initOverviewChart();
+  initFeedbackChart();
+
+  // --------- People search (mobile + desktop) ---------
+  const searchInput = document.getElementById("peopleSearch");
+  if (searchInput) {
+    const filterPeople = () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const items = document.querySelectorAll(".people-item");
+      items.forEach(item => {
+        const name = item.getAttribute("data-name") || "";
+        const guardian = item.getAttribute("data-guardian") || "";
+        const phone = item.getAttribute("data-phone") || "";
+        const match = !q || name.includes(q) || guardian.includes(q) || phone.includes(q);
+        item.style.display = match ? "" : "none";
+      });
+    };
+    searchInput.addEventListener("input", filterPeople);
+  }
+
+  // --------- Users search & role filters ---------
+  function filterUsersDesktop() {
+    const q = (document.getElementById("userSearch")?.value || "").trim().toLowerCase();
+    const role = (document.getElementById("userRoleFilter")?.value || "").toLowerCase();
+    const rows = document.querySelectorAll("tbody#usersDesktopBody .user-item");
+    rows.forEach(row => {
+      const username = row.getAttribute("data-username") || "";
+      const email = row.getAttribute("data-email") || "";
+      const phone = row.getAttribute("data-phone") || "";
+      const rowRole = row.getAttribute("data-role") || "";
+      const matchesText = !q || username.includes(q) || email.includes(q) || phone.includes(q);
+      const matchesRole = !role || rowRole === role;
+      row.style.display = (matchesText && matchesRole) ? "" : "none";
+    });
+  }
+
+  function filterUsersMobile() {
+    const q = (document.getElementById("userSearchMobile")?.value || "").trim().toLowerCase();
+    const role = (document.getElementById("userRoleFilterMobile")?.value || "").toLowerCase();
+    const cards = document.querySelectorAll("section.md\\:hidden .user-item");
+    cards.forEach(card => {
+      const username = card.getAttribute("data-username") || "";
+      const email = card.getAttribute("data-email") || "";
+      const phone = card.getAttribute("data-phone") || "";
+      const rowRole = card.getAttribute("data-role") || "";
+      const matchesText = !q || username.includes(q) || email.includes(q) || phone.includes(q);
+      const matchesRole = !role || rowRole === role;
+      card.style.display = (matchesText && matchesRole) ? "" : "none";
+    });
+  }
+
+  const userSearch = document.getElementById("userSearch");
+  const userRoleFilter = document.getElementById("userRoleFilter");
+  if (userSearch) userSearch.addEventListener("input", filterUsersDesktop);
+  if (userRoleFilter) userRoleFilter.addEventListener("change", filterUsersDesktop);
+
+  const userSearchMobile = document.getElementById("userSearchMobile");
+  const userRoleFilterMobile = document.getElementById("userRoleFilterMobile");
+  if (userSearchMobile) userSearchMobile.addEventListener("input", filterUsersMobile);
+  if (userRoleFilterMobile) userRoleFilterMobile.addEventListener("change", filterUsersMobile);
+
+  // --------- Select all (desktop) ---------
   const selectAll = document.getElementById("selectAll");
   if (selectAll) {
     selectAll.addEventListener("change", function () {
-      document.querySelectorAll('input[name="selected_ids"]').forEach(cb => cb.checked = this.checked);
+      document.querySelectorAll(".person-checkbox").forEach(cb => { cb.checked = this.checked; });
     });
   }
 
-  // Delete modals
+  // --------- Delete modal (single + multi + users) ---------
   const deleteModal = document.getElementById("deleteModal");
   const cancelDelete = document.getElementById("cancelDelete");
   const confirmDelete = document.getElementById("confirmDelete");
+  const modalMsg = document.getElementById("modalMessage");
   let activeForm = null;
 
-  const openModal = (message, form) => {
+  const openDeleteModal = (message, form) => {
+    if (!deleteModal) return;
     activeForm = form;
-    document.getElementById("modalMessage").innerText = message;
+    if (modalMsg) modalMsg.innerText = message;
+
+    scrollToTopForModal();
+
     deleteModal.classList.remove("hidden");
-    setTimeout(() => {
-      deleteModal.classList.remove("opacity-0");
-      deleteModal.querySelector("div").classList.remove("scale-95");
-    }, 10);
+    deleteModal.classList.add("flex");
+    deleteModal.classList.remove("opacity-0");
+    const dialog = deleteModal.querySelector("div");
+    if (dialog) dialog.classList.remove("scale-95");
+
+    const primaryBtn = document.getElementById("confirmDelete");
+    if (primaryBtn) {
+      setTimeout(() => primaryBtn.focus(), 150);
+    }
   };
-  const closeModal = () => {
+
+  const closeDeleteModal = () => {
+    if (!deleteModal) return;
+    const dialog = deleteModal.querySelector("div");
     deleteModal.classList.add("opacity-0");
-    deleteModal.querySelector("div").classList.add("scale-95");
-    setTimeout(() => deleteModal.classList.add("hidden"), 300);
+    if (dialog) dialog.classList.add("scale-95");
+    setTimeout(() => {
+      deleteModal.classList.add("hidden");
+      deleteModal.classList.remove("flex");
+    }, 200);
     activeForm = null;
   };
 
-  const multiDeleteForm = document.getElementById("multiDeleteForm");
-  const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
-  if (deleteSelectedBtn) {
-    deleteSelectedBtn.addEventListener("click", () => {
-      const selected = document.querySelectorAll('input[name="selected_ids"]:checked');
-      if (selected.length === 0) { alert("No people selected."); return; }
-      openModal(`Are you sure you want to delete ${selected.length} selected people?`, multiDeleteForm);
-    });
-  }
-  document.querySelectorAll(".individualDeleteForm").forEach(form => {
+  document.querySelectorAll(".individualDeleteForm, .userDeleteForm").forEach(form => {
     form.addEventListener("submit", e => {
       e.preventDefault();
-      openModal("Are you sure you want to delete this person?", form);
+      const isUserForm = form.classList.contains("userDeleteForm");
+      const msg = isUserForm
+        ? "Are you sure you want to permanently delete this user account?"
+        : "Are you sure you want to delete this person?";
+      openDeleteModal(msg, form);
     });
   });
-  if (cancelDelete) cancelDelete.addEventListener("click", closeModal);
-  if (confirmDelete) confirmDelete.addEventListener("click", () => { if (activeForm) activeForm.submit(); });
 
-  // Clear logs modal
-  const clearLogsBtn = document.getElementById("clearLogsBtn");
+  if (cancelDelete) cancelDelete.addEventListener("click", closeDeleteModal);
+  if (confirmDelete) {
+    confirmDelete.addEventListener("click", () => {
+      if (activeForm) activeForm.submit();
+      closeDeleteModal();
+    });
+  }
+
+  if (deleteModal) {
+    deleteModal.addEventListener("click", (e) => {
+      if (e.target === deleteModal) {
+        closeDeleteModal();
+      }
+    });
+  }
+
+  // --------- Multi-delete using a single hidden form ---------
+  const multiDeleteForm = document.getElementById("multiDeleteForm");
+  document.querySelectorAll("[data-delete-selected]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const selected = Array.from(document.querySelectorAll(".person-checkbox:checked"));
+      if (!selected.length) {
+        alert("No people selected.");
+        return;
+      }
+      if (!multiDeleteForm) return;
+
+      Array.from(multiDeleteForm.querySelectorAll('input[name="selected_ids"]')).forEach(n => n.remove());
+
+      selected.forEach(cb => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "selected_ids";
+        input.value = cb.value;
+        multiDeleteForm.appendChild(input);
+      });
+
+      openDeleteModal(`Are you sure you want to delete ${selected.length} selected people?`, multiDeleteForm);
+    });
+  });
+
+  // --------- Clear logs modal (shared) ---------
   const clearLogsModal = document.getElementById("clearLogsModal");
   const cancelClearLogs = document.getElementById("cancelClearLogs");
-  if (clearLogsBtn && clearLogsModal) {
-    clearLogsBtn.addEventListener("click", () => {
-      clearLogsModal.classList.remove("hidden");
-      setTimeout(() => {
-        clearLogsModal.classList.remove("opacity-0");
-        clearLogsModal.querySelector("div").classList.remove("scale-95");
-      }, 10);
+
+  const openLogsModal = () => {
+    if (!clearLogsModal) return;
+
+    scrollToTopForModal();
+
+    clearLogsModal.classList.remove("hidden");
+    clearLogsModal.classList.add("flex");
+    clearLogsModal.classList.remove("opacity-0");
+    const dialog = clearLogsModal.querySelector("div");
+    if (dialog) dialog.classList.remove("scale-95");
+
+    if (cancelClearLogs) {
+      setTimeout(() => cancelClearLogs.focus(), 150);
+    }
+  };
+
+  const closeLogsModal = () => {
+    if (!clearLogsModal) return;
+    const dialog = clearLogsModal.querySelector("div");
+    clearLogsModal.classList.add("opacity-0");
+    if (dialog) dialog.classList.add("scale-95");
+    setTimeout(() => {
+      clearLogsModal.classList.add("hidden");
+      clearLogsModal.classList.remove("flex");
+    }, 200);
+  };
+
+  document.querySelectorAll("[data-clear-logs]").forEach(btn => {
+    btn.addEventListener("click", openLogsModal);
+  });
+
+  if (cancelClearLogs) {
+    cancelClearLogs.addEventListener("click", closeLogsModal);
+  }
+
+  if (clearLogsModal) {
+    clearLogsModal.addEventListener("click", (e) => {
+      if (e.target === clearLogsModal) {
+        closeLogsModal();
+      }
     });
   }
-  if (cancelClearLogs && clearLogsModal) {
-    cancelClearLogs.addEventListener("click", () => {
-      clearLogsModal.classList.add("opacity-0");
-      clearLogsModal.querySelector("div").classList.add("scale-95");
-      setTimeout(() => clearLogsModal.classList.add("hidden"), 300);
+
+  // --------- Create User Modal ---------
+  const createUserModal = document.getElementById("createUserModal");
+  const usersSection = document.getElementById("usersSection");
+  const openCreateBtns = document.querySelectorAll("[data-open-create-user]");
+  const closeCreateBtns = document.querySelectorAll("[data-close-create-user]");
+
+  const openCreateModal = () => {
+    if (!createUserModal) return;
+
+    scrollToTopForModal();
+
+    if (usersSection) {
+      usersSection.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    createUserModal.classList.remove("hidden");
+    createUserModal.classList.add("flex");
+    createUserModal.classList.remove("opacity-0");
+
+    const dialog = createUserModal.querySelector("div");
+    if (dialog) dialog.classList.remove("scale-95");
+
+    const firstInput = createUserModal.querySelector('input[name="new_username"]');
+    if (firstInput) {
+      setTimeout(() => firstInput.focus(), 150);
+    }
+  };
+
+  const closeCreateModal = () => {
+    if (!createUserModal) return;
+    const dialog = createUserModal.querySelector("div");
+    createUserModal.classList.add("opacity-0");
+    if (dialog) dialog.classList.add("scale-95");
+    setTimeout(() => {
+      createUserModal.classList.add("hidden");
+      createUserModal.classList.remove("flex");
+    }, 200);
+  };
+
+  openCreateBtns.forEach(btn => btn.addEventListener("click", openCreateModal));
+  closeCreateBtns.forEach(btn => btn.addEventListener("click", closeCreateModal));
+
+  if (createUserModal) {
+    createUserModal.addEventListener("click", (e) => {
+      if (e.target === createUserModal) {
+        closeCreateModal();
+      }
     });
   }
+
+  // --------- Password show/hide toggles ---------
+  document.querySelectorAll("[data-toggle-password]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const wrapper = btn.closest(".relative");
+      if (!wrapper) return;
+      const input = wrapper.querySelector("input");
+      if (!input) return;
+      const isPassword = input.type === "password";
+      input.type = isPassword ? "text" : "password";
+    });
+  });
 });
 </script>
 
 <style>
-/* Float (stat cards) */
-@keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+html {
+  scroll-behavior: smooth;
+}
+
+/* Modern section nav container (floating) */
+.section-nav-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  background: #1d4ed8;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.45);
+}
+
+.section-nav-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Nav pills */
+.section-nav-pill {
+  padding: 0.375rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #e5e7eb;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease,
+              transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.section-nav-pill:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+  transform: translateY(-1px);
+}
+
+.section-nav-pill-active {
+  background: #ffffff;
+  color: #1d4ed8;
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.5);
+}
+
+/* Larger text on bigger screens */
+@media (min-width: 640px) {
+  .section-nav-pill {
+    font-size: 0.875rem;
+  }
+}
+
+.logout-container {
+  margin-top: 1.75rem !important;
+}
+
+/* Float animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 .animate-float { animation: float 3s ease-in-out infinite; }
 .animate-float.delay-100 { animation-delay: .1s; }
 .animate-float.delay-200 { animation-delay: .2s; }
 .animate-float.delay-300 { animation-delay: .3s; }
 
 /* Section fade-in */
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .fade-in { opacity: 0; animation: fadeInUp .5s ease-out forwards; }
 .fade-in.delay-100 { animation-delay: .1s; }
 .fade-in.delay-150 { animation-delay: .15s; }
 .fade-in.delay-200 { animation-delay: .2s; }
 .fade-in.delay-300 { animation-delay: .3s; }
+
+/* Overview card tweaks */
+.overview-card {
+  border-radius: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .overview-card {
+    margin-top: 0.5rem;
+  }
+}
+
+/* Edge-to-edge cards on mobile */
+@media (max-width: 640px) {
+  .edge-card {
+    border-radius: 0 !important;
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+
+  .people-item,
+  .user-item {
+    text-align: center;
+  }
+}
 </style>
 {% endblock %}

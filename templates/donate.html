@@ -33,32 +33,6 @@
     </div>
   </div>
 
-  <style>
-  /* Gradient animation for highlighted text */
-  .animate-gradient {
-    background-size: 200% 200%;
-    animation: gradientShift 6s ease infinite;
-  }
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  /* Floating card effect */
-  .card-float {
-    animation: floaty 6.5s ease-in-out infinite;
-  }
-  @keyframes floaty {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card-float { animation: none !important; }
-  }
-  </style>
-
   <!-- Divider below heading -->
   <div class="relative w-full flex justify-center my-16 sm:my-20 lg:my-24">
     <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
@@ -66,8 +40,6 @@
       Donate
     </span>
   </div>
-
-</div>
 
   <!-- QR + Bank Transfer Section -->
   <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
@@ -82,6 +54,12 @@
         <p class="text-center text-xs sm:text-sm mt-4 opacity-80">
           Scan this QR code with your UPI app to donate instantly.
         </p>
+        <p class="text-center text-xs sm:text-sm mt-2 text-gray-200">
+          UPI ID:&nbsp;
+          <span class="font-semibold text-green-300">
+            {{ donation_upi_id|default('personfinder@sbi') }}
+          </span>
+        </p>
       </div>
     </div>
 
@@ -90,12 +68,19 @@
       <div class="absolute inset-0 z-0 pointer-events-none bg-gradient-to-br from-green-400 via-emerald-500 to-teal-500 opacity-20 animate-shimmer-diagonal"></div>
       <div class="relative z-10 flex flex-col p-6 sm:p-10">
         <h3 class="text-lg sm:text-xl font-bold text-center mb-4">Bank Transfer</h3>
+
+        {% set acc_holder = donation_account_holder|default('PersonFinder Foundation') %}
+        {% set acc_number = donation_account_number|default('1234567890') %}
+        {% set ifsc       = donation_ifsc|default('SBIN000000') %}
+        {% set bank_name  = donation_bank_name|default('State Bank of India') %}
+
         <div id="bank-details" class="space-y-2 text-center text-xs sm:text-sm">
-          <p><strong>Account Holder:</strong> PersonFinder Foundation</p>
-          <p><strong>Account Number:</strong> 1234567890</p>
-          <p><strong>IFSC Code:</strong> SBIN000000</p>
-          <p><strong>Bank Name:</strong> State Bank of India</p>
+          <p><strong>Account Holder:</strong> {{ acc_holder }}</p>
+          <p><strong>Account Number:</strong> {{ acc_number }}</p>
+          <p><strong>IFSC Code:</strong> {{ ifsc }}</p>
+          <p><strong>Bank Name:</strong> {{ bank_name }}</p>
         </div>
+
         <div class="flex justify-center mt-4">
           <button id="copy-btn"
                   class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-400 via-emerald-500 to-teal-500 
@@ -103,6 +88,7 @@
             Copy Account Details
           </button>
         </div>
+
         <p id="copy-message" class="text-center text-xs sm:text-sm text-green-300 opacity-0 transition-opacity duration-500 mt-2" aria-live="polite">
           ✅ Account details copied to clipboard!
         </p>
@@ -119,7 +105,7 @@
     </span>
   </div>
 
-  <!-- Donation Cards Section (floating enabled here) -->
+  <!-- Donation Cards Section -->
   <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
     {% set cards = [
       {"icon": "fas fa-hands-helping", "title": "Every Rupee Counts", "desc": "Your donation, no matter how small, directly supports missing persons searches.", "from": "indigo-500", "via": "purple-500", "to": "pink-500"},
@@ -158,7 +144,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   const btn = document.getElementById('copy-btn');
   const msg = document.getElementById('copy-message');
-  if (!btn) return;
+  if (!btn || !msg) return;
 
   function showMsg() {
     msg.classList.remove('opacity-0');
@@ -183,6 +169,8 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault();
     const details = document.getElementById('bank-details');
     const text = details ? details.innerText.trim() : "";
+    if (!text) return;
+
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(text).then(showMsg).catch(() => fallbackCopy(text));
     } else {
@@ -193,6 +181,30 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <style>
+  /* Gradient animation for highlighted text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Generic floating card effect (used on hero + cards) */
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+  }
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-float { animation: none !important; }
+  }
+
   /* Diagonal shimmer animation */
   @keyframes shimmer-diagonal {
     0% { background-position: -400px -400px; }
@@ -219,19 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
   .animate-float {
     animation: float 2s ease-in-out infinite;
-  }
-
-  /* Floating animation for donation cards only */
-  @keyframes floaty {
-    0%   { transform: translateY(0); }
-    50%  { transform: translateY(-8px); }
-    100% { transform: translateY(0); }
-  }
-  .card-float {
-    animation: floaty 6.5s ease-in-out infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card-float { animation: none !important; }
   }
 </style>
 {% endblock %}

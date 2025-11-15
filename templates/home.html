@@ -586,19 +586,39 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(cycle, CYCLE);
   }
 
-  // Slide-Up Cards Intersection Observer
+    // Slide-Up Cards Intersection Observer (per card, so Trust & Reach / Mission load correctly)
   const allCards = document.querySelectorAll(".slide-up-card");
-  const observer = new IntersectionObserver((entries, obs) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        allCards.forEach((card, i) => {
-          card.style.animation = `slideUp 0.8s ease forwards ${i * 0.15}s`;
+
+  if (allCards.length) {
+    const slideObserver = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+
+          const card = entry.target;
+          const index = Number(card.dataset.slideIndex ?? 0);
+
+          // Trigger animation with slight stagger
+          card.style.animation = `slideUp 0.8s ease forwards ${index * 0.12}s`;
+
+          // Make sure opacity is released from Tailwind's opacity-0
+          card.classList.remove("opacity-0");
+
+          // Only animate once per card
+          obs.unobserve(card);
         });
-        obs.disconnect();
+      },
+      {
+        threshold: 0.2,
+        rootMargin: "0px 0px -10% 0px" // start a bit before fully in view
       }
+    );
+
+    allCards.forEach((card, i) => {
+      card.dataset.slideIndex = i;
+      slideObserver.observe(card);
     });
-  }, { threshold: 0.2 });
-  if (allCards.length) observer.observe(allCards[0].parentElement);
+  }
 
   // Stats Observer & Animate Count
   const statsGrid = document.getElementById("stats-section");

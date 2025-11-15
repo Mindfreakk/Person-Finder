@@ -337,7 +337,7 @@
 
 <!-- ===== Script ===== -->
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',()=>{ 
   const header  = document.getElementById('pf-header');
   const btn     = document.getElementById('pf-menu-btn');
   const drawer  = document.getElementById('pf-mobile-drawer');
@@ -567,11 +567,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Init desktop behavior once
   initDesktopNav();
 
-  // --- Ensure Admin Login shows as active on login/dashboard routes (desktop + mobile) ---
+  // --- Ensure Admin Login shows as active on login/dashboard/reset/forgot-password routes (desktop + mobile) ---
   (function ensureAdminLive(){
     const adminLikely = /\/(admin(?:[_-]dashboard)?|dashboard(?:\/admin)?)\b/i.test(location.pathname);
     const onLogin     = /\/login\b/i.test(location.pathname);
-    if (!(adminLikely || onLogin)) return;
+    const onReset     = /\/reset_password\b/i.test(location.pathname);  // Add for reset password page
+    const onForgot    = /\/forgot_password\b/i.test(location.pathname); // Add for forgot password page
+    if (!(adminLikely || onLogin || onReset || onForgot)) return;
     const desktopAdmin = document.querySelector('.pf-admin-cta');
     const mobileAdmin  = document.getElementById('pf-admin-mobile');
     desktopAdmin?.classList.add('is-active');
@@ -581,4 +583,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   })();
 });
 </script>
+
 <!-- ================= END HEADER ================= -->

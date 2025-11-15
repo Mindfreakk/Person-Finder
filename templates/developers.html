@@ -6,8 +6,7 @@
 <!-- Hero Card -->
 <div class="w-full flex justify-center pt-32 sm:pt-36 lg:pt-40 px-4 sm:px-6 lg:px-8">
   <div
-    class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-4xl text-center"
-  >
+    class="card-base card-float rounded-2xl border border-blue-400/20 bg-blue-900/40 backdrop-blur p-5 sm:p-6 shadow-xl relative overflow-hidden max-w-4xl text-center">
     <!-- Decorative dots overlay -->
     <div class="absolute inset-0 pointer-events-none opacity-[.08]"
          style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
@@ -15,17 +14,18 @@
     <!-- Heading -->
     <div class="relative z-10 w-full">
       <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">
-        Meet the Team Behind 
-        <span class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
+        Meet the Team Behind
+        <span
+          class="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient">
           PersonFinder
         </span>
       </h1>
 
       <p class="mx-auto text-xs sm:text-sm md:text-base leading-relaxed mt-2 px-2 font-light text-gray-300 max-w-2xl">
-        A passionate group of innovators, engineers, and mentors dedicated to 
-        <span class="text-blue-300 font-medium">AI research</span>, 
-        <span class="text-green-300 font-medium">code craftsmanship</span>, and 
-        <span class="text-pink-300 font-medium">data intelligence</span>, 
+        A passionate group of innovators, engineers, and mentors dedicated to
+        <span class="text-blue-300 font-medium">AI research</span>,
+        <span class="text-green-300 font-medium">code craftsmanship</span>, and
+        <span class="text-pink-300 font-medium">data intelligence</span>,
         working together to reunite families with loved ones.
       </p>
     </div>
@@ -33,29 +33,34 @@
 </div>
 
 <style>
-/* Gradient animation for highlighted text */
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradientShift 6s ease infinite;
-}
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+  /* Gradient animation for highlighted text */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 6s ease infinite;
+  }
 
-/* Floating card effect */
-.card-float {
-  animation: floaty 6.5s ease-in-out infinite;
-}
-@keyframes floaty {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .card-float { animation: none !important; }
-}
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Floating card effect */
+  .card-float {
+    animation: floaty 6.5s ease-in-out infinite;
+  }
+
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-float {
+      animation: none !important;
+    }
+  }
 </style>
 
 <!-- Modern Divider -->
@@ -71,21 +76,26 @@
 
   <!-- Card: Dr. Wajid -->
   <div class="dev-card shimmer shimmer-blue tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
-    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-blue-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <div
+      class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-blue-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2
+        class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-blue-300" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         Dr. Wajid Aalam
       </h2>
       <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
-        Visionary mentor & <span class="font-semibold text-blue-200">AI Innovator</span>, guiding breakthroughs in machine learning and inspiring future researchers.
+        Visionary mentor &amp; <span class="font-semibold text-blue-200">AI Innovator</span>, guiding breakthroughs in
+        machine learning and inspiring future researchers.
       </p>
 
       <a href="https://www.linkedin.com/in/sdwjd51/" target="_blank" rel="noopener noreferrer"
          class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
-        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
-             class="w-5 h-5 object-contain" />
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn profile"
+             class="w-5 h-5 object-contain" loading="lazy" decoding="async" />
         <span class="text-blue-100">LinkedIn</span>
       </a>
     </div>
@@ -93,21 +103,25 @@
 
   <!-- Card: Amir -->
   <div class="dev-card shimmer shimmer-green tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
-    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-green-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div
+      class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-green-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2
+        class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-300" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
         Amir Mushtaq
       </h2>
       <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
-        <span class="font-semibold text-green-200">Code Craftsman</span> building scalable AI systems with precision, clean design, and forward-thinking solutions.
+        <span class="font-semibold text-green-200">Code Craftsman</span> building scalable AI systems with precision,
+        clean design, and forward-thinking solutions.
       </p>
 
       <a href="https://www.linkedin.com/in/idaretoshare" target="_blank" rel="noopener noreferrer"
          class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
-        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
-             class="w-5 h-5 object-contain" />
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn profile"
+             class="w-5 h-5 object-contain" loading="lazy" decoding="async" />
         <span class="text-green-100">LinkedIn</span>
       </a>
     </div>
@@ -115,21 +129,26 @@
 
   <!-- Card: Abrar -->
   <div class="dev-card shimmer shimmer-pink tilt relative rounded-3xl overflow-hidden scroll-fade h-full">
-    <div class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-pink-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-      <h2 class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" />
+    <div
+      class="tilt-inner relative rounded-3xl p-6 flex flex-col bg-pink-600/40 backdrop-blur-md text-white shadow-lg border border-white/10 h-full transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+      <h2
+        class="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-2 text-xl sm:text-2xl font-extrabold mb-2 tracking-wide">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-300" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16M4 6v12a2 2 0 002 2h12a2 2 0 002-2V6" />
         </svg>
         Abrar Ahmad
       </h2>
       <p class="text-sm sm:text-base leading-relaxed mb-4 text-center sm:text-left">
-        <span class="font-semibold text-pink-200">Data Engineer</span> shaping data into actionable insights, architecting systems, and enhancing AI performance.
+        <span class="font-semibold text-pink-200">Data Engineer</span> shaping data into actionable insights,
+        architecting systems, and enhancing AI performance.
       </p>
 
       <a href="https://www.linkedin.com/in/siyran-shafi/" target="_blank" rel="noopener noreferrer"
          class="mt-auto inline-flex items-center justify-center gap-2 px-3 py-2 mx-auto sm:mx-0 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition">
-        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn"
-             class="w-5 h-5 object-contain" />
+        <img src="{{ url_for('static', filename='Images/linkedin.png') }}" alt="LinkedIn profile"
+             class="w-5 h-5 object-contain" loading="lazy" decoding="async" />
         <span class="text-pink-100">LinkedIn</span>
       </a>
     </div>
@@ -146,7 +165,7 @@
 </div>
 
 <!-- Narrative Section -->
-<section class="relative prose max-w-4xl mx-auto text-justify leading-relaxed space-y-5 
+<section class="relative max-w-4xl mx-auto text-justify leading-relaxed space-y-5 
                 text-[0.75rem] sm:text-sm md:text-base lg:text-[0.95rem] 
                 scroll-fade animate-slide-up-delay-2 
                 rounded-[2rem] overflow-hidden 
@@ -157,31 +176,47 @@
     <div class="w-full h-full rounded-[2rem] bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-border"></div>
   </div>
 
-  <!-- Inner Content Wrapper (to block gradient bleed) -->
+  <!-- Inner Content Wrapper -->
   <div class="relative z-10 rounded-[2rem] bg-blue-900/30 backdrop-blur-xl p-6 sm:p-8 lg:p-10">
     <div class="rounded-[1.8rem] bg-blue-900/40 p-4 sm:p-6 lg:p-8 border border-white/10">
       <p>
-        The <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> app is the result of a collaborative effort by a dedicated team from the
-        <em>Centre for Artificial Intelligence at the Islamic University of Science and Technology (IUST), Awantipora, Jammu & Kashmir</em>.
-        Designed to help families locate missing or elderly loved ones quickly and safely, the platform combines AI, facial recognition, and predictive analytics.
+        The <span
+          class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span>
+        app is the result of a collaborative effort by a dedicated team from the
+        <em>Centre for Artificial Intelligence at the Islamic University of Science and Technology (IUST), Awantipora,
+          Jammu &amp; Kashmir</em>.
+        Designed to help families locate missing or elderly loved ones quickly and safely, the platform combines AI,
+        facial recognition, and predictive analytics.
       </p>
       <p>
-        The idea for <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> was conceived by <strong>Dr. Wajid Aalam</strong>, who envisioned a platform that could leverage AI to enable faster, more accurate searches while keeping privacy at the forefront.
+        The idea for <span
+          class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span>
+        was conceived by <strong>Dr. Wajid Aalam</strong>, who envisioned a platform that could leverage AI to enable
+        faster, more accurate searches while keeping privacy at the forefront.
       </p>
       <p>
-        Under his supervision, <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong> developed the application, contributing expertise in ML, programming, and software architecture—ensuring the system is reliable, scalable, and intuitive.
+        Under his supervision, <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong> developed the application,
+        contributing expertise in ML, programming, and software architecture—ensuring the system is reliable, scalable,
+        and intuitive.
       </p>
       <p>
-        A robust facial recognition pipeline was implemented, capable of matching individuals against verified records with high accuracy. Predictive analytics further guide searches and prioritize leads. These features were refined iteratively for speed and usability.
+        A robust facial recognition pipeline was implemented, capable of matching individuals against verified records
+        with high accuracy. Predictive analytics further guide searches and prioritize leads. These features were
+        refined iteratively for speed and usability.
       </p>
       <p>
-        Privacy and security were treated as first-class requirements with encrypted data handling, access controls, and ethical safeguards to protect user confidentiality.
+        Privacy and security were treated as first-class requirements with encrypted data handling, access controls, and
+        ethical safeguards to protect user confidentiality.
       </p>
       <p>
-        The project also incorporated feedback from stakeholders, which led to improvements in usability, search filters, and notifications. This ensured the platform remained practical and community-driven.
+        The project also incorporated feedback from stakeholders, which led to improvements in usability, search
+        filters, and notifications. This ensured the platform remained practical and community-driven.
       </p>
       <p>
-        In summary, <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span> emerged as a vision by <strong>Dr. Wajid Aalam</strong> and was transformed into a working, community-focused platform through the efforts of <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong>.
+        In summary, <span
+          class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent font-semibold">PersonFinder</span>
+        emerged as a vision by <strong>Dr. Wajid Aalam</strong> and was transformed into a working, community-focused
+        platform through the efforts of <strong>Amir Mushtaq</strong> and <strong>Abrar Ahmad</strong>.
         Together, they delivered a solution that combines AI innovation with empathy and responsibility.
       </p>
     </div>
@@ -206,7 +241,7 @@
     <div class="absolute inset-0 pointer-events-none opacity-[.08]"
          style="background-image: radial-gradient(#3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-    <!-- Top bar (centered) -->
+    <!-- Top bar -->
     <div class="relative z-10 px-6 pt-6 text-center">
       <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10">
         <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400/90"></span>
@@ -218,12 +253,15 @@
     <div class="relative z-10 px-6 pb-6 mt-4">
       <dl class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <!-- Concept & Supervision -->
-        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-emerald-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
-             role="group" aria-labelledby="credit-concept-title" tabindex="0">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-300/30">
-            <svg class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path stroke-width="1.5" d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="12" r="9" stroke-width="1.5"/>
+        <div
+          class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-emerald-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+          role="group" aria-labelledby="credit-concept-title" tabindex="0">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-300/30">
+            <svg class="h-5 w-5 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 aria-hidden="true">
+              <path stroke-width="1.5" d="M12 6v6l4 2" stroke-linecap="round" stroke-linejoin="round" />
+              <circle cx="12" cy="12" r="9" stroke-width="1.5" />
             </svg>
           </div>
           <dt id="credit-concept-title" class="text-sm font-medium text-white/90">Concept &amp; Supervision</dt>
@@ -231,11 +269,12 @@
         </div>
 
         <!-- Development -->
-        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-sky-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
-             role="group" aria-labelledby="credit-dev-title" tabindex="0">
+        <div
+          class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 scroll-fade focus-within:ring-2 focus-within:ring-sky-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+          role="group" aria-labelledby="credit-dev-title" tabindex="0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-400/10 ring-1 ring-sky-300/30">
             <svg class="h-5 w-5 text-sky-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path stroke-width="1.5" d="M8 7l-5 5 5 5M16 7l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path stroke-width="1.5" d="M8 7l-5 5 5 5M16 7l5 5-5 5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </div>
           <dt id="credit-dev-title" class="text-sm font-medium text-white/90">Development</dt>
@@ -243,11 +282,14 @@
         </div>
 
         <!-- Institution -->
-        <div class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 sm:col-span-1 scroll-fade focus-within:ring-2 focus-within:ring-violet-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
-             role="group" aria-labelledby="credit-inst-title" tabindex="0">
+        <div
+          class="group flex flex-col items-center text-center gap-3 rounded-2xl bg-white/5 p-5 border border-white/10 sm:col-span-1 scroll-fade focus-within:ring-2 focus-within:ring-violet-300/40 transition-all duration-300 hover:translate-y-[-2px] hover:shadow-xl"
+          role="group" aria-labelledby="credit-inst-title" tabindex="0">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-400/10 ring-1 ring-violet-300/30">
-            <svg class="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-              <path stroke-width="1.5" d="M3 10l9-6 9 6M4 10v8h16v-8M8 18v-6h8v6" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg class="h-5 w-5 text-violet-300" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 aria-hidden="true">
+              <path stroke-width="1.5" d="M3 10l9-6 9 6M4 10v8h16v-8M8 18v-6h8v6" stroke-linecap="round"
+                    stroke-linejoin="round" />
             </svg>
           </div>
           <dt id="credit-inst-title" class="text-sm font-medium text-white/90">Institution</dt>
@@ -262,112 +304,186 @@
 
 <!-- Credits Card Style -->
 <style>
-/* Softer shimmer (optional) */
-.shimmer::before { opacity: .28; }
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    border-radius: inherit;
+  }
 
-/* Subtle hover lift on tiles (optional) */
-.credits-card dl > div { transition: transform .25s ease, box-shadow .25s ease; }
-.credits-card dl > div:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+  .shimmer::before {
+    content: "";
+    position: absolute;
+    top: 25%;
+    left: -150%;
+    width: 250%;
+    height: 60%;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.12));
+    animation: shimmer-diagonal 4s linear infinite;
+    opacity: .28;
+  }
 
-/* --- Animations & Effects --- */
-.page-slide { animation: pageSlideIn 0.9s ease-out forwards; opacity: 0; transform: translateY(40px); }
-@keyframes pageSlideIn { to { opacity: 1; transform: translateY(0); } }
-.shimmer { position: relative; overflow: hidden; border-radius: inherit; }
-.shimmer::before {
-  content: ""; position: absolute; top: 25%; left: -150%; width: 250%; height: 60%;
-  background: linear-gradient(120deg, rgba(255,255,255,0.12), rgba(255,255,255,0.28), rgba(255,255,255,0.12));
-  animation: shimmer-diagonal 4s linear infinite;
-}
-.shimmer-blue::before { background: linear-gradient(120deg, rgba(59,130,246,0.15), rgba(59,130,246,0.35), rgba(59,130,246,0.15)); }
-.shimmer-green::before { background: linear-gradient(120deg, rgba(34,197,94,0.15), rgba(34,197,94,0.35), rgba(34,197,94,0.15)); }
-.shimmer-pink::before { background: linear-gradient(120deg, rgba(236,72,153,0.15), rgba(236,72,153,0.35), rgba(236,72,153,0.15)); }
-@keyframes shimmer-diagonal { 0% { transform: translateX(-150%) rotate(25deg); } 100% { transform: translateX(150%) rotate(25deg); } }
+  .shimmer-blue::before {
+    background: linear-gradient(120deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.15));
+  }
 
-/* Scroll fade-in */
-.scroll-fade { opacity: 0; transform: translateY(20px); transition: all 0.7s ease-out; }
-.scroll-fade.show { opacity: 1; transform: translateY(0); }
+  .shimmer-green::before {
+    background: linear-gradient(120deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.35), rgba(34, 197, 94, 0.15));
+  }
 
-/* Tilt */
-.tilt { perspective: 1000px; transform-style: preserve-3d; }
-.tilt-inner { transition: transform 0.2s ease-out; will-change: transform; }
+  .shimmer-pink::before {
+    background: linear-gradient(120deg, rgba(236, 72, 153, 0.15), rgba(236, 72, 153, 0.35), rgba(236, 72, 153, 0.15));
+  }
 
-/* ===== Floating animation ===== */
-@keyframes floaty {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
-}
-.dev-card, .credits-card {
-  animation: floaty 6s ease-in-out infinite;
-  will-change: transform;
-}
+  @keyframes shimmer-diagonal {
+    0%   { transform: translateX(-150%) rotate(25deg); }
+    100% { transform: translateX(150%)  rotate(25deg); }
+  }
 
-/* Stagger the developer cards for a more organic feel */
-section .dev-card:nth-of-type(1) { animation-duration: 6.5s; animation-delay: .1s; }
-section .dev-card:nth-of-type(2) { animation-duration: 6.2s; animation-delay: .4s; }
-section .dev-card:nth-of-type(3) { animation-duration: 6.8s; animation-delay: .25s; }
+  .credits-card dl > div {
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
 
-/* Respect users who prefer reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  .dev-card, .credits-card { animation: none !important; }
-  .shimmer::before { animation: none !important; }
-}
+  .credits-card dl > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+  }
 
-/* Keep hover/tilt transforms crisp even while floating */
-.dev-card .tilt-inner:hover,
-.credits-card .tilt-inner:hover {
-  transform: translateZ(0);
-  will-change: transform;
-}
+  .page-slide {
+    animation: pageSlideIn 0.9s ease-out forwards;
+    opacity: 0;
+    transform: translateY(40px);
+  }
 
-/* Gradient Border Animation (optional utility) */
-@keyframes borderShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-border {
-  background-size: 300% 300%;
-  animation: borderShift 8s ease infinite;
-}
+  @keyframes pageSlideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .scroll-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.7s ease-out;
+  }
+
+  .scroll-fade.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .tilt {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+
+  .tilt-inner {
+    transition: transform 0.2s ease-out;
+    will-change: transform;
+  }
+
+  /* Floating animation shared with cards */
+  @keyframes floaty {
+    0%   { transform: translateY(0); }
+    50%  { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+  }
+
+  .dev-card,
+  .credits-card {
+    animation: floaty 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  section .dev-card:nth-of-type(1) {
+    animation-duration: 6.5s;
+    animation-delay: .1s;
+  }
+
+  section .dev-card:nth-of-type(2) {
+    animation-duration: 6.2s;
+    animation-delay: .4s;
+  }
+
+  section .dev-card:nth-of-type(3) {
+    animation-duration: 6.8s;
+    animation-delay: .25s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dev-card,
+    .credits-card {
+      animation: none !important;
+    }
+
+    .shimmer::before {
+      animation: none !important;
+    }
+  }
+
+  .dev-card .tilt-inner:hover,
+  .credits-card .tilt-inner:hover {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  @keyframes borderShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .animate-border {
+    background-size: 300% 300%;
+    animation: borderShift 8s ease infinite;
+  }
 </style>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  // Scroll fade-in
-  const faders = document.querySelectorAll(".scroll-fade");
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  faders.forEach(fader => observer.observe(fader));
+  document.addEventListener("DOMContentLoaded", function () {
+    // Scroll fade-in
+    const faders = document.querySelectorAll(".scroll-fade");
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("show");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
 
-  // Tilt interaction (respect reduced motion)
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const tiltCards = document.querySelectorAll(".tilt");
-  if (!prefersReduced) {
-    tiltCards.forEach(card => {
-      const inner = card.querySelector(".tilt-inner") || card;
-      card.addEventListener("mousemove", e => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left, y = e.clientY - rect.top;
-        const midX = rect.width / 2, midY = rect.height / 2;
-        const rotateX = ((y - midY) / midY) * 6;
-        const rotateY = ((x - midX) / midX) * 6;
-        inner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+    faders.forEach(fader => observer.observe(fader));
+
+    // Tilt interaction (respect reduced motion)
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const tiltCards = document.querySelectorAll(".tilt");
+
+    if (!prefersReduced) {
+      tiltCards.forEach(card => {
+        const inner = card.querySelector(".tilt-inner") || card;
+
+        card.addEventListener("mousemove", e => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const midX = rect.width / 2;
+          const midY = rect.height / 2;
+
+          const rotateX = ((y - midY) / midY) * 6;
+          const rotateY = ((x - midX) / midX) * 6;
+
+          inner.style.transform = `rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        card.addEventListener("mouseleave", () => {
+          inner.style.transform = "rotateX(0deg) rotateY(0deg)";
+        });
+
+        card.addEventListener("focusin", () => card.classList.add("ring-2", "ring-white/20"));
+        card.addEventListener("focusout", () => card.classList.remove("ring-2", "ring-white/20"));
       });
-      card.addEventListener("mouseleave", () => {
-        inner.style.transform = "rotateX(0deg) rotateY(0deg)";
-      });
-      card.addEventListener("focusin", () => card.classList.add("ring-2","ring-white/20"));
-      card.addEventListener("focusout", () => card.classList.remove("ring-2","ring-white/20"));
-    });
-  }
-});
+    }
+  });
 </script>
 
 {% endblock %}

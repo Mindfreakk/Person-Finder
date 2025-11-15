@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Create New User - Admin Dashboard{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Create New User</h2>
+    <form method="POST" action="{{ url_for('create_user') }}">
+      <!-- New User Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" class="form-control" name="email" id="email" required>
+      </div>
+      
+      <!-- New User Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" required>
+      </div>
+      
+      <!-- Confirm New User Password -->
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" class="form-control" name="confirm_password" id="confirm_password" required>
+      </div>
+      
+      <!-- Admin Password -->
+      <div class="form-group">
+        <label for="admin_password">Admin Password (for verification)</label>
+        <input type="password" class="form-control" name="admin_password" id="admin_password" required>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary">Create User</button>
+    </form>
+  </div>
+{% endblock %}

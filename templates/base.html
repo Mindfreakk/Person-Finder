@@ -108,6 +108,19 @@
     </div>
   </div>
 
+  <div id="pf-feedback-toast"
+     class="fixed bottom-6 right-6 z-[2000] bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-xl opacity-0 pointer-events-none transition-all duration-300 text-sm flex items-center gap-2">
+  <i data-lucide="check-circle" class="w-4 h-4"></i>
+  <span id="pf-feedback-toast-text"></span>
+</div>
+
+<div id="pf-feedback-toast-error"
+     class="fixed bottom-6 right-6 z-[2000] bg-rose-600 text-white px-4 py-3 rounded-xl shadow-xl opacity-0 pointer-events-none transition-all duration-300 text-sm flex items-center gap-2">
+  <i data-lucide="alert-circle" class="w-4 h-4"></i>
+  <span id="pf-feedback-toast-error-text"></span>
+</div>
+
+  <!-- Global script -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       (function ensureHeaderHeightVar(){
@@ -245,5 +258,9 @@
       }
     });
   </script>
+
+  {# 🔹 Page-specific scripts (like your admin login eye-toggle) #}
+  {% block scripts %}{% endblock %}
+
 </body>
 </html>
