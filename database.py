@@ -748,9 +748,19 @@ def add_missing_user_columns(db_file: str):
 # ---------------------------------------------------
 # Admin seeding & DB initialization
 # ---------------------------------------------------
+from sqlalchemy import inspect, func
+from werkzeug.security import generate_password_hash
+
 def ensure_admin_exists():
-    """Ensure at least one admin exists, with email + phone from .env"""
-    admin_email = os.getenv("ADMIN_EMAIL", "admin@example.com")
+    """Ensure at least one admin exists, with email + phone from .env.
+
+    Logic:
+      - Prefer existing user with ADMIN_EMAIL (primary super admin).
+      - Else fallback to user with username='admin'.
+      - If none found, create a new admin with username='amir'.
+      - Avoid UNIQUE email collisions by not blindly overwriting emails.
+    """
+    admin_email = (os.getenv("ADMIN_EMAIL", "admin@example.com") or "").strip().lower()
     admin_phone = os.getenv("ADMIN_PHONE", "000-000-0000")
 
     # Only attempt to query if the users table exists
@@ -765,58 +775,104 @@ def ensure_admin_exists():
         logger.info("users table not present; skipping ensure_admin_exists for now.")
         return
 
-    # Look up admin by the convention username='admin'
-    try:
-        admin = User.query.filter_by(username="admin").first()
-    except Exception as e:
-        logger.exception("ensure_admin_exists: DB query failed: %s", e)
-        raise
+    admin = None
 
-    # --- Create admin if missing ---
+    # 🔹 1) Prefer finding admin by email (ADMIN_EMAIL)
+    try:
+        if admin_email:
+            admin = (
+                User.query
+                .filter(func.lower(User.email) == admin_email)
+                .first()
+            )
+    except Exception as e:
+        logger.exception("ensure_admin_exists: DB query by email failed: %s", e)
+        return
+
+    # 🔹 2) Fallback: existing 'admin' username, if no email match
     if admin is None:
+        try:
+            admin = User.query.filter_by(username="admin").first()
+        except Exception as e:
+            logger.exception("ensure_admin_exists: DB query by username failed: %s", e)
+            return
+
+    # --- Case A: admin user already exists → update, don't insert ---
+    if admin is not None:
+        try:
+            # Email sync (careful: don't cause UNIQUE constraint issues)
+            if admin_email and hasattr(admin, "email"):
+                current_email = (admin.email or "").strip().lower()
+                if not current_email:
+                    # Only set email if it's currently empty
+                    admin.email = admin_email
+                elif current_email != admin_email:
+                    # Different email already set; keep it to avoid UNIQUE conflicts
+                    logger.warning(
+                        "ensure_admin_exists: existing admin has email %s, "
+                        "ADMIN_EMAIL is %s; leaving email unchanged to avoid conflicts.",
+                        current_email,
+                        admin_email,
+                    )
+
+            # Phone sync if column exists
+            if hasattr(admin, "phone_number"):
+                admin.phone_number = admin_phone
+            elif hasattr(admin, "phone"):
+                admin.phone = admin_phone
+
+            # Always ensure role is 'admin'
+            if hasattr(admin, "role") and admin.role != "admin":
+                admin.role = "admin"
+
+            # Make sure admin is active, if supported
+            if hasattr(admin, "is_active") and admin.is_active is False:
+                admin.is_active = True
+
+            db.session.commit()
+            logger.info(
+                "✅ Ensured primary admin exists (id=%s, username=%s, email=%s, role=%s, is_active=%s)",
+                getattr(admin, "id", None),
+                getattr(admin, "username", None),
+                getattr(admin, "email", None),
+                getattr(admin, "role", None),
+                getattr(admin, "is_active", None),
+            )
+        except Exception as e:
+            db.session.rollback()
+            logger.exception("ensure_admin_exists: failed updating admin fields: %s", e)
+        return
+
+    # --- Case B: No admin found at all → create one ---
+    try:
+        password_hash = generate_password_hash("Alhamdulillah@123")  # default password
+
+        # since you want the super admin username to be "amir", create it like that
         admin = User(
-            username="admin",
-            email=admin_email,
-            phone_number=admin_phone,
+            username="amir",
+            email=admin_email or "admin@example.com",
             role="admin",
-            password_hash=generate_password_hash("Alhamdulillah@123"),  # default password
+            password_hash=password_hash,
         )
-        # If the model has is_active, force it to True
+
+        # Phone
+        if hasattr(admin, "phone_number"):
+            admin.phone_number = admin_phone
+        elif hasattr(admin, "phone"):
+            admin.phone = admin_phone
+
+        # Active flag
         if hasattr(admin, "is_active"):
             admin.is_active = True
 
         db.session.add(admin)
         db.session.commit()
-        logger.info("✅ Created default admin user (username='admin')")
-        return
-
-    # --- Update existing admin record from environment ---
-    try:
-        if hasattr(admin, "email"):
-            admin.email = admin_email
-        if hasattr(admin, "phone_number"):
-            admin.phone_number = admin_phone
-
-        # 🔥 NEW: always force role back to 'admin' for this account
-        if hasattr(admin, "role") and admin.role != "admin":
-            admin.role = "admin"
-
-        # Make sure admin is not accidentally deactivated
-        if hasattr(admin, "is_active") and admin.is_active is False:
-            admin.is_active = True
-
-        db.session.commit()
         logger.info(
-            "✅ Ensured primary admin exists with email=%s, phone=%s, role=%s, is_active=%s",
-            admin.email,
-            admin.phone_number,
-            admin.role,
-            getattr(admin, "is_active", None),
+            "✅ Created default admin user (username='amir', email=%s)", admin_email
         )
     except Exception as e:
         db.session.rollback()
-        logger.exception("ensure_admin_exists: failed updating admin fields: %s", e)
-        raise
+        logger.exception("ensure_admin_exists: failed creating admin: %s", e)
 
 
 def initialize_database(app):

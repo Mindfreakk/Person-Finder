@@ -9,8 +9,10 @@
 
       <!-- Feedback Card -->
       <aside class="w-full">
-        <div class="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/80 p-4 sm:p-5 shadow-lg shadow-black/30 relative overflow-hidden">
-
+        <div
+          class="rounded-2xl border border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/80 p-4 sm:p-5 shadow-lg shadow-black/30 relative overflow-hidden"
+          data-scroll-anim="card"
+        >
           <!-- Subtle glow -->
           <div class="pointer-events-none absolute -inset-0.5 rounded-3xl opacity-40"
                style="background: radial-gradient(circle at top left, rgba(56,189,248,0.35), transparent 60%); mix-blend-mode: screen;"></div>
@@ -19,9 +21,9 @@
             <div class="flex items-start justify-between gap-3">
               <div>
                 <h3 class="footer-heading mb-1.5 text-[1.1rem] font-bold flex items-center gap-2">
-  <i data-lucide="message-circle-heart" class="w-5 h-5 text-pink-300"></i>
-  We value your feedback
-</h3>
+                  <i data-lucide="message-circle-heart" class="w-5 h-5 text-pink-300"></i>
+                  We value your feedback
+                </h3>
                 <p class="text-xs sm:text-sm text-white/75">
                   Share your experience with PersonFinder to help us improve usability, performance, and support.
                 </p>
@@ -154,17 +156,19 @@
 
       <!-- Admin Card -->
       <aside class="w-full">
-        <div class="admin-card rounded-2xl border border-white/10 bg-gradient-to-br 
+        <div
+          class="admin-card rounded-2xl border border-white/10 bg-gradient-to-br 
                     from-slate-900/80 via-slate-900/60 to-slate-800/80 
-                    p-4 sm:p-5 shadow-lg shadow-black/30 h-full flex flex-col">
-
+                    p-4 sm:p-5 shadow-lg shadow-black/30 h-full flex flex-col"
+          data-scroll-anim="card"
+        >
           <!-- Header -->
           <div class="flex items-start justify-between gap-3">
             <div>
               <h3 class="footer-heading mb-1.5 text-[1.1rem] font-bold flex items-center gap-2">
-  <i data-lucide="shield-check" class="w-5 h-5 text-emerald-300"></i>
-  Admin
-</h3>
+                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-300"></i>
+                Admin
+              </h3>
               <p class="text-xs sm:text-sm text-white/75">
                 Log in to access administrative tools, user management, and system settings.
               </p>
@@ -176,7 +180,7 @@
             </div>
           </div>
 
-          <!-- Security Icons Row (centered & shimmering) -->
+          <!-- Security Icons Row -->
           <div class="mt-4 mb-4 flex justify-center pf-admin-icon-section">
             <div class="pf-admin-icon-row">
               <div class="pf-admin-icon shimmer-random">
@@ -203,7 +207,6 @@
               <i data-lucide="log-in" class="w-3.5 h-3.5 ml-1"></i>
             </a>
 
-            <!-- note: using id + data attribute, either is fine -->
             <button id="pf-role-open"
                     type="button"
                     data-pf-role-open
@@ -216,53 +219,149 @@
         </div>
       </aside>
     </div>
+  </div>
+</footer>
 
 <!-- ================= ROLES MODAL (SUPER ADMIN / ADMIN / USER) ================= -->
-<div id="pf-role-modal"
-     class="fixed inset-0 z-[80] hidden opacity-0 pointer-events-none items-center justify-center">
+<div
+  id="pf-role-modal"
+  class="pf-role-modal fixed inset-0 z-[80] hidden opacity-0 pointer-events-none flex justify-center px-3 sm:px-4 pt-20 sm:pt-24 pb-6"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+>
   <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" data-pf-role-backdrop data-pf-role-close></div>
+  <div
+    class="pf-role-backdrop absolute inset-0 bg-black/55 backdrop-blur-sm"
+    data-pf-role-backdrop
+    data-pf-role-close
+  ></div>
 
   <!-- Modal Content -->
-  <div class="relative w-full max-w-md mx-4 bg-slate-900/95 border border-white/10 rounded-2xl p-6 shadow-2xl shadow-black/50 overflow-hidden">
-    <div class="absolute -inset-1 opacity-40 blur-2xl bg-gradient-to-tr from-blue-500/15 via-purple-500/15 to-pink-500/15 pointer-events-none"></div>
+  <div
+    class="pf-role-panel relative w-full max-w-4xl mx-auto 
+           bg-slate-900/95 border border-white/10 rounded-2xl 
+           p-4 sm:p-5 shadow-2xl shadow-black/50 overflow-hidden
+           max-h-[80vh] sm:max-h-[80vh] overflow-y-auto"
+  >
+    <div class="absolute -inset-1 opacity-35 blur-2xl bg-gradient-to-tr from-blue-500/15 via-purple-500/15 to-pink-500/15 pointer-events-none"></div>
 
-    <div class="relative">
+    <div class="relative space-y-4">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-          <i data-lucide="badge-check" class="w-5 h-5 text-blue-300"></i>
-          User Roles
-        </h3>
-        <button type="button"
-                data-pf-role-close
-                class="text-white/70 hover:text-white transition">
+      <div class="flex items-center justify-between mb-1 gap-3">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-500/20 border border-blue-300/50 shrink-0">
+            <i data-lucide="badge-check" class="w-4 h-4 text-blue-100"></i>
+          </span>
+          <div class="min-w-0">
+            <h3 class="text-sm sm:text-base font-semibold text-white truncate">
+              User Roles in PersonFinder
+            </h3>
+            <p class="text-[0.72rem] text-slate-300/85">
+              Roles define who can search, register, and administer the system.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          data-pf-role-close
+          class="text-white/70 hover:text-white transition shrink-0"
+        >
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- Body -->
-      <div class="space-y-3 text-sm leading-relaxed text-white/80">
-        <p>
-          <span class="font-semibold text-emerald-200">Super Admin:</span>
-          Full system-wide control, including critical configuration, role assignment, and security policies.
-        </p>
-        <p>
-          <span class="font-semibold text-blue-200">Admin:</span>
-          Manages cases, reviews and approves reports, handles user accounts, and oversees day-to-day operations.
-        </p>
-        <p>
-          <span class="font-semibold text-purple-200">User:</span>
-          Can register missing persons, submit updates, and search the PersonFinder database.
-        </p>
+      <!-- Role cards: horizontal on desktop -->
+      <div class="grid gap-3 md:grid-cols-3">
+        <!-- Super Admin -->
+        <article class="rounded-xl border border-amber-400/50 bg-gradient-to-b from-amber-500/18 via-slate-900/70 to-slate-900/95 p-3 space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <div class="inline-flex items-center justify-center rounded-full bg-amber-500/25 border border-amber-300/80 w-6 h-6 shrink-0">
+                <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-100"></i>
+              </div>
+              <h4 class="text-[0.78rem] font-semibold text-amber-50 truncate">
+                Super Admin
+              </h4>
+            </div>
+            <span class="text-[0.6rem] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-50 border border-amber-300/70 shrink-0">
+              Highest access
+            </span>
+          </div>
+          <p class="text-[0.7rem] text-amber-50/95">
+            Owns security, environment configuration, and global policies.
+          </p>
+          <ul class="mt-1 space-y-0.5 text-[0.66rem] text-amber-50/90">
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Configure infrastructure & environment variables</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Manage admin roles & access controls</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Oversee critical data protection decisions</li>
+          </ul>
+        </article>
+
+        <!-- Admin -->
+        <article class="rounded-xl border border-sky-500/45 bg-gradient-to-b from-sky-500/18 via-slate-900/70 to-slate-900/95 p-3 flex flex-col gap-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <div class="inline-flex items-center justify-center rounded-full bg-sky-500/25 border border-sky-400/70 w-6 h-6 shrink-0">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-sky-200"></i>
+              </div>
+              <h4 class="text-[0.78rem] font-semibold text-sky-100 truncate">
+                Admin
+              </h4>
+            </div>
+            <span class="text-[0.6rem] px-1.5 py-0.5 rounded-full bg-sky-500/20 text-sky-50 border border-sky-400/60 shrink-0">
+              Operational
+            </span>
+          </div>
+          <p class="text-[0.7rem] text-sky-50/90">
+            Manages people records, cases, and user activity.
+          </p>
+          <ul class="mt-1 space-y-0.5 text-[0.66rem] text-sky-50/85">
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Review and manage registrations</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Monitor search logs & feedback</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Manage user accounts & access issues</li>
+          </ul>
+        </article>
+
+        <!-- User -->
+        <article class="rounded-xl border border-emerald-400/50 bg-gradient-to-b from-emerald-500/16 via-slate-900/70 to-slate-900/95 p-3 space-y-1.5">
+          <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <div class="inline-flex items-center justify-center rounded-full bg-emerald-500/25 border border-emerald-300/70 w-6 h-6 shrink-0">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-emerald-100"></i>
+              </div>
+              <h4 class="text-[0.78rem] font-semibold text-emerald-50 truncate">
+                User
+              </h4>
+            </div>
+            <span class="text-[0.6rem] px-1.5 py-0.5 rounded-full bg-emerald-500/18 text-emerald-50 border border-emerald-300/70 shrink-0">
+              Community
+            </span>
+          </div>
+          <p class="text-[0.7rem] text-emerald-50/95">
+            Frontline role for registering and searching missing persons.
+          </p>
+          <ul class="mt-1 space-y-0.5 text-[0.66rem] text-emerald-50/90">
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Register missing persons with details and photos</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Search the PersonFinder database</li>
+            <li class="flex items-start gap-1.5"><span class="mt-[3px]">•</span> Provide case updates & additional information</li>
+          </ul>
+        </article>
       </div>
 
-      <!-- Footer -->
-      <div class="mt-5 flex justify-end">
-        <button type="button"
-                data-pf-role-close
-                class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs border border-white/15">
+      <!-- Footer row -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-slate-800/80">
+        <p class="text-[0.68rem] text-slate-400/90 flex items-center gap-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-300/80"></i>
+          Role changes are intentionally limited to preserve privacy, auditability, and trust.
+        </p>
+        <button
+          type="button"
+          data-pf-role-close
+          class="px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-[0.75rem] border border-white/15 flex items-center gap-1.5 self-end sm:self-auto"
+        >
           Close
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
         </button>
       </div>
     </div>
@@ -270,54 +369,7 @@
 </div>
 <!-- ================= END ROLES MODAL ================= -->
 
-<script>
-  // Simple, robust wiring for the Roles modal (no DOMContentLoaded issues)
-  (function () {
-    const openBtn = document.getElementById('pf-role-open');
-    const modal = document.getElementById('pf-role-modal');
-    if (!openBtn || !modal) return;
-
-    const closeEls = modal.querySelectorAll('[data-pf-role-close]');
-    const backdrop = modal.querySelector('[data-pf-role-backdrop]') || modal;
-
-    function hydrateIcons() {
-      if (window.pfRefreshIcons) {
-        window.pfRefreshIcons();
-      } else if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        window.lucide.createIcons();
-      }
-    }
-
-    function openModal() {
-      modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-      modal.classList.add('flex');              // center on mobile & desktop
-      modal.setAttribute('aria-hidden', 'false');
-      hydrateIcons();
-    }
-
-    function closeModal() {
-      modal.classList.add('hidden', 'opacity-0', 'pointer-events-none');
-      modal.classList.remove('flex');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-
-    openBtn.addEventListener('click', openModal);
-    closeEls.forEach(el => el.addEventListener('click', closeModal));
-
-    if (backdrop) {
-      backdrop.addEventListener('click', function (e) {
-        if (e.target === backdrop) closeModal();
-      });
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') closeModal();
-    });
-  })();
-</script>
-
-
-<!-- ================= DESKTOP WATER WAVE DIVIDER (ABOVE FOOTER) ================= -->
+<!-- ================= DESKTOP WATER WAVE DIVIDER (ABOVE MAIN FOOTER) ================= -->
 <div class="footer-wave-divider">
   <svg
     class="w-full h-full"
@@ -327,13 +379,11 @@
     focusable="false"
   >
     <defs>
-      <!-- Gradient for subtle depth -->
       <linearGradient id="footerDividerGradient" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
         <stop offset="100%" stop-color="#f0f0f0" stop-opacity="0.1" />
       </linearGradient>
 
-      <!-- Soft drop shadow -->
       <filter id="footerDividerShadow" x="-50%" y="-50%" width="200%" height="200%">
         <feDropShadow
           dx="0"
@@ -345,7 +395,6 @@
       </filter>
     </defs>
 
-    <!-- Primary strong wave -->
     <path
       fill="url(#footerDividerGradient)"
       filter="url(#footerDividerShadow)"
@@ -363,7 +412,6 @@
       />
     </path>
 
-    <!-- Secondary soft wave -->
     <path
       fill="url(#footerDividerGradient)"
       opacity="0.5"
@@ -383,7 +431,7 @@
   </svg>
 </div>
 
-<!-- ================= FOOTER (UNCHANGED MAIN BACKGROUND) ================= -->
+<!-- ================= MAIN FOOTER ================= -->
 <footer class="relative mt-auto bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 text-white/90 shadow-inner">
   <div class="pointer-events-none absolute -top-px inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
 
@@ -473,7 +521,6 @@
         <p class="text-center sm:text-left">
           Built for hope, trust, and reconnection. <span class="text-white/75">#HumanFirstAI</span>
         </p>
-        <!-- Visible on mobile + desktop -->
         <nav aria-label="Legal links" class="mt-2">
           <ul class="flex flex-wrap items-center justify-center sm:justify-start gap-3">
             <li><a href="{{ url_for('privacy_policy') }}" class="footer-legal-link">Privacy Policy</a></li>
@@ -506,7 +553,7 @@
 <!-- ============== SCRIPTS ============== -->
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
-  // Lucide icon bootstrap (footer, admin, feedback, modals, etc.)
+  // Lucide icon bootstrap
   (function initLucide() {
     function hydrateIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -520,29 +567,103 @@
       hydrateIcons();
     }
 
-    // helper if you later inject HTML dynamically
     window.pfRefreshIcons = hydrateIcons;
   })();
 
-  // Roles modal wiring (Admin "Learn about roles" button)
+  // Feedback form AJAX submit
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('feedbackForm');
+    if (!form) return;
+
+    const emailInput = document.getElementById('feedbackEmail');
+    const ratingInput = document.getElementById('feedbackRating');
+    const messageInput = document.getElementById('feedbackMessage');
+
+    const emailError = document.getElementById('feedbackEmailError');
+    const ratingError = document.getElementById('feedbackRatingError');
+    const messageError = document.getElementById('feedbackMessageError');
+
+    const successEl = document.getElementById('feedbackSuccess');
+    const errorEl = document.getElementById('feedbackError');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      [emailError, ratingError, messageError, successEl, errorEl].forEach(el => {
+        if (el) el.classList.add('hidden');
+      });
+
+      const data = {
+        name: (document.getElementById('feedbackName')?.value || '').trim(),
+        email: (emailInput?.value || '').trim(),
+        rating: (ratingInput?.value || '').trim(),
+        message: (messageInput?.value || '').trim()
+      };
+
+      let hasError = false;
+      if (!data.email || !data.email.includes('@')) {
+        if (emailError) emailError.classList.remove('hidden');
+        hasError = true;
+      }
+      if (!data.rating) {
+        if (ratingError) ratingError.classList.remove('hidden');
+        hasError = true;
+      }
+      if (!data.message || data.message.length < 5) {
+        if (messageError) messageError.classList.remove('hidden');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      try {
+        const res = await fetch('{{ url_for("api_feedback") }}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Feedback-Page': window.location.href
+          },
+          body: JSON.stringify(data)
+        });
+
+        const payload = await res.json();
+
+        if (res.ok && payload.ok) {
+          if (successEl) successEl.classList.remove('hidden');
+          form.reset();
+        } else {
+          if (errorEl) errorEl.classList.remove('hidden');
+        }
+      } catch (err) {
+        if (errorEl) errorEl.classList.remove('hidden');
+      }
+    });
+  });
+
+  // Roles modal with smooth open/close
   document.addEventListener('DOMContentLoaded', function () {
     const openButtons = document.querySelectorAll('[data-pf-role-open], #pf-role-open');
-    const modal = document.getElementById('pf-role-modal') || document.getElementById('pf-roles-modal');
-
+    const modal = document.getElementById('pf-role-modal');
     if (!openButtons.length || !modal) return;
 
     const closeButtons = modal.querySelectorAll('[data-pf-role-close], [data-modal-close]');
     const backdrop = modal.querySelector('[data-pf-role-backdrop]') || modal;
+    const TRANSITION_MS = 220;
 
     function openModal() {
-      modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+      modal.classList.remove('hidden', 'pointer-events-none');
+      // Small reflow to ensure transition applies
+      void modal.offsetWidth;
+      modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
       if (window.pfRefreshIcons) window.pfRefreshIcons();
     }
 
     function closeModal() {
-      modal.classList.add('hidden');
+      modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
+      setTimeout(() => {
+        modal.classList.add('hidden', 'pointer-events-none');
+      }, TRANSITION_MS);
     }
 
     openButtons.forEach(btn => btn.addEventListener('click', openModal));
@@ -559,62 +680,38 @@
     });
   });
 
-  // Sync Admin button href with the SAME link used in the header (or fallback to /admin).
-  (function syncAdminHref() {
-    const adminBtn = document.getElementById('adminCta');
-    if (!adminBtn) return;
+  // Scroll-triggered animation for cards (feedback + admin)
+  document.addEventListener('DOMContentLoaded', function () {
+    const cards = document.querySelectorAll('[data-scroll-anim="card"]');
+    if (!cards.length) return;
 
-    const fallback = adminBtn.getAttribute('data-fallback') || '/admin';
-    let headerAdmin =
-      document.querySelector('[data-admin-link]') ||
-      Array.from(document.querySelectorAll('header a, nav a')).find(a => /admin/i.test((a.textContent || '').trim())) ||
-      document.querySelector('header a[href*="/admin"], nav a[href*="/admin"]');
-
-    const href = headerAdmin && headerAdmin.getAttribute('href') ? headerAdmin.getAttribute('href') : fallback;
-    adminBtn.setAttribute('href', href);
-  })();
-
-  // Back-to-top behavior (smooth, respects reduced motion)
-  (function () {
-    const btn = document.getElementById('backToTop');
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function setVisible(v) {
-      if (!btn) return;
-      if (v) {
-        btn.classList.add('show');
-        btn.classList.remove('hide');
-        btn.style.pointerEvents = 'auto';
-      } else {
-        btn.classList.add('hide');
-        btn.classList.remove('show');
-        btn.style.pointerEvents = 'none';
-      }
+    if (!('IntersectionObserver' in window)) {
+      return;
     }
 
-    function onScroll() {
-      const y = window.scrollY || document.documentElement.scrollTop;
-      setVisible(y > 300);
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('load', onScroll);
-
-    if (btn) {
-      btn.addEventListener('click', function () {
-        if (prefersReduced) {
-          window.scrollTo(0, 0);
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const el = entry.target;
+        if (entry.isIntersecting) {
+          el.classList.remove('pf-card-anim-active');
+          void el.offsetWidth;
+          el.classList.add('pf-card-anim-active');
         }
       });
-    }
-  })();
+    }, { threshold: 0.3 });
+
+    cards.forEach(el => {
+      observer.observe(el);
+      el.addEventListener('animationend', () => {
+        el.classList.remove('pf-card-anim-active');
+      });
+    });
+  });
 </script>
 
-<!-- ============== STYLES (INCLUDING ICON LAYOUT & ANIMATIONS) ============== -->
+<!-- ============== STYLES ============== -->
 <style>
-/* Full-bleed wave above footer, footer stays on main background */
+/* Wave divider */
 .footer-wave-divider {
   position: relative;
   width: 100vw;
@@ -625,12 +722,11 @@
   margin-top: -5px;
 }
 
-/* ---- Admin card icon section: center vertically on desktop ---- */
+/* Admin icon section */
 .pf-admin-icon-section {
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-
 @media (min-width: 1024px) {
   .pf-admin-icon-section {
     flex: 1;
@@ -641,16 +737,12 @@
     margin-bottom: 0;
   }
 }
-
-/* Icon row layout (horizontal) */
 .pf-admin-icon-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
 }
-
-/* Base icon pill */
 .pf-admin-icon {
   display: flex;
   align-items: center;
@@ -665,8 +757,6 @@
   overflow: hidden;
   animation: adminIconFloat 4s ease-in-out infinite, adminIconGlow 3.5s ease-in-out infinite;
 }
-
-/* Slightly larger on desktop */
 @media (min-width: 1024px) {
   .pf-admin-icon {
     width: 3.1rem;
@@ -677,84 +767,46 @@
     height: 1.5rem !important;
   }
 }
+.pf-admin-icon-row .pf-admin-icon:nth-child(1) { animation-delay: 0s, 0s; }
+.pf-admin-icon-row .pf-admin-icon:nth-child(2) { animation-delay: .12s, .12s; }
+.pf-admin-icon-row .pf-admin-icon:nth-child(3) { animation-delay: .24s, .24s; }
+.pf-admin-icon-row .pf-admin-icon:nth-child(4) { animation-delay: .36s, .36s; }
 
-/* Stagger animation timings per icon */
-.pf-admin-icon-row .pf-admin-icon:nth-child(1) {
-  animation-delay: 0s, 0s;
-}
-.pf-admin-icon-row .pf-admin-icon:nth-child(2) {
-  animation-delay: 0.12s, 0.12s;
-}
-.pf-admin-icon-row .pf-admin-icon:nth-child(3) {
-  animation-delay: 0.24s, 0.24s;
-}
-.pf-admin-icon-row .pf-admin-icon:nth-child(4) {
-  animation-delay: 0.36s, 0.36s;
-}
-
-/* Soft float animation */
 @keyframes adminIconFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-3px); }
 }
-
-/* Glow / pulse animation */
 @keyframes adminIconGlow {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(56,189,248,0.35);
-    opacity: 1;
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(129,140,248,0.6);
-    opacity: 0.95;
-  }
+  0%,100% { box-shadow:0 0 10px rgba(56,189,248,.35); opacity:1; }
+  50%     { box-shadow:0 0 16px rgba(129,140,248,.6); opacity:.95; }
 }
-
-/* Optional shimmer sweep using existing .shimmer-random class */
 .shimmer-random::after {
-  content: "";
-  position: absolute;
-  inset: -40%;
-  background: linear-gradient(
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:linear-gradient(
     120deg,
     transparent 0%,
     rgba(255,255,255,0.35) 45%,
     rgba(255,255,255,0.1) 55%,
     transparent 100%
   );
-  transform: translateX(-130%);
-  opacity: 0;
-  pointer-events: none;
-  animation: adminIconShimmer 4.2s ease-in-out infinite;
+  transform:translateX(-130%);
+  opacity:0;
+  pointer-events:none;
+  animation:adminIconShimmer 4.2s ease-in-out infinite;
 }
-
 @keyframes adminIconShimmer {
-  0%, 65% {
-    transform: translateX(-130%);
-    opacity: 0;
-  }
-  70% {
-    opacity: 0.9;
-  }
-  85% {
-    transform: translateX(130%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(130%);
-    opacity: 0;
-  }
+  0%,65%  { transform:translateX(-130%); opacity:0; }
+  70%     { opacity:.9; }
+  85%,100%{ transform:translateX(130%); opacity:0; }
 }
 
-/* Live gradient animation */
+/* Gradient text */
 @keyframes gradient-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% { background-position:0% 50%; }
+  50%{ background-position:100% 50%; }
+  100%{ background-position:0% 50%; }
 }
 .animate-gradient { background-size:200% 200%; animation:gradient-move 6s ease infinite; }
 
@@ -782,34 +834,38 @@
 /* Live dot ripple */
 @keyframes rippleCorePulse {
   0%,100%{transform:scale(1);opacity:1;filter:brightness(1);}
-  50%{transform:scale(1.12);opacity:.95;filter:brightness(1.4);}
+  50%    {transform:scale(1.12);opacity:.95;filter:brightness(1.4);}
 }
 @keyframes rippleRing {
-  0%{transform:translate(-50%,-50%)scale(0.9);opacity:.5;}
-  60%{opacity:.2;}
-  100%{transform:translate(-50%,-50%)scale(5.2);opacity:0;}
+  0%   {transform:translate(-50%,-50%)scale(0.9);opacity:.5;}
+  60%  {opacity:.2;}
+  100% {transform:translate(-50%,-50%)scale(5.2);opacity:0;}
 }
 .animate-liveDotWater {
   position:relative;animation:rippleCorePulse 2s ease-in-out infinite;
   box-shadow:0 0 4px 1px rgba(16,185,129,.45);
 }
-.animate-liveDotWater::before,.animate-liveDotWater::after{
+.animate-liveDotWater::before,
+.animate-liveDotWater::after{
   content:"";position:absolute;left:50%;top:50%;
   width:100%;height:100%;border-radius:9999px;
   border:1px solid rgba(16,185,129,.45);
   transform:translate(-50%,-50%)scale(1);
   animation:rippleRing 2.4s ease-out infinite;pointer-events:none;
 }
-.animate-liveDotWater::after{animation-delay:1.2s;border-color:rgba(16,185,129,.3);}
+.animate-liveDotWater::after{
+  animation-delay:1.2s;border-color:rgba(16,185,129,.3);
+}
 
 /* Emerald badge ripple */
 @keyframes badgeTintEmerald {
-  0%{transform:translate(-50%,-50%)scale(0.6);opacity:0.35;}
-  70%{opacity:0.12;}
-  100%{transform:translate(-50%,-50%)scale(4.5);opacity:0;}
+  0%   {transform:translate(-50%,-50%)scale(0.6);opacity:0.35;}
+  70%  {opacity:0.12;}
+  100% {transform:translate(-50%,-50%)scale(4.5);opacity:0;}
 }
 .badge-ripple-emerald{position:relative;isolation:isolate;}
-.badge-ripple-emerald::before,.badge-ripple-emerald::after{
+.badge-ripple-emerald::before,
+.badge-ripple-emerald::after{
   content:"";position:absolute;left:50%;top:50%;
   width:160%;height:160%;border-radius:9999px;
   background:radial-gradient(closest-side,rgba(16,185,129,.35),rgba(16,185,129,0));
@@ -822,7 +878,7 @@
 }
 .badge-ripple-emerald>*{position:relative;z-index:1;}
 
-/* Compact legal links */
+/* Legal links */
 .footer-legal-link {
   position:relative; padding-bottom:2px; color:rgba(255,255,255,.75);
   transition:color .2s ease;
@@ -836,50 +892,53 @@
 .footer-legal-link:hover { color:#fff; }
 .footer-legal-link:hover::after { transform:scaleX(1); }
 
-/* Admin CTA styling (glass + gradient ring) */
-.admin-card { backdrop-filter: saturate(1.2) blur(0px); }
-.admin-cta {
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-  border-color: rgba(255,255,255,.18);
-  border-width: 1px;
-  line-height: 1;
-  box-shadow: 0 2px 8px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.06);
-  position: relative;
-  overflow: hidden;
+/* Roles modal overlay + panel transitions */
+.pf-role-modal {
+  opacity: 0;
+  transition: opacity 220ms ease-out;
 }
-.admin-cta::before {
-  content: "";
-  position: absolute; inset: -1px;
-  border-radius: 9999px;
-  padding: 1px;
-  background: linear-gradient(90deg, rgba(34,211,238,.6), rgba(99,102,241,.6), rgba(139,92,246,.6));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor; mask-composite: exclude;
-  opacity: .55;
+.pf-role-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
 }
-.admin-cta:hover { transform: translateY(-1px); }
-.admin-cta:hover::before { opacity: .85; }
-.admin-cta i { opacity: .9; }
-
-/* Back to Top button */
-.back-to-top { z-index: 40; }
-.back-to-top .btn-surface{
-  display:inline-flex; align-items:center; justify-content:center;
-  width:40px; height:40px; border-radius:9999px;
-  backdrop-filter: blur(6px);
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 4px 18px rgba(0,0,0,.35);
+.pf-role-panel {
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  transition:
+    opacity 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.back-to-top i { stroke-width:2; color: rgba(255,255,255,.9); }
-.back-to-top.show { opacity: 1 !important; transform: translateY(0) scale(1); }
-.back-to-top.hide { opacity: 0 !important; transform: translateY(8px) scale(.98); }
+.pf-role-modal.is-open .pf-role-panel {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
 
-/* Icons */
-[class*="bg-"] i { stroke-width:1.8; }
+/* Scroll-triggered card animation */
+[data-scroll-anim="card"] {
+  transform-origin: center;
+}
+.pf-card-anim-active {
+  animation: pfCardFloatIn 700ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@keyframes pfCardFloatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    box-shadow: 0 0 0 rgba(15,23,42,0);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 18px 45px rgba(15,23,42,0.55);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: 0 10px 30px rgba(15,23,42,0.4);
+  }
+}
 
-/* Accessibility */
+/* Accessibility: reduce motion */
 @media (prefers-reduced-motion: reduce){
   .animate-gradient,
   .animate-liveDotWater,
@@ -888,9 +947,14 @@
   .badge-ripple-emerald::before,
   .badge-ripple-emerald::after,
   .pf-admin-icon,
-  .shimmer-random::after { animation:none !important; }
-  .back-to-top { transition: none !important; }
+  .shimmer-random::after,
+  .pf-card-anim-active {
+    animation:none !important;
+  }
+  .pf-role-modal,
+  .pf-role-panel {
+    transition: none !important;
+  }
 }
 </style>
-
-<!-- ================= END FOOTER WITH FEEDBACK + ROLES MODAL ================= -->
+<!-- ================= END OF FOOTER ================= -->

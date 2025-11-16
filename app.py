@@ -1,5 +1,4 @@
 # app.py
-# app.py
 import os
 import io
 import uuid
@@ -10,7 +9,6 @@ import secrets
 import time
 import socket
 import csv
-from flask import Response
 from math import ceil
 from datetime import datetime, timedelta
 from functools import wraps
@@ -36,6 +34,7 @@ from flask import (
     jsonify,
     session,
     current_app,
+    Response,
 )
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -249,12 +248,14 @@ try:
 except Exception as _e:
     print(f"[version] Warning: could not bump version: {_e}")
 
+# Optionally store it in config for convenience
+app.config["APP_VERSION"] = get_app_version()
 
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
     return {
-        "app_version": get_app_version(),  # footer reads live value
+        "app_version": get_app_version(),  # footer & dashboard read live value
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
@@ -516,34 +517,42 @@ def api_stats():
     stats = get_stats()
     return jsonify(stats)
 
-    # ----------------- Feedback API -----------------
+
+# ----------------- Feedback API -----------------
 @app.post("/api/feedback")
 def api_feedback():
     """
-    Accepts JSON feedback from the footer form.
+    Accept feedback from either:
+      - JSON (AJAX / fetch)  -> returns JSON
+      - HTML form POST       -> redirects with flash messages
 
-    Expected payload:
-      {
-        "name": "optional string",
-        "email": "required string",
-        "rating": 1-5 (int),
-        "message": "required string",
-        "createdAt": "...optional client timestamp..."
-      }
-
-    Returns JSON:
-      { "ok": true } on success
-      { "ok": false, "errors": { ... } } on validation error
+    Expected fields:
+      name    (optional)
+      email   (required)
+      rating  (required, 1–5)
+      message (required)
     """
-    try:
-        data = request.get_json(silent=True) or {}
-    except Exception:
-        data = {}
+    is_json = request.is_json or (
+        request.content_type and "application/json" in request.content_type.lower()
+    )
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
-    name = (data.get("name") or "").strip()
-    email = (data.get("email") or "").strip()
-    rating_raw = data.get("rating")
-    message = (data.get("message") or "").strip()
+    # --------- Parse input (JSON or form) ---------
+    if is_json:
+        try:
+            data = request.get_json(silent=True) or {}
+        except Exception:
+            data = {}
+        name = (data.get("name") or "").strip()
+        email = (data.get("email") or "").strip()
+        rating_raw = data.get("rating")
+        message = (data.get("message") or "").strip()
+    else:
+        # Standard HTML form POST: make sure your form uses these names
+        name = (request.form.get("name") or "").strip()
+        email = (request.form.get("email") or "").strip()
+        rating_raw = request.form.get("rating")
+        message = (request.form.get("message") or "").strip()
 
     errors = {}
 
@@ -551,7 +560,6 @@ def api_feedback():
     if not email:
         errors["email"] = "Email is required."
     else:
-        # Very simple email check – enough for our case
         if "@" not in email or "." not in email.split("@")[-1]:
             errors["email"] = "Please provide a valid email address."
 
@@ -570,15 +578,21 @@ def api_feedback():
     if not message or len(message) < 5:
         errors["message"] = "Please describe your experience (at least 5 characters)."
 
+    # ---- If there are validation errors ----
     if errors:
-        return jsonify({"ok": False, "errors": errors}), 400
+        if is_json or is_ajax:
+            return jsonify({"ok": False, "errors": errors}), 400
 
-    # Collect some context for admin view/analysis
+        # HTML form: use flash + redirect
+        for msg in errors.values():
+            flash(msg, "error")
+        return redirect(request.referrer or url_for("home"))
+
+    # --------- Save to DB ---------
     page_url = request.headers.get("X-Feedback-Page") or request.referrer or ""
     user_agent = request.user_agent.string if request.user_agent else ""
     ip_address = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or request.remote_addr
 
-    # Save to DB
     try:
         fb = Feedback(
             name=name or None,
@@ -593,10 +607,17 @@ def api_feedback():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        current_app.logger.exception("Failed to save feedback: %s", e)
-        return jsonify({"ok": False, "errors": {"server": "Could not save feedback"}}), 500
+        if is_json or is_ajax:
+            return jsonify({"ok": False, "errors": {"server": "Could not save feedback"}}), 500
+        flash("Could not save feedback. Please try again later.", "error")
+        return redirect(request.referrer or url_for("home"))
 
-    return jsonify({"ok": True})
+    # --------- Success responses ---------
+    if is_json or is_ajax:
+        return jsonify({"ok": True})
+
+    flash("Thank you! Your feedback has been submitted.", "success")
+    return redirect(request.referrer or url_for("home"))
 
 
 # ----------------- Auth Routes -----------------
@@ -661,7 +682,6 @@ def logout():
 
 
 # ----------------- Admin Dashboard -----------------
-
 @app.route("/admin/dashboard", methods=["GET"])
 @login_required
 @require_role("admin")
@@ -693,19 +713,21 @@ def admin_dashboard():
     # Optional recent events for the Activity section (empty for now)
     recent_events = []
 
-    # Optional app version (will fall back to default in template if not set)
-    app_version = current_app.config.get("APP_VERSION", "v1.0.0")
+    # App version for the System Info card
+    app_version = get_app_version()
 
     # ---- Feedback stats for dashboard ----
     try:
+        from sqlalchemy import func as sa_func
+
         feedback_total = Feedback.query.count()
-        feedback_avg_rating = db.session.query(func.avg(Feedback.rating)).scalar()
+        feedback_avg_rating = db.session.query(sa_func.avg(Feedback.rating)).scalar()
         feedback_negative_count = Feedback.query.filter(Feedback.rating <= 2).count()
 
         # Histogram for ratings 1–5
         feedback_hist = [0, 0, 0, 0, 0]
         rows = (
-            db.session.query(Feedback.rating, func.count(Feedback.id))
+            db.session.query(Feedback.rating, sa_func.count(Feedback.id))
             .group_by(Feedback.rating)
             .all()
         )
@@ -726,6 +748,32 @@ def admin_dashboard():
         feedback_hist = [0, 0, 0, 0, 0]
         recent_feedback = []
 
+    # ---- Dashboard role badge for logged-in user (Super Admin vs Admin) ----
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    admin_user = User.query.get(int(current_user.id)) if current_user.is_authenticated else None
+
+    is_super_admin_current = bool(
+        admin_user
+        and super_admin_email
+        and (admin_user.email or "").strip().lower() == super_admin_email
+    )
+
+    if is_super_admin_current:
+        dashboard_role_label = "Super Admin"
+        dashboard_role_slug = "super-admin"
+        dashboard_role_icon = "👑"
+    else:
+        # Normal admin (users cannot access this dashboard)
+        dashboard_role_label = "Admin"
+        dashboard_role_slug = "admin"
+        dashboard_role_icon = "🛡️"
+
+    # 🔹 NEW: force display username in lowercase (for UI only)
+    display_username = ""
+    if admin_user and getattr(admin_user, "username", None):
+        display_username = (admin_user.username or "").strip().lower()
+
+    # 🔹 Always return here – NOT inside the try/except
     return render_template(
         "admin_dashboard.html",
         # people
@@ -746,6 +794,12 @@ def admin_dashboard():
         feedback_negative_count=feedback_negative_count,
         feedback_hist=feedback_hist,
         recent_feedback=recent_feedback,
+        # dashboard greeting + role pill
+        dashboard_role_label=dashboard_role_label,
+        dashboard_role_slug=dashboard_role_slug,
+        dashboard_role_icon=dashboard_role_icon,
+        # 🔹 NEW: lowercase username for display
+        display_username=display_username,
     )
 
 
@@ -1265,14 +1319,12 @@ def admin_create_user():
     )
 
     # Now set phone only if the attribute exists on the model
-    # (this avoids 'phone' invalid keyword argument issues completely)
     try:
         if hasattr(new_user, "phone"):
             new_user.phone = phone or None
         elif hasattr(new_user, "phone_number"):
             new_user.phone_number = phone or None
     except Exception:
-        # If anything weird happens here, just ignore the phone update
         pass
 
     # Set verification fields only if they exist on the model
@@ -1632,7 +1684,6 @@ def register():
             "chosen_face_box": [int(v) for v in (chosen_box or (0, 0, 0, 0))],
         }
 
-        # Save to DB
         try:
             register_person_to_db(person_data)
             flash("Person registered successfully!", "success")
@@ -1680,12 +1731,12 @@ def search():
     USE_GENDER_FILTER = True
 
     # Soft vs strict behavior
-    REQUIRE_NAME_AGREEMENT = False  # if True: drop candidates whose name doesn't meet threshold
-    REQUIRE_GENDER_AGREEMENT = False  # if True: drop candidates whose gender mismatches
+    REQUIRE_NAME_AGREEMENT = False
+    REQUIRE_GENDER_AGREEMENT = False
 
     NAME_SIM_THRESHOLD = 0.62  # similarity threshold when strict or to get strong bonus
-    NAME_SOFT_BONUS = 10.0  # how many points to add for a good name match (soft mode)
-    GENDER_SOFT_BONUS = 7.0  # how many points to add if genders match (soft mode)
+    NAME_SOFT_BONUS = 10.0
+    GENDER_SOFT_BONUS = 7.0
     # -----------------------------------------
 
     results = []
@@ -1727,7 +1778,6 @@ def search():
             )
         return out
 
-    # ---------- helpers for name/gender filtering ----------
     import re
     import difflib
 
@@ -1760,11 +1810,9 @@ def search():
     if request.method == "POST":
         searched = True
 
-        # Optional user-specified fields (used for filter/rerank after face match)
         query_name = (request.form.get("full_name") or "").strip()
         query_gender = (request.form.get("gender") or "").strip()
 
-        # --- Handle uploaded photo ---
         photo = request.files.get("photo")
         if not photo or not photo.filename:
             if request.headers.get("X-Requested-With") == "XMLHttpRequest":
@@ -1776,17 +1824,14 @@ def search():
         uploaded_photo = "uploads/" + os.path.basename(tmp_abs_path)
 
         try:
-            # --- Open and correct orientation ---
             img = auto_orient_image(tmp_abs_path)
 
-            # Resize for runtime speed (encoding copy)
             max_dim_for_runtime = 1600
             if max(img.width, img.height) > max_dim_for_runtime:
                 scale = max_dim_for_runtime / max(img.width, img.height)
                 new_size = (int(img.width * scale), int(img.height * scale))
                 img = img.resize(new_size, Image.Resampling.LANCZOS)
 
-            # Save compressed JPEG (optional temporary)
             temp_jpg_path = tmp_abs_path + "_compressed.jpg"
             img.convert("RGB").save(temp_jpg_path, format="JPEG", quality=85, optimize=True)
             tmp_abs_path = temp_jpg_path
@@ -1824,7 +1869,6 @@ def search():
             if encodings:
                 face_encoding = encodings[0]
 
-                # IMPORTANT: ensure your DB encodings are np.float64 (or compatible) and length 128
                 candidates = find_person_by_face(
                     face_encoding, tolerance=0.6, max_results=50, debug=False
                 ) or []
@@ -1849,7 +1893,6 @@ def search():
                     if cand["match_confidence"] >= MATCH_CONFIDENCE_THRESHOLD:
                         all_matches.append(cand)
 
-                # Enrich with DB fields to apply name/gender filters
                 enriched = []
                 for cand in all_matches:
                     pid = cand.get("id")
@@ -1871,7 +1914,6 @@ def search():
                     keep = True
                     bonus = 0.0
 
-                    # Gender
                     if USE_GENDER_FILTER and query_gender:
                         gm = gender_matches(query_gender, cand.get("gender"))
                         if REQUIRE_GENDER_AGREEMENT and not gm:
@@ -1879,7 +1921,6 @@ def search():
                         elif gm:
                             bonus += GENDER_SOFT_BONUS
 
-                    # Name
                     if USE_NAME_FILTER and query_name and cand.get("full_name"):
                         sim = name_similarity(query_name, cand.get("full_name"))
                         cand["_name_similarity"] = sim
@@ -1939,7 +1980,6 @@ def search():
                 ), 500
             return redirect(url_for("search"))
 
-        # --- Return JSON if AJAX ---
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             scrubbed = []
             for c in results:
@@ -1965,12 +2005,6 @@ def search():
         face_locations=face_locations,
     )
 
-    return render_template(
-    "base.html",
-    system_status="operational",  # or "degraded", "maintenance"
-    app_version=APP_VERSION,
-    current_year=datetime.utcnow().year,
-)
 
 # --- Admin helpers ----------------------------------------------------------
 def _redirect_back_to_dashboard(default_page: int = 1):
@@ -1988,16 +2022,14 @@ def _redirect_back_to_dashboard(default_page: int = 1):
 def delete_multiple_persons():
     """
     Delete multiple Person records based on IDs sent from the admin dashboard.
-    Expects a list of person IDs in form field 'person_ids'.
+    Expects a list of person IDs in form field 'selected_ids' (matches template JS).
     """
-    # IDs from checkboxes: <input type="checkbox" name="person_ids" value="{{ person.id }}">
-    raw_ids = request.form.getlist("person_ids")
+    raw_ids = request.form.getlist("selected_ids")
 
     if not raw_ids:
         flash("No persons selected for deletion.", "error")
         return _redirect_back_to_dashboard()
 
-    # Convert to integers defensively
     ids = []
     for v in raw_ids:
         try:
@@ -2010,7 +2042,6 @@ def delete_multiple_persons():
         return _redirect_back_to_dashboard()
 
     try:
-        # Adjust 'Person' if your model has a different name
         Person.query.filter(Person.id.in_(ids)).delete(synchronize_session=False)
         db.session.commit()
         flash(f"Deleted {len(ids)} person(s).", "success")
@@ -2019,6 +2050,7 @@ def delete_multiple_persons():
         flash(f"Error deleting persons: {e}", "error")
 
     return _redirect_back_to_dashboard()
+
 
 @app.route("/admin/clear-search-logs", methods=["POST"])
 @login_required
@@ -2034,7 +2066,6 @@ def clear_search_logs():
     cleared = False
     error = None
 
-    # 1) Try helper function if defined (e.g. in your db utils)
     fn = globals().get("db_clear_search_logs")
     if callable(fn):
         try:
@@ -2043,12 +2074,11 @@ def clear_search_logs():
         except Exception as e:
             error = e
 
-    # 2) Fallback: try a SearchLog model, if it exists
     if not cleared:
-        SearchLog = globals().get("SearchLog")
-        if SearchLog is not None:
+        SearchLog_model = globals().get("SearchLog")
+        if SearchLog_model is not None:
             try:
-                SearchLog.query.delete()
+                SearchLog_model.query.delete()
                 db.session.commit()
                 cleared = True
             except Exception as e:
@@ -2069,7 +2099,7 @@ def clear_search_logs():
 @app.route(
     "/admin/users/<int:user_id>/reset-password",
     methods=["POST"],
-    endpoint="admin_reset_user_password",  # 👈 endpoint matches the template
+    endpoint="admin_reset_user_password",
 )
 @login_required
 @require_role("admin")
@@ -2083,7 +2113,6 @@ def admin_reset_user_password(user_id):
     token = secrets.token_urlsafe(32)
     expiry = datetime.utcnow() + timedelta(minutes=30)
 
-    # Reuse the same reset flow as /reset-password/<token>
     if hasattr(user, "reset_token"):
         user.reset_token = token
     if hasattr(user, "reset_expiry"):
@@ -2124,14 +2153,13 @@ Click this link to choose a new password (valid for 30 minutes):
 @app.route(
     "/admin/toggle-user-role/<int:user_id>",
     methods=["POST"],
-    endpoint="admin_toggle_user_role",  # 👈 this endpoint matches the template
+    endpoint="admin_toggle_user_role",
 )
 @login_required
 @require_role("admin")
 def admin_toggle_user_role(user_id):
     user = User.query.get_or_404(user_id)
 
-    # Toggle the user role (e.g., from admin to user)
     if user.role == "admin":
         user.role = "user"
     else:
@@ -2150,31 +2178,26 @@ def admin_toggle_user_role(user_id):
 @app.route(
     "/admin/users/<int:user_id>/toggle-active",
     methods=["POST"],
-    endpoint="admin_toggle_user_active",  # 👈 this endpoint matches the template
+    endpoint="admin_toggle_user_active",
 )
 @login_required
 @require_role("admin")
 def admin_toggle_user_active(user_id):
     user = User.query.get_or_404(user_id)
 
-    # If your User model does not yet have an `is_active` column/attribute,
-    # fail gracefully instead of crashing.
     if not hasattr(user, "is_active"):
         flash("This installation does not yet support enabling/disabling users.", "error")
         return _redirect_back_to_dashboard()
 
-    # Safety: don't let someone disable themselves
     if user.id == current_user.id:
         flash("You cannot disable your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    # Safety: don't disable primary admin from .env
     super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
     if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
         flash("You cannot disable the primary admin account.", "error")
         return _redirect_back_to_dashboard()
 
-    # Toggle active flag
     user.is_active = not bool(user.is_active)
 
     try:
@@ -2191,19 +2214,17 @@ def admin_toggle_user_active(user_id):
 @app.route(
     "/admin/users/<int:user_id>/delete",
     methods=["POST"],
-    endpoint="admin_delete_user",  # 👈 This endpoint matches the template
+    endpoint="admin_delete_user",
 )
 @login_required
 @require_role("admin")
 def admin_delete_user(user_id):
     user = User.query.get_or_404(user_id)
 
-    # Ensure we don't allow deleting the current admin user
     if user.id == current_user.id:
         flash("You cannot delete your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    # Safety: don't delete the primary admin account
     super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
     if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
         flash("You cannot delete the primary admin account.", "error")
@@ -2285,7 +2306,7 @@ def admin_debug_match():
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="threading",  # no eventlet/gevent needed
+    async_mode="threading",
     logger=False,
     engineio_logger=os.getenv("ENGINEIO_LOG", "0") in ("1", "true", "yes", "on"),
     ping_interval=25,
@@ -2308,7 +2329,6 @@ if __name__ == "__main__":
         port=port,
         debug=DEV_MODE,
         use_reloader=False,  # avoid double-start/version bump
-        allow_unsafe_werkzeug=True,  # quiets warnings in dev
-        # ssl_context="adhoc",       # <- optional if you want HTTPS locally
+        allow_unsafe_werkzeug=True,
+        # ssl_context="adhoc",  # optional if you want HTTPS locally
     )
-
