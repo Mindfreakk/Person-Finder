@@ -7,34 +7,52 @@
 <!-- Full-bleed header -->
 <div class="w-full bg-blue-900 text-white p-6 shadow-md mt-16 sm:mt-[3cm] fade-in">
   <div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4">
-    <div>
-      <h1 class="text-2xl font-bold">Admin Dashboard</h1>
-      <p class="text-xs sm:text-sm text-blue-100/90 mt-1">
+    <div class="w-full sm:w-auto">
+      <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight">Admin Dashboard</h1>
+      <p class="text-xs sm:text-sm text-blue-100/90 mt-1 max-w-xl">
         Secure area for managing <span class="font-semibold">people, logs, users, and feedback</span>. Changes here affect real data.
       </p>
     </div>
 
-    <!-- Greeting + role + logout -->
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
-      <div class="flex flex-col sm:items-end text-right leading-tight gap-1 flex-1">
-        <span class="text-[11px] sm:text-xs uppercase tracking-[0.16em] text-blue-100/80">
-          Welcome back
-        </span>
-        <div class="flex items-baseline justify-end gap-2 flex-wrap">
-          <span class="text-lg sm:text-2xl font-semibold">
-            Hi <span class="capitalize">{{ current_user.username }}</span>
-          </span>
+    <!-- User identity block -->
+    <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-between sm:justify-end">
+      <div
+        class="flex items-center gap-3 sm:gap-4 bg-blue-800/50 border border-blue-700/60 rounded-2xl px-3 py-2 sm:px-4 sm:py-3 backdrop-blur-sm w-full sm:w-auto">
+        <!-- Avatar initial (desktop / larger screens) -->
+        <div
+          class="hidden sm:flex h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-blue-700/70 items-center justify-center text-sm sm:text-base font-semibold uppercase tracking-wide">
+          {{ (current_user.username or 'PF')[:2] }}
+        </div>
 
-          <!-- Role pill next to username -->
-          <span class="pf-role-pill pf-role-{{ dashboard_role_slug }}">
-            <span class="pf-role-icon">{{ dashboard_role_icon }}</span>
-            {{ dashboard_role_label }}
+        <div class="flex flex-col items-start sm:items-end leading-snug flex-1">
+          <span class="text-[0.7rem] sm:text-xs text-blue-100/80 uppercase tracking-[0.15em]">
+            Signed in
+          </span>
+          <div class="flex flex-wrap sm:flex-nowrap items-baseline gap-x-1 sm:gap-x-1.5 mt-0.5">
+            <span class="text-base sm:text-lg font-semibold tracking-tight">
+              {{ current_user.username }}
+            </span>
+            <!-- Slightly smaller, secondary "Hi" text -->
+            <span class="hidden sm:inline text-xs text-blue-100/80">
+              (Hi!)
+            </span>
+          </div>
+
+          <!-- Role pill just below username -->
+          <span
+            class="pf-role-pill pf-role-{{ dashboard_role_slug }} mt-1 inline-flex items-center gap-1 sm:justify-end">
+            {% if dashboard_role_icon %}
+              <span class="pf-role-icon">{{ dashboard_role_icon }}</span>
+            {% endif %}
+            <span class="truncate max-w-[9rem] sm:max-w-[10rem]">
+              {{ dashboard_role_label }}
+            </span>
           </span>
         </div>
       </div>
 
       <a href="{{ url_for('logout') }}"
-         class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-sm sm:text-base transition-colors shadow-sm hover:shadow-md transform hover:-translate-y-0.5 duration-150 text-center sm:text-right w-full sm:w-auto">
+         class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl text-sm sm:text-base font-medium transition-colors shadow-sm hover:shadow-md transform hover:-translate-y-0.5 duration-150 whitespace-nowrap">
         Logout
       </a>
     </div>
@@ -509,7 +527,7 @@
 
   <!-- Feedback summary section -->
   <section class="w-full px-4 sm:px-6 fade-in delay-200">
-    <!-- NOTE: overflow-hidden removed here -->
+    <!-- overflow-hidden intentionally not used here -->
     <div class="bg-white rounded-2xl shadow p-5 edge-card grid gap-5 lg:grid-cols-3 transition-shadow duration-200 hover:shadow-2xl">
       <!-- Stats + CTA -->
       <div class="space-y-3 lg:col-span-1">
@@ -703,7 +721,7 @@
     </span>
   </div>
 
-  <!-- Users (Mobile cards) -->
+    <!-- Users (Mobile cards) -->
   <section class="w-full px-4 sm:px-6 pb-4 fade-in delay-200 md:hidden">
     <div class="bg-white rounded-2xl shadow p-4 mb-3 edge-card transition-shadow duration-200 hover:shadow-lg">
       <div class="flex flex-col gap-2">
@@ -730,7 +748,9 @@
 
     <div class="space-y-3" id="usersMobileList">
       {% for user in users %}
+      {# SUPER ADMIN CHECK – update email here if needed #}
       {% set is_super_admin = user.email|lower == 'ammehz09@gmail.com' %}
+
       <div class="bg-white rounded-2xl shadow p-4 user-item text-center transition-transform duration-150 hover:-translate-y-0.5 hover:shadow-lg edge-card"
            data-username="{{ user.username|lower }}"
            data-email="{{ user.email|lower }}"
@@ -747,7 +767,7 @@
             <p class="mt-1 text-sm text-gray-700">
               Role:
               {% if is_super_admin %}
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-700">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-800 border border-teal-200">
                   Super Admin
                 </span>
               {% elif user.role|lower == 'admin' %}
@@ -765,8 +785,9 @@
 
         <div class="mt-3 flex flex-wrap gap-2 justify-center">
           {% if is_super_admin %}
+            {# SUPER ADMIN: ONLY RESET PASSWORD #}
             <span class="px-3 py-1 rounded text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
-              Super Admin
+              Super Admin (protected)
             </span>
             <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
               <button type="submit"
@@ -775,6 +796,7 @@
               </button>
             </form>
           {% else %}
+            {# NORMAL ADMINS / USERS: FULL CONTROLS #}
             <form method="POST" action="{{ url_for('admin_reset_user_password', user_id=user.id) }}">
               <button type="submit"
                       class="px-3 py-1 rounded text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
@@ -829,7 +851,7 @@
     {% endif %}
   </section>
 
-  <!-- Users (Desktop table) -->
+    <!-- Users (Desktop table) -->
   <section id="usersSection" class="relative w-full px-4 sm:px-6 pb-10 fade-in delay-200 hidden md:block">
     <div class="w-full">
       <div class="bg-blue-900 rounded-2xl p-4 mb-3 flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between edge-card shadow-md">
@@ -883,7 +905,9 @@
           </thead>
           <tbody class="text-sm" id="usersDesktopBody">
             {% for user in users %}
+            {# SUPER ADMIN CHECK – update email here if needed #}
             {% set is_super_admin = user.email|lower == 'ammehz09@gmail.com' %}
+
             <tr class="border-b border-gray-200 hover:bg-gray-50 transition-colors user-item"
                 data-username="{{ user.username|lower }}"
                 data-email="{{ user.email|lower }}"
@@ -895,7 +919,7 @@
               <td class="py-3 px-3 whitespace-normal break-all">{{ user.phone or user.phone_number or '—' }}</td>
               <td class="py-3 px-3 whitespace-normal break-words text-center">
                 {% if is_super_admin %}
-                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-700">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-teal-100 text-teal-800 border border-teal-200">
                     Super Admin
                   </span>
                 {% elif user.role|lower == 'admin' %}
@@ -911,6 +935,7 @@
               <td class="py-3 px-3">
                 <div class="flex flex-wrap gap-2 justify-center">
                   {% if is_super_admin %}
+                    {# SUPER ADMIN: ONLY RESET PASSWORD #}
                     <span class="px-3 py-1 rounded text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
                       Super Admin (protected)
                     </span>
@@ -921,6 +946,7 @@
                       </button>
                     </form>
                   {% else %}
+                    {# NORMAL ADMINS / USERS: FULL CONTROLS #}
                     <form method="POST" action="{{ url_for('admin_toggle_user_role', user_id=user.id) }}">
                       <button type="submit"
                               class="px-3 py-1 rounded text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -1091,7 +1117,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268-2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
               </button>
             </div>
@@ -1514,7 +1540,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- Chart CSS -->
 <style>
 html {
   scroll-behavior: smooth;
@@ -1609,11 +1634,6 @@ html {
 }
 .feedback-item { transition: transform 150ms ease, box-shadow 150ms ease; }
 
-.feedback-item:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(15,23,42,0.08);
-}
-
 /* Modal transforms */
 #deleteModal > div,
 #clearLogsModal > div,
@@ -1622,78 +1642,57 @@ html {
 }
 
 /* ================================
-   ROLE PILL STYLING (updated)
+   ROLE PILL STYLING (subtle, modern)
    ================================ */
 
 .pf-role-pill {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.22rem 0.65rem;         /* slightly smaller */
+  gap: 0.35rem;
+  padding: 0.18rem 0.6rem;
   border-radius: 9999px;
-  font-size: 0.68rem;               /* smaller text */
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  backdrop-filter: blur(4px);
-  transition: background-color 0.2s ease,
-              color 0.2s ease,
-              transform 0.15s ease,
-              border-color 0.2s ease;
-  box-shadow: none;                 /* no glow */
-  border: 1px solid rgba(148,163,184,0.5); /* slate-400 */
+  background: rgba(15,23,42,0.35); /* slate-900/35 */
+  color: #e5e7eb; /* gray-200 */
+  border: 1px solid rgba(148,163,184,0.5); /* slate-400/50 */
+  backdrop-filter: blur(6px);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-/* Hover: subtle, no glow */
 .pf-role-pill:hover {
+  background: rgba(30,64,175,0.65); /* indigo-800/65 */
+  border-color: rgba(191,219,254,0.7); /* blue-200/70 */
   transform: translateY(-1px);
-  background-color: rgba(15,23,42,0.18);
-  border-color: rgba(96,165,250,0.6); /* blue-400 */
 }
 
 /* Icon inside pill */
 .pf-role-icon {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   line-height: 1;
 }
 
-/* Super Admin: teal gradient, no glow */
+/* Super Admin */
 .pf-role-super-admin {
-  background: linear-gradient(135deg, #0f766e, #14b8a6); /* teal-700 → teal-500 */
-  color: #ecfdf5; /* emerald-50-ish */
-  border-color: rgba(45,212,191,0.7);
-  box-shadow: none;
+  background: rgba(45,212,191,0.14); /* teal-400/14 */
+  border-color: rgba(45,212,191,0.65);
+  color: #ccfbf1; /* teal-100 */
 }
 
-.pf-role-super-admin:hover {
-  background: linear-gradient(135deg, #0d9488, #14b8a6);
-}
-
-/* Admin: indigo/blue, no glow */
+/* Admin */
 .pf-role-admin {
-  background: linear-gradient(135deg, #1d4ed8, #1e40af); /* blue-700 → indigo-800 */
-  color: #e0f2fe; /* blue-100 */
+  background: rgba(37,99,235,0.16); /* blue-600/16 */
   border-color: rgba(96,165,250,0.7);
-  box-shadow: none;
+  color: #dbeafe; /* blue-100 */
 }
 
-.pf-role-admin:hover {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-}
-
-/* (Optional) basic user role styling, if you ever add pf-role-user */
+/* Optional: default user role styling if needed */
 .pf-role-user {
-  background: rgba(15,23,42,0.6);
-  color: #e5e7eb;
+  background: rgba(148,163,184,0.18); /* slate-400/18 */
   border-color: rgba(148,163,184,0.7);
-}
-
-/* Make header greeting feel a bit more modern on larger screens without breaking layout */
-@media (min-width: 640px) {
-  .logout-container + .w-full .flex.justify-between.items-center > div:last-child span.text-sm.sm\:text-base {
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
+  color: #e5e7eb;
 }
 </style>
 {% endblock %}

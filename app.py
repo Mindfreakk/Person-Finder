@@ -2016,6 +2016,39 @@ def _redirect_back_to_dashboard(default_page: int = 1):
     return redirect(url_for("admin_dashboard", page=page))
 
 
+def _get_super_admin_email() -> str:
+    """Return the configured primary super admin email (lowercased, trimmed)."""
+    return (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+
+
+def _get_actor_email_from_current_user() -> str:
+    """
+    Best-effort way to get the logged-in user's email.
+
+    current_user is a UserLogin wrapper without an email attribute,
+    so we look up the real User row if needed.
+    """
+    # 1) Try direct attribute on current_user (if your UserLogin ever gets email later)
+    direct = getattr(current_user, "email", None)
+    if direct:
+        return (direct or "").strip().lower()
+
+    # 2) Try to resolve via User model
+    actor_user = None
+    actor_id = getattr(current_user, "id", None)
+    actor_username = getattr(current_user, "username", None)
+
+    if actor_id is not None:
+        actor_user = User.query.get(actor_id)
+    elif actor_username:
+        actor_user = User.query.filter_by(username=actor_username).first()
+
+    if actor_user and getattr(actor_user, "email", None):
+        return (actor_user.email or "").strip().lower()
+
+    return ""  # fallback if we really can't determine it
+
+
 @app.route("/admin/persons/delete-multiple", methods=["POST"])
 @login_required
 @require_role("admin")
@@ -2104,7 +2137,26 @@ def clear_search_logs():
 @login_required
 @require_role("admin")
 def admin_reset_user_password(user_id):
+    """
+    Send a password reset link to the selected user.
+
+    - Super admin (ADMIN_EMAIL) can reset anyone, including themselves.
+    - Other admins CANNOT reset the primary super admin account.
+    """
     user = User.query.get_or_404(user_id)
+
+    # Identify primary super admin
+    super_admin_email = _get_super_admin_email()
+    target_email = (user.email or "").strip().lower()
+    actor_email = _get_actor_email_from_current_user()
+
+    is_super_admin_target = super_admin_email and target_email == super_admin_email
+    is_super_admin_actor = super_admin_email and actor_email == super_admin_email
+
+    # Block non-super-admins from resetting the primary super admin
+    if is_super_admin_target and not is_super_admin_actor:
+        flash("Only the primary super admin can reset this account's password.", "error")
+        return _redirect_back_to_dashboard()
 
     if not user.email:
         flash("User has no email address on file; cannot send reset link.", "error")
@@ -2127,19 +2179,94 @@ def admin_reset_user_password(user_id):
 
     reset_link = build_external_url("reset_password", token=token)
 
-    subject = "Your PersonFinder password reset link"
+    subject = "Reset your PersonFinder password"
+
     body = f"""Hello {user.username},
 
-An admin has requested a password reset for your PersonFinder account.
+A password reset request was initiated for your PersonFinder account.
 
-Click this link to choose a new password (valid for 30 minutes):
+To continue, click the link below to set a new password (valid for 30 minutes):
 {reset_link}
+
+If you did not request this password reset, please ignore this email or contact support.
+
+Security notice:
+PersonFinder staff will NEVER ask for your password, verification codes, or sensitive credentials via email, SMS, or phone.
 """
+
     html = f"""
-    <p>Hello <strong>{user.username}</strong>,</p>
-    <p>An admin has requested a password reset for your PersonFinder account.</p>
-    <p><a href="{reset_link}">Reset my password</a> (valid for 30 minutes)</p>
-    """
+<div style="margin:0; padding:0; background:#f3f4f6; font-family:Arial, Helvetica, sans-serif;">
+  <table width="100%" cellspacing="0" cellpadding="0" style="padding:20px 0; background:#f3f4f6;">
+    <tr>
+      <td align="center">
+
+        <table width="600" cellspacing="0" cellpadding="0" 
+               style="background:#ffffff; border-radius:12px; overflow:hidden; 
+                      box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td align="center" style="background:#1e3a8a; padding:24px;">
+              <h1 style="margin:0; color:#ffffff; font-size:26px; font-weight:700;">
+                PersonFinder
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:28px; font-size:15px; line-height:1.65; color:#111827;">
+
+              <p>Hello <strong>{user.username}</strong>,</p>
+
+              <p>
+                A password reset request was created for your PersonFinder account.
+                Click the button below to choose a new password.
+              </p>
+
+              <!-- Button -->
+              <div style="text-align:center; margin:30px 0;">
+                <a href="{reset_link}"
+                   style="background:#2563eb; color:#ffffff; padding:12px 22px;
+                          text-decoration:none; border-radius:6px; font-weight:600;
+                          display:inline-block; font-size:15px;">
+                  Reset My Password
+                </a>
+              </div>
+
+              <p style="font-size:13px; color:#6b7280;">
+                This link will remain active for <strong>30 minutes</strong>.
+                If you did not request this change, you may safely ignore this email.
+              </p>
+
+              <!-- Security Notice -->
+              <hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0 16px;">
+              <p style="font-size:12px; color:#6b7280;">
+                <strong>Security Notice:</strong><br>
+                PersonFinder staff will <strong>never</strong> ask you for your password,
+                verification codes, or any sensitive account details through email, SMS, or phone.
+                If you receive any such request, do not share your information.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="background:#f9fafb; padding:18px;">
+              <p style="margin:0; color:#6b7280; font-size:12px;">
+                © {datetime.utcnow().year} PersonFinder · All rights reserved
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</div>
+"""
 
     ok, err = send_mail(subject, [user.email], body=body, html=html)
     if not ok:
@@ -2160,6 +2287,12 @@ Click this link to choose a new password (valid for 30 minutes):
 def admin_toggle_user_role(user_id):
     user = User.query.get_or_404(user_id)
 
+    # Never allow changing the primary super admin's role
+    super_admin_email = _get_super_admin_email()
+    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
+        flash("You cannot change the primary super admin's role.", "error")
+        return _redirect_back_to_dashboard()
+
     if user.role == "admin":
         user.role = "user"
     else:
@@ -2172,7 +2305,7 @@ def admin_toggle_user_role(user_id):
         db.session.rollback()
         flash(f"Error updating role: {e}", "error")
 
-    return redirect(url_for("admin_dashboard"))
+    return _redirect_back_to_dashboard()
 
 
 @app.route(
@@ -2193,9 +2326,10 @@ def admin_toggle_user_active(user_id):
         flash("You cannot disable your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    # Never allow disabling the primary super admin
+    super_admin_email = _get_super_admin_email()
     if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
-        flash("You cannot disable the primary admin account.", "error")
+        flash("You cannot disable the primary super admin account.", "error")
         return _redirect_back_to_dashboard()
 
     user.is_active = not bool(user.is_active)
@@ -2225,9 +2359,10 @@ def admin_delete_user(user_id):
         flash("You cannot delete your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    # Never allow deleting the primary super admin
+    super_admin_email = _get_super_admin_email()
     if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
-        flash("You cannot delete the primary admin account.", "error")
+        flash("You cannot delete the primary super admin account.", "error")
         return _redirect_back_to_dashboard()
 
     try:
@@ -2300,6 +2435,30 @@ def admin_debug_match():
             os.remove(tmp)
         except Exception:
             pass
+
+
+import os
+import socket
+from flask_socketio import SocketIO
+# from your_app import app, DEV_MODE  # whatever you already have
+
+
+# ----------------- Helper: Get local LAN IP -----------------
+def get_local_ip() -> str:
+    """
+    Best-effort detection of the LAN IP (e.g. 192.168.x.x).
+    Falls back to 127.0.0.1 if it can't determine one.
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # This doesn't actually send traffic; it's just to pick the right interface
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except OSError:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
 
 
 # ----------------- SocketIO Integration -----------------
