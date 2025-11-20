@@ -748,9 +748,16 @@ def admin_dashboard():
         feedback_hist = [0, 0, 0, 0, 0]
         recent_feedback = []
 
-    # ---- Dashboard role badge for logged-in user (Super Admin vs Admin) ----
+        # ---- Dashboard role badge for logged-in user (Super Admin vs Admin) ----
+    # This email is your *primary* Super Admin. Set in env, e.g. ADMIN_EMAIL=ammehz09@gmail.com
     super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
-    admin_user = User.query.get(int(current_user.id)) if current_user.is_authenticated else None
+
+    # Use Session.get to avoid the SQLAlchemy legacy warning
+    admin_user = (
+        db.session.get(User, int(current_user.id))
+        if current_user.is_authenticated
+        else None
+    )
 
     is_super_admin_current = bool(
         admin_user
@@ -763,17 +770,21 @@ def admin_dashboard():
         dashboard_role_slug = "super-admin"
         dashboard_role_icon = "👑"
     else:
-        # Normal admin (users cannot access this dashboard)
+        # Normal admin (users cannot access this dashboard otherwise)
         dashboard_role_label = "Admin"
         dashboard_role_slug = "admin"
         dashboard_role_icon = "🛡️"
 
-    # 🔹 NEW: force display username in lowercase (for UI only)
+    # lowercase display username for the header
     display_username = ""
     if admin_user and getattr(admin_user, "username", None):
         display_username = (admin_user.username or "").strip().lower()
 
-    # 🔹 Always return here – NOT inside the try/except
+    # Expose super admin info and actor info to the template
+    primary_super_admin_email = super_admin_email
+    actor_is_super_admin = is_super_admin_current
+    actor_user_id = admin_user.id if admin_user else None
+
     return render_template(
         "admin_dashboard.html",
         # people
@@ -798,10 +809,47 @@ def admin_dashboard():
         dashboard_role_label=dashboard_role_label,
         dashboard_role_slug=dashboard_role_slug,
         dashboard_role_icon=dashboard_role_icon,
-        # 🔹 NEW: lowercase username for display
         display_username=display_username,
+        # super-admin info for template logic
+        super_admin_email=super_admin_email,
+        primary_super_admin_email=primary_super_admin_email,
+        # actor flags for template (used in users table)
+        actor_is_super_admin=actor_is_super_admin,
+        actor_user_id=actor_user_id,
     )
 
+
+@app.route(
+    "/admin/search-logs/export",
+    methods=["GET"],
+    endpoint="export_search_logs_csv",
+)
+@login_required
+@require_role("admin")
+def export_search_logs_csv():
+    SearchLog_model = globals().get("SearchLog")
+    if SearchLog_model is None:
+        flash("Search log export is not configured on this installation.", "error")
+        return _redirect_back_to_dashboard()
+
+    logs = SearchLog_model.query.order_by(SearchLog_model.ts.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow(["timestamp", "searched_name", "matches"])
+
+    for log in logs:
+        ts = log.ts.strftime("%Y-%m-%d %H:%M:%S") if log.ts else ""
+        writer.writerow([ts, log.uploaded_name or "", log.matches or ""])
+
+    output.seek(0)
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="search_logs.csv"'},
+    )
 
 @app.route("/admin/export-people", methods=["GET"])
 @login_required
@@ -2016,38 +2064,56 @@ def _redirect_back_to_dashboard(default_page: int = 1):
     return redirect(url_for("admin_dashboard", page=page))
 
 
-def _get_super_admin_email() -> str:
-    """Return the configured primary super admin email (lowercased, trimmed)."""
-    return (os.getenv("ADMIN_EMAIL") or "").strip().lower()
-
-
-def _get_actor_email_from_current_user() -> str:
+def _is_primary_super_admin(user_obj) -> bool:
     """
-    Best-effort way to get the logged-in user's email.
-
-    current_user is a UserLogin wrapper without an email attribute,
-    so we look up the real User row if needed.
+    Returns True if the given user_obj is the primary super admin,
+    based on the ADMIN_EMAIL environment variable.
     """
-    # 1) Try direct attribute on current_user (if your UserLogin ever gets email later)
-    direct = getattr(current_user, "email", None)
-    if direct:
-        return (direct or "").strip().lower()
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    if not super_admin_email or not user_obj:
+        return False
 
-    # 2) Try to resolve via User model
-    actor_user = None
-    actor_id = getattr(current_user, "id", None)
-    actor_username = getattr(current_user, "username", None)
+    email = getattr(user_obj, "email", None)
+    if not email:
+        return False
 
-    if actor_id is not None:
-        actor_user = User.query.get(actor_id)
-    elif actor_username:
-        actor_user = User.query.filter_by(username=actor_username).first()
+    return email.strip().lower() == super_admin_email
 
-    if actor_user and getattr(actor_user, "email", None):
-        return (actor_user.email or "").strip().lower()
 
-    return ""  # fallback if we really can't determine it
+def _current_actor() -> "User | None":
+    """
+    Safely load the DB User row for the current logged-in principal.
+    This avoids relying on current_user having an email attribute.
+    """
+    user_id = getattr(current_user, "id", None)
+    if user_id is None:
+        return None
+    return User.query.get(user_id)
 
+@app.route(
+    "/admin/persons/<int:person_id>/delete",
+    methods=["POST"],
+    endpoint="delete_person",
+)
+@login_required
+@require_role("admin")
+def delete_person(person_id):
+    """
+    Delete a single Person record from the admin dashboard.
+    Used by the 'Delete' buttons on each row/card.
+    """
+    person = Person.query.get_or_404(person_id)
+
+    try:
+        db.session.delete(person)
+        db.session.commit()
+        flash(f"Person '{person.full_name}' has been deleted.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting person: {e}", "error")
+
+    # Preserve pagination if 'page' was posted
+    return _redirect_back_to_dashboard()
 
 @app.route("/admin/persons/delete-multiple", methods=["POST"])
 @login_required
@@ -2137,31 +2203,40 @@ def clear_search_logs():
 @login_required
 @require_role("admin")
 def admin_reset_user_password(user_id):
-    """
-    Send a password reset link to the selected user.
-
-    - Super admin (ADMIN_EMAIL) can reset anyone, including themselves.
-    - Other admins CANNOT reset the primary super admin account.
-    """
     user = User.query.get_or_404(user_id)
 
-    # Identify primary super admin
-    super_admin_email = _get_super_admin_email()
-    target_email = (user.email or "").strip().lower()
-    actor_email = _get_actor_email_from_current_user()
-
-    is_super_admin_target = super_admin_email and target_email == super_admin_email
-    is_super_admin_actor = super_admin_email and actor_email == super_admin_email
-
-    # Block non-super-admins from resetting the primary super admin
-    if is_super_admin_target and not is_super_admin_actor:
-        flash("Only the primary super admin can reset this account's password.", "error")
+    # Load the real actor row from DB
+    actor = _current_actor()
+    if actor is None:
+        flash("Unable to determine the current admin account.", "error")
         return _redirect_back_to_dashboard()
 
+    # Normalize emails
+    actor_email = (getattr(actor, "email", "") or "").strip().lower()
+    target_email = (user.email or "").strip().lower()
+    super_admin_email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+
+    # --- 1. SUPER ADMIN PROTECTION ---
+    # Only the primary Super Admin can reset the primary Super Admin account
+    if target_email == super_admin_email and actor_email != super_admin_email:
+        flash("Only the Super Admin can reset the primary Super Admin password.", "error")
+        return _redirect_back_to_dashboard()
+
+    # --- 2. ADMIN CANNOT RESET ANOTHER ADMIN ---
+    target_is_admin = (getattr(user, "role", "") or "").lower() == "admin"
+    if target_is_admin and actor_email not in (target_email, super_admin_email):
+        flash(
+            "Only the Super Admin or this admin themselves can reset this admin password.",
+            "error",
+        )
+        return _redirect_back_to_dashboard()
+
+    # --- 3. Must have email ---
     if not user.email:
         flash("User has no email address on file; cannot send reset link.", "error")
         return _redirect_back_to_dashboard()
 
+    # --- 4. Generate reset token ---
     token = secrets.token_urlsafe(32)
     expiry = datetime.utcnow() + timedelta(minutes=30)
 
@@ -2179,100 +2254,50 @@ def admin_reset_user_password(user_id):
 
     reset_link = build_external_url("reset_password", token=token)
 
-    subject = "Reset your PersonFinder password"
-
+    # --- 5. Email contents ---
+    subject = "Your PersonFinder Password Reset Request"
     body = f"""Hello {user.username},
 
-A password reset request was initiated for your PersonFinder account.
+A password reset request was made for your PersonFinder account.
 
-To continue, click the link below to set a new password (valid for 30 minutes):
+Click the link below to set a new password (valid for 30 minutes):
 {reset_link}
 
-If you did not request this password reset, please ignore this email or contact support.
-
-Security notice:
-PersonFinder staff will NEVER ask for your password, verification codes, or sensitive credentials via email, SMS, or phone.
+If you did not request this change, please contact the system administrator immediately.
 """
-
     html = f"""
-<div style="margin:0; padding:0; background:#f3f4f6; font-family:Arial, Helvetica, sans-serif;">
-  <table width="100%" cellspacing="0" cellpadding="0" style="padding:20px 0; background:#f3f4f6;">
-    <tr>
-      <td align="center">
+    <div style="font-family: Arial, sans-serif; color:#333;">
+      <h2 style="margin-bottom: 10px;">PersonFinder Password Reset</h2>
+      <p>Hello <strong>{user.username}</strong>,</p>
+      <p>A password reset was requested for your PersonFinder account.</p>
 
-        <table width="600" cellspacing="0" cellpadding="0" 
-               style="background:#ffffff; border-radius:12px; overflow:hidden; 
-                      box-shadow:0 4px 18px rgba(0,0,0,0.08);">
+      <p>
+        <a href="{reset_link}"
+           style="background:#2563eb;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none;">
+           Reset My Password
+        </a>
+      </p>
 
-          <!-- Header -->
-          <tr>
-            <td align="center" style="background:#1e3a8a; padding:24px;">
-              <h1 style="margin:0; color:#ffffff; font-size:26px; font-weight:700;">
-                PersonFinder
-              </h1>
-            </td>
-          </tr>
+      <p style="margin-top:20px;font-size:13px;color:#666;">
+        This link is valid for <strong>30 minutes</strong>.
+      </p>
 
-          <!-- Body -->
-          <tr>
-            <td style="padding:28px; font-size:15px; line-height:1.65; color:#111827;">
+      <hr style="border:none;border-top:1px solid #ddd;margin:20px 0;">
 
-              <p>Hello <strong>{user.username}</strong>,</p>
+      <p style="font-size:12px;color:#777;">
+        Security notice: If you did not request this password reset, please ignore this email
+        and contact your administrator or the PersonFinder support team immediately.
+      </p>
 
-              <p>
-                A password reset request was created for your PersonFinder account.
-                Click the button below to choose a new password.
-              </p>
-
-              <!-- Button -->
-              <div style="text-align:center; margin:30px 0;">
-                <a href="{reset_link}"
-                   style="background:#2563eb; color:#ffffff; padding:12px 22px;
-                          text-decoration:none; border-radius:6px; font-weight:600;
-                          display:inline-block; font-size:15px;">
-                  Reset My Password
-                </a>
-              </div>
-
-              <p style="font-size:13px; color:#6b7280;">
-                This link will remain active for <strong>30 minutes</strong>.
-                If you did not request this change, you may safely ignore this email.
-              </p>
-
-              <!-- Security Notice -->
-              <hr style="border:none; border-top:1px solid #e5e7eb; margin:24px 0 16px;">
-              <p style="font-size:12px; color:#6b7280;">
-                <strong>Security Notice:</strong><br>
-                PersonFinder staff will <strong>never</strong> ask you for your password,
-                verification codes, or any sensitive account details through email, SMS, or phone.
-                If you receive any such request, do not share your information.
-              </p>
-
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td align="center" style="background:#f9fafb; padding:18px;">
-              <p style="margin:0; color:#6b7280; font-size:12px;">
-                © {datetime.utcnow().year} PersonFinder · All rights reserved
-              </p>
-            </td>
-          </tr>
-
-        </table>
-
-      </td>
-    </tr>
-  </table>
-</div>
-"""
+      <p style="font-size:12px;color:#999;">— PersonFinder Security Team</p>
+    </div>
+    """
 
     ok, err = send_mail(subject, [user.email], body=body, html=html)
     if not ok:
         flash(f"Reset token created, but email failed: {err}", "error")
     else:
-        flash("Password reset link sent to the user.", "success")
+        flash("Password reset link sent successfully.", "success")
 
     return _redirect_back_to_dashboard()
 
@@ -2286,13 +2311,23 @@ PersonFinder staff will NEVER ask for your password, verification codes, or sens
 @require_role("admin")
 def admin_toggle_user_role(user_id):
     user = User.query.get_or_404(user_id)
+    actor = _current_actor()
 
-    # Never allow changing the primary super admin's role
-    super_admin_email = _get_super_admin_email()
-    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
-        flash("You cannot change the primary super admin's role.", "error")
+    actor_is_super_admin = _is_primary_super_admin(actor)
+    target_is_super_admin = _is_primary_super_admin(user)
+    target_is_admin = (getattr(user, "role", "") or "").lower() == "admin"
+
+    # Nobody can change the primary super admin role
+    if target_is_super_admin:
+        flash("You cannot change the role of the primary super admin.", "error")
         return _redirect_back_to_dashboard()
 
+    # Only super admin can change roles for admin accounts
+    if target_is_admin and not actor_is_super_admin:
+        flash("Only the Super Admin can change roles for admin accounts.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Toggle role normally (user <-> admin)
     if user.role == "admin":
         user.role = "user"
     else:
@@ -2317,19 +2352,29 @@ def admin_toggle_user_role(user_id):
 @require_role("admin")
 def admin_toggle_user_active(user_id):
     user = User.query.get_or_404(user_id)
+    actor = _current_actor()
+
+    actor_is_super_admin = _is_primary_super_admin(actor)
+    target_is_super_admin = _is_primary_super_admin(user)
+    target_is_admin = (getattr(user, "role", "") or "").lower() == "admin"
 
     if not hasattr(user, "is_active"):
         flash("This installation does not yet support enabling/disabling users.", "error")
         return _redirect_back_to_dashboard()
 
+    # Prevent disabling yourself
     if user.id == current_user.id:
         flash("You cannot disable your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    # Never allow disabling the primary super admin
-    super_admin_email = _get_super_admin_email()
-    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
+    # Nobody can disable the primary super admin account
+    if target_is_super_admin:
         flash("You cannot disable the primary super admin account.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Only super admin can activate/deactivate admin accounts
+    if target_is_admin and not actor_is_super_admin:
+        flash("Only the Super Admin can activate/deactivate admin accounts.", "error")
         return _redirect_back_to_dashboard()
 
     user.is_active = not bool(user.is_active)
@@ -2354,15 +2399,25 @@ def admin_toggle_user_active(user_id):
 @require_role("admin")
 def admin_delete_user(user_id):
     user = User.query.get_or_404(user_id)
+    actor = _current_actor()
 
+    actor_is_super_admin = _is_primary_super_admin(actor)
+    target_is_super_admin = _is_primary_super_admin(user)
+    target_is_admin = (getattr(user, "role", "") or "").lower() == "admin"
+
+    # Prevent deleting yourself
     if user.id == current_user.id:
         flash("You cannot delete your own account.", "error")
         return _redirect_back_to_dashboard()
 
-    # Never allow deleting the primary super admin
-    super_admin_email = _get_super_admin_email()
-    if super_admin_email and (user.email or "").strip().lower() == super_admin_email:
+    # Nobody can delete the primary super admin
+    if target_is_super_admin:
         flash("You cannot delete the primary super admin account.", "error")
+        return _redirect_back_to_dashboard()
+
+    # Only super admin can delete admin accounts
+    if target_is_admin and not actor_is_super_admin:
+        flash("Only the Super Admin can delete admin accounts.", "error")
         return _redirect_back_to_dashboard()
 
     try:
