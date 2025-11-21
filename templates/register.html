@@ -105,16 +105,16 @@
         >
         <input type="hidden" id="photo_input" name="photo_input">
 
-        <!-- Upload + Tooltip + Webcam -->
-        <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+        <!-- Upload + Tooltip (no webcam) -->
+        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center items-center relative">
           <div class="flex flex-col items-center gap-2">
             <!-- Upload -->
             <label
               for="photo"
               id="upload_label"
-              class="cursor-pointer px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
+              class="cursor-pointer w-full sm:w-48 text-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
                      hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md
-                     transition transform hover:scale-105 w-full text-center"
+                     transition transform hover:scale-105"
             >
               Upload Photo <span class="text-red-400">*</span>
             </label>
@@ -124,7 +124,7 @@
               <button
                 type="button"
                 id="search_info_btn_mobile"
-                aria-label="Upload/Use Webcam Info"
+                aria-label="Upload Info"
                 class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -148,7 +148,7 @@
             <button
               type="button"
               id="search_info_btn"
-              aria-label="Upload/Use Webcam Info"
+              aria-label="Upload Info"
               class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -163,41 +163,6 @@
             <span id="search_info_tip" role="tooltip" class="tooltip theme-dark">
               For optimal results, please upload a high-quality, front-facing photo.
             </span>
-          </div>
-
-          <!-- Webcam -->
-          <button
-            type="button"
-            id="use_webcam_btn"
-            class="hidden sm:inline-block px-4 py-2 rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500
-                   hover:from-fuchsia-500 hover:to-violet-500 text-white font-medium shadow-md
-                   transition transform hover:scale-105"
-          >
-            Use Webcam
-          </button>
-        </div>
-
-        <!-- Webcam Area -->
-        <div
-          id="webcam_container"
-          class="hidden mt-4 w-full max-w-md rounded-xl border border-white/20 p-3 bg-white/5"
-        >
-          <video id="webcam" autoplay playsinline class="w-full rounded-lg bg-black"></video>
-          <div class="mt-3 flex gap-3 justify-center">
-            <button
-              type="button"
-              id="capture_btn"
-              class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white shadow"
-            >
-              Capture
-            </button>
-            <button
-              type="button"
-              id="close_webcam_btn"
-              class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white shadow"
-            >
-              Close
-            </button>
           </div>
         </div>
 
@@ -223,7 +188,7 @@
 
         <!-- Error Message -->
         <p id="photo_error" class="text-red-400 text-sm mt-2 hidden" role="alert">
-          Photo is required (upload a file or capture from webcam).
+          Photo is required. Please upload a file.
         </p>
       </div>
 
@@ -512,8 +477,7 @@
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                 <path
                   fill-rule="evenodd"
-                  d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8
-                     8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
+                  d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-8-4a1 1 0 100 2 1 1 0
                      000-2zm-1 4a1 1 0 012 0v4a1 1 0 11-2
                      0v-4z"
                   clip-rule="evenodd"
@@ -527,24 +491,14 @@
           </span>
         </div>
 
-        <!-- Toast (re-usable) -->
-        <div
-          id="agreement_toast"
-          class="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-[90vw] w-auto px-4 py-3 text-sm
-                 text-white bg-red-600 rounded shadow-md z-50 opacity-0 pointer-events-none
-                 transition-all duration-300 ease-in-out translate-y-8 hidden"
+        <!-- Inline agreement error -->
+        <p
+          id="agreement_error"
+          class="text-red-400 text-xs mt-2 hidden"
           role="alert"
-          aria-live="polite"
         >
-          <span>Please review and accept the terms before submitting the form.</span>
-          <button
-            id="toast_close_btn"
-            class="absolute top-1 right-2 text-white hover:text-gray-200 text-lg leading-none"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
+          Please review and accept the terms before submitting the form.
+        </p>
       </div>
 
       <!-- Divider before Submit -->
@@ -915,7 +869,7 @@
       ? requestIdleCallback(fn, { timeout: 800 })
       : setTimeout(fn, 0);
 
-    /* ===== Toast ===== */
+    /* ===== Toast (generic, not the agreement one) ===== */
     function showServerToast(message, type = 'success', opts = {}) {
       let root = document.getElementById('server_toast_root');
       if (!root) {
@@ -947,7 +901,7 @@
       if (timeout > 0) setTimeout(close, timeout);
     }
 
-    /* ===== Image compression, webcam, validation, submission ===== */
+    /* ===== Image compression, validation, submission ===== */
 
     const IMG_TARGET_MAX_BYTES = 400 * 1024;
     const IMG_MIN_QUALITY = 0.5;
@@ -1031,36 +985,8 @@
       return blobToDataURL(blob);
     }
 
-    async function canvasToTargetJpegNoResize(sourceCanvas, targetBytes) {
-      const canvas = document.createElement('canvas');
-      canvas.width = sourceCanvas.width;
-      canvas.height = sourceCanvas.height;
-
-      const ctx = canvas.getContext('2d', { alpha: false });
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(sourceCanvas, 0, 0);
-
-      const toBlobQ = (q) => new Promise(res => canvas.toBlob(b => res(b), 'image/jpeg', q));
-      let q = IMG_START_QUALITY;
-      let blob = await toBlobQ(q);
-
-      while (blob && blob.size > targetBytes && q > IMG_MIN_QUALITY) {
-        q = Math.max(IMG_MIN_QUALITY, q - 0.1);
-        blob = await toBlobQ(q);
-      }
-
-      return blobToDataURL(blob);
-    }
-
-    /* Elements */
-    let webcamStream = null;
-    const useWebcamBtn = document.getElementById('use_webcam_btn'),
-          webcamContainer = document.getElementById('webcam_container'),
-          webcamVideo = document.getElementById('webcam'),
-          captureBtn = document.getElementById('capture_btn'),
-          closeWebcamBtn = document.getElementById('close_webcam_btn'),
-          photoFileInput = document.getElementById('photo'),
+    /* Elements (no webcam) */
+    const photoFileInput = document.getElementById('photo'),
           photoHiddenInput = document.getElementById('photo_input'),
           photoPreviewContainer = document.getElementById('photo_preview_container'),
           photoPreviewImg = document.getElementById('photo_preview'),
@@ -1083,51 +1009,6 @@
         photoFileInput.removeAttribute('data-suppressed');
       }
     }
-
-    /* Webcam */
-    function toggleWebcam() {
-      if (webcamContainer && webcamContainer.classList.contains('hidden')) openWebcam();
-      else closeWebcam();
-    }
-    function openWebcam() {
-      if (!navigator.mediaDevices || !webcamVideo || !webcamContainer) {
-        showServerToast('Webcam not available.', 'error');
-        return;
-      }
-      navigator.mediaDevices.getUserMedia({ video: { width: { max: 1920 }, height: { max: 1080 } } })
-        .then(stream => {
-          webcamStream = stream;
-          webcamVideo.srcObject = stream;
-          webcamContainer.classList.remove('hidden');
-          webcamVideo.play().catch(() => {});
-        })
-        .catch(() => showServerToast('Webcam access denied.', 'error'));
-    }
-    function closeWebcam() {
-      if (webcamStream) {
-        try { webcamStream.getTracks().forEach(t => t.stop()); } catch (_) {}
-      }
-      webcamStream = null;
-      if (webcamContainer) webcamContainer.classList.add('hidden');
-    }
-    async function capturePhoto() {
-      if (!webcamVideo) return;
-      const tmp = document.createElement('canvas');
-      tmp.width = webcamVideo.videoWidth || 640;
-      tmp.height = webcamVideo.videoHeight || 480;
-      tmp.getContext('2d').drawImage(webcamVideo, 0, 0, tmp.width, tmp.height);
-      try {
-        const dataUrl = await canvasToTargetJpegNoResize(tmp, IMG_TARGET_MAX_BYTES);
-        setOptimizedPreview(dataUrl);
-        suppressFileField();
-      } catch {
-        showServerToast('Failed to process webcam photo.', 'error');
-      }
-      closeWebcam();
-    }
-    if (useWebcamBtn) useWebcamBtn.addEventListener('click', toggleWebcam, { passive: true });
-    if (captureBtn) captureBtn.addEventListener('click', capturePhoto);
-    if (closeWebcamBtn) closeWebcamBtn.addEventListener('click', closeWebcam, { passive: true });
 
     /* Preview & clear */
     function setOptimizedPreview(dataUrl) {
@@ -1344,7 +1225,7 @@
     }
     runIdle(bindTips);
 
-    /* ===== Agreement warning toast helpers ===== */
+    /* ===== Agreement helpers ===== */
     function showAgreementTooltipIfAvailable() {
       const t = document.getElementById('agreement_tooltip');
       if (!t) return;
@@ -1352,146 +1233,165 @@
       t.setAttribute('aria-hidden', 'false');
     }
 
-    function showAgreementWarningToast(timeout = 3500) {
-      const t = document.getElementById('agreement_toast');
-      if (!t) {
-        showServerToast('Please accept the agreement before registering.', 'error', { timeout });
-        return;
-      }
-      if (t._agTimer) clearTimeout(t._agTimer);
-      t.classList.remove('opacity-0', 'pointer-events-none', 'hidden');
-      t.classList.add('opacity-100');
-      t.style.visibility = 'visible';
-
-      t._agTimer = setTimeout(() => {
-        t.classList.add('opacity-0', 'pointer-events-none');
-        t.classList.remove('opacity-100');
-        setTimeout(() => {
-          t.classList.add('hidden');
-        }, 320);
-        t._agTimer = null;
-      }, timeout);
-    }
-
     /* ===== Submit control ===== */
-    const registerForm = document.getElementById('register_form'),
-          registerBtn = document.getElementById('register_btn'),
-          registerSpinner = document.getElementById('register_spinner'),
-          registerText = document.getElementById('register_text');
+const registerForm = document.getElementById('register_form'),
+      registerBtn = document.getElementById('register_btn'),
+      registerSpinner = document.getElementById('register_spinner'),
+      registerText = document.getElementById('register_text');
 
-    function allFieldsValid() {
-      return fields.every(f => validateField(f.id, f.errorId, f.checkId));
+/**
+ * Consider fields with `errorId === null` as OPTIONAL:
+ * - We still run validateField() to keep check icons in sync,
+ *   but they do NOT block overall validity.
+ */
+function allFieldsValid() {
+  return fields.every(f => {
+    const isOptional = !f.errorId;   // e.g. last_seen
+    if (isOptional) {
+      // Update its UI state, but don't fail overall validity
+      validateField(f.id, f.errorId, f.checkId);
+      return true;
     }
+    return validateField(f.id, f.errorId, f.checkId);
+  });
+}
 
-    function updateRegisterButtonState() {
-      if (!registerBtn) return;
-      const agreement = document.getElementById('agreement');
-      const ok = allFieldsValid() &&
-                 updatePhotoValidity() &&
-                 !!(agreement && agreement.checked);
+function updateRegisterButtonState() {
+  if (!registerBtn) return;
+  const agreement = document.getElementById('agreement');
+  const ok =
+    allFieldsValid() &&
+    updatePhotoValidity() &&
+    !!(agreement && agreement.checked);
 
-      if (ok) {
-        registerBtn.classList.remove('opacity-60', 'cursor-not-allowed');
-        registerBtn.setAttribute('aria-disabled', 'false');
-      } else {
-        registerBtn.classList.add('opacity-60', 'cursor-not-allowed');
-        registerBtn.setAttribute('aria-disabled', 'true');
-      }
-    }
-    window.updateRegisterButtonState = updateRegisterButtonState;
+  if (ok) {
+    registerBtn.classList.remove('opacity-60', 'cursor-not-allowed');
+    registerBtn.setAttribute('aria-disabled', 'false');
+  } else {
+    registerBtn.classList.add('opacity-60', 'cursor-not-allowed');
+    registerBtn.setAttribute('aria-disabled', 'true');
+  }
+}
+window.updateRegisterButtonState = updateRegisterButtonState;
 
-    function doSubmitWithRecaptcha() {
-      if (typeof grecaptcha === 'undefined') {
-        showServerToast('Security check failed. Please try again.', 'error');
-        return;
-      }
-      if (photoHiddenInput && photoHiddenInput.value.trim() !== '') {
-        suppressFileField();
-      }
-      if (registerSpinner) registerSpinner.classList.remove('hidden');
-      if (registerText) registerText.textContent = 'Checking...';
+function doSubmitWithRecaptcha() {
+  if (typeof grecaptcha === 'undefined') {
+    showServerToast('Security check failed. Please try again.', 'error');
+    return;
+  }
+  if (photoHiddenInput && photoHiddenInput.value.trim() !== '') {
+    suppressFileField();
+  }
+  if (registerSpinner) registerSpinner.classList.remove('hidden');
+  if (registerText) registerText.textContent = 'Checking...';
 
-      grecaptcha.ready(function () {
-        grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'register' })
-          .then(function (token) {
-            const recaptchaInput = document.getElementById('g-recaptcha-response');
-            if (recaptchaInput) recaptchaInput.value = token || '';
+  grecaptcha.ready(function () {
+    grecaptcha.execute('{{ RECAPTCHA_SITE_KEY }}', { action: 'register' })
+      .then(function (token) {
+        const recaptchaInput = document.getElementById('g-recaptcha-response');
+        if (recaptchaInput) recaptchaInput.value = token || '';
 
-            const realSubmit = document.createElement('button');
-            realSubmit.type = 'submit';
-            realSubmit.style.display = 'none';
-            registerForm.appendChild(realSubmit);
-            realSubmit.click();
-            realSubmit.remove();
-          })
-          .catch(() => {
-            showServerToast('reCAPTCHA failed. Try again.', 'error');
-            if (registerSpinner) registerSpinner.classList.add('hidden');
-            if (registerText) registerText.textContent = 'Register';
-          });
+        const realSubmit = document.createElement('button');
+        realSubmit.type = 'submit';
+        realSubmit.style.display = 'none';
+        registerForm.appendChild(realSubmit);
+        realSubmit.click();
+        realSubmit.remove();
+      })
+      .catch(() => {
+        showServerToast('reCAPTCHA failed. Try again.', 'error');
+        if (registerSpinner) registerSpinner.classList.add('hidden');
+        if (registerText) registerText.textContent = 'Register';
       });
+  });
+}
+
+if (registerBtn) {
+  registerBtn.addEventListener('click', (ev) => {
+    ev.preventDefault();
+    showErrors = true;  // now show inline validation messages
+    let invalid = false;
+
+    if (!updatePhotoValidity()) {
+      invalid = true;
+      if (photoError) photoError.classList.remove('hidden');
+      if (uploadLabel) {
+        uploadLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        uploadLabel.classList.add('shake');
+        setTimeout(() => uploadLabel.classList.remove('shake'), 600);
+      }
     }
 
-    if (registerBtn) {
-      registerBtn.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        let invalid = false;
+    if (!invalid) {
+      for (const f of fields) {
+        // skip optional fields in this “first invalid” scan too
+        if (!f.errorId) continue;
 
-        if (!updatePhotoValidity()) {
+        const el = document.getElementById(f.id);
+        if (
+          el &&
+          (!el.value || el.value.trim() === '' ||
+            (el.tagName === 'SELECT' && el.value === ''))
+        ) {
           invalid = true;
-          if (photoError) photoError.classList.remove('hidden');
-          if (uploadLabel) {
-            uploadLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            uploadLabel.classList.add('shake');
-            setTimeout(() => uploadLabel.classList.remove('shake'), 600);
-          }
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.focus({ preventScroll: true });
+          break;
         }
-
-        if (!invalid) {
-          for (const f of fields) {
-            const el = document.getElementById(f.id);
-            if (
-              el &&
-              f.errorId &&
-              (!el.value || el.value.trim() === '' ||
-                (el.tagName === 'SELECT' && el.value === ''))
-            ) {
-              invalid = true;
-              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              el.focus({ preventScroll: true });
-              break;
-            }
-          }
-        }
-
-        const agreementEl = document.getElementById('agreement');
-        if (!invalid && agreementEl && !agreementEl.checked) {
-          invalid = true;
-          agreementEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          agreementEl.focus({ preventScroll: true });
-          showAgreementTooltipIfAvailable();
-          showAgreementWarningToast(3500);
-          agreementEl.classList.add('border-red-500', 'ring-red-300', 'ring-1');
-
-          const clearWarning = () => {
-            agreementEl.classList.remove('border-red-500', 'ring-red-300', 'ring-1');
-            agreementEl.removeEventListener('change', clearWarning);
-          };
-          agreementEl.addEventListener('change', clearWarning, { passive: true });
-        }
-
-        if (invalid) {
-          if (registerSpinner) registerSpinner.classList.add('hidden');
-          if (registerText) registerText.textContent = 'Register';
-          return;
-        }
-
-        doSubmitWithRecaptcha();
-      });
+      }
     }
 
-    runIdle(updateRegisterButtonState);
-    </script>
+    const agreementEl = document.getElementById('agreement');
+    const agreementError = document.getElementById('agreement_error');
+
+    if (!invalid && agreementEl && !agreementEl.checked) {
+      invalid = true;
+
+      agreementEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      agreementEl.focus({ preventScroll: true });
+
+      showAgreementTooltipIfAvailable();
+      if (agreementError) {
+        agreementError.classList.remove('hidden');
+      }
+
+      agreementEl.classList.add('border-red-500', 'ring-red-300', 'ring-1');
+
+      const clearWarning = () => {
+        agreementEl.classList.remove('border-red-500', 'ring-red-300', 'ring-1');
+        if (agreementError) {
+          agreementError.classList.add('hidden');
+        }
+        agreementEl.removeEventListener('change', clearWarning);
+      };
+      agreementEl.addEventListener('change', clearWarning, { passive: true });
+    }
+
+    if (invalid) {
+      if (registerSpinner) registerSpinner.classList.add('hidden');
+      if (registerText) registerText.textContent = 'Register';
+      return;
+    }
+
+    doSubmitWithRecaptcha();
+  });
+}
+
+/* Keep button in sync with agreement checkbox */
+const agreementControl = document.getElementById('agreement');
+if (agreementControl) {
+  agreementControl.addEventListener('change', () => {
+    const agreementError = document.getElementById('agreement_error');
+    if (agreementControl.checked && agreementError) {
+      agreementError.classList.add('hidden');
+    }
+    updateRegisterButtonState();
+  }, { passive: true });
+}
+
+runIdle(updateRegisterButtonState);
+</script>
+
 
     <!-- ================= CSS ================= -->
     <style>

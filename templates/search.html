@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block title %}Search - PersonFinder{% endblock %}
 
 <!-- Flash Messages -->
@@ -7,10 +6,10 @@
   {% if messages %}
     <div id="flash-container" class="fixed left-1/2 top-4 transform -translate-x-1/2 space-y-3 z-[1201] text-center w-[90%] max-w-xl">
       {% for category, message in messages %}
-        {% set color = 
-          'bg-green-100 border-green-500 text-green-800' if category=='success' else
-          'bg-red-100 border-red-500 text-red-800' if category=='error' else
-          'bg-yellow-100 border-yellow-500 text-yellow-800'
+        {% set color =
+           'bg-green-100 border-green-500 text-green-800' if category=='success' else
+           'bg-red-100 border-red-500 text-red-800' if category=='error' else
+           'bg-yellow-100 border-yellow-500 text-yellow-800'
         %}
         <div class="flash-message relative border-l-4 {{ color }} p-4 rounded-lg shadow-xl transition-opacity duration-1000 pointer-events-auto animate-slide-down" role="alert">
           <p class="font-medium">{{ message }}</p>
@@ -85,7 +84,7 @@
 
   <br/>
 
-   <!-- Divider: Search Now -->
+  <!-- Divider: Search Now -->
   <div class="relative w-full flex justify-center mt-8 mb-8">
     <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
     <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
@@ -98,15 +97,15 @@
         class="w-full max-w-md mb-24 sm:mb-28 lg:mb-32"
         onsubmit="return validateAndStartSearch(event)">
 
-    <div class="bg-white/5 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl 
-                flex flex-col justify-between items-center relative 
-                min-h-[520px] sm:min-h-[560px] lg:min-h-[600px] 
+    <div class="bg-white/5 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl
+                flex flex-col justify-between items-center relative
+                min-h-[520px] sm:min-h-[560px] lg:min-h-[600px]
                 border border-white/10">
 
       <!-- Form Fields Container -->
       <div class="w-full flex flex-col items-center space-y-6">
 
-        <!-- Upload + Tooltip + Webcam in one row -->
+        <!-- Upload + Tooltip row -->
         <div class="flex flex-col sm:flex-row gap-4 w-full justify-center items-center relative">
 
           <!-- Upload input (hidden) -->
@@ -114,15 +113,17 @@
 
           <!-- Upload label -->
           <label for="photo" id="upload_label"
-                 class="cursor-pointer flex-1 text-center px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500 
-                        hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500 text-white font-medium shadow-md 
-                        transition transform hover:scale-105">
-            Upload Photo <span class="text-red-400">*</span>
-          </label>
+  class="cursor-pointer w-full sm:w-48 text-center px-4 py-2 rounded-lg
+         bg-gradient-to-r from-blue-500 via-cyan-500 to-teal-500
+         hover:from-teal-500 hover:via-cyan-500 hover:to-blue-500
+         text-white font-medium shadow-md
+         transition transform hover:scale-105">
+  Upload Photo <span class="text-red-400">*</span>
+</label>
 
-          <!-- Tooltip Icon (centered between buttons) -->
+          <!-- Tooltip Icon -->
           <div class="relative flex justify-center">
-            <button type="button" id="search_info_btn" aria-label="Upload/Use Webcam Info"
+            <button type="button" id="search_info_btn" aria-label="Upload Info"
                     class="h-5 w-5 text-gray-400 hover:text-blue-400 focus:outline-none relative group animate-bounce">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -139,16 +140,6 @@
               </span>
             </button>
           </div>
-
-          <!-- Webcam button (hidden on mobile) -->
-          <button type="button"
-                  id="use_webcam_btn"
-                  onclick="openWebcamModal()"
-                  class="hidden sm:flex flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 
-                         hover:from-red-500 hover:via-pink-500 hover:to-purple-500 text-white font-medium shadow-md 
-                         transition transform hover:scale-105">
-            Use Webcam
-          </button>
         </div>
 
         <!-- Preview -->
@@ -169,7 +160,7 @@
             Full Name <span class="text-gray-400 italic">(optional but helpful)</span>
           </label>
           <input type="text" id="full_name" name="full_name" placeholder="Enter the name of the missing person"
-                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30 
+                 class="w-full px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
                         focus:ring-2 focus:ring-purple-500 focus:outline-none"/>
           <span id="full_name_check" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-green-500 text-xl font-bold">✔</span>
         </div>
@@ -180,7 +171,7 @@
             Gender <span class="text-gray-400 italic">(optional but helpful)</span>
           </label>
           <select id="gender" name="gender"
-                  class="w-full min-w-0 px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30 
+                  class="w-full min-w-0 px-4 py-2 rounded-xl bg-white/10 text-white border border-gray-500/30
                          focus:ring-2 focus:ring-purple-500 focus:outline-none sm:text-sm text-xs">
             <option value="" selected disabled class="text-gray-400">Enter the gender of the missing person</option>
             <option value="Male">Male</option>
@@ -192,7 +183,7 @@
         <!-- Divider -->
         <div class="w-full border-t border-white/20 my-2"></div>
 
-        <!-- Submit Button (wrapped in a container card like Register button) -->
+        <!-- Submit Button -->
         <div class="flex justify-center mt-4">
           <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-3 shadow-xl">
             <button type="submit" id="search_btn"
@@ -242,7 +233,6 @@
 
         <!-- Inline Error Message (hidden by default) -->
         <p id="photo_error" class="hidden text-red-400 text-sm font-medium mt-2 text-center" aria-live="polite"></p>
-
       </div>
 
       <!-- Bottom Note inside card -->
@@ -255,14 +245,14 @@
         </div>
 
         <p class="text-xs sm:text-xs text-gray-200 leading-relaxed slide-fade-in text-center mt-3">
-          If you <span class="text-green-300 font-semibold">find someone</span>, please upload their photo  
-          to help us <span class="text-purple-300 font-semibold">reunite families</span>.
+          If you <span class="text-green-300 font-semibold">find someone</span>, please upload their photo
+            to help us <span class="text-purple-300 font-semibold">reunite families</span>.
         </p>
       </div>
     </div>
   </form>
 
-  <!-- Reminder Divider (outside the card) -->
+  <!-- Reminder Divider -->
   <div class="relative w-full flex justify-center mt-12 mb-12">
     <div class="h-px w-3/4 sm:w-2/3 lg:w-1/2 bg-gradient-to-r from-transparent via-gray-400/40 to-transparent"></div>
     <span class="absolute -top-3 bg-blue-900 text-gray-200 text-xs sm:text-sm px-3 py-1 rounded-full shadow-md tracking-wide">
@@ -270,8 +260,8 @@
     </span>
   </div>
 
-  <!-- Info Box (outside card) -->
-  <div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-5 sm:p-6 shadow-lg 
+  <!-- Info Box -->
+  <div class="info-box bg-indigo-900/40 border border-indigo-500/30 rounded-xl p-5 sm:p-6 shadow-lg
               max-w-2xl mx-auto text-center mb-16 relative animate-slide-in animate-pulse-slow">
 
     <!-- Floating Centered Icon -->
@@ -284,12 +274,12 @@
 
     <!-- Content -->
     <p class="mt-6 sm:mt-7 text-xs sm:text-sm leading-relaxed text-gray-200">
-      Every search brings us one step closer to 
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 font-semibold animate-gradient-x">reuniting families</span>.  
-      Your contribution, no matter how small, makes a real difference.  
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 font-semibold animate-gradient-x">Thank you</span> for being part of this important 
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 font-semibold animate-gradient-x">effort</span> to bring hope, comfort, and smiles to those who need it most.  
-      <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 font-semibold animate-gradient-x">Together, we can make a meaningful impact</span> and 
+      Every search brings us one step closer to
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-green-300 to-green-500 font-semibold animate-gradient-x">reuniting families</span>.
+      Your contribution, no matter how small, makes a real difference.
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-purple-500 font-semibold animate-gradient-x">Thank you</span> for being part of this important
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 font-semibold animate-gradient-x">effort</span> to bring hope, comfort, and smiles to those who need it most.
+      <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-green-400 font-semibold animate-gradient-x">Together, we can make a meaningful impact</span> and
       <span class="bg-clip-text text-transparent bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 font-semibold animate-gradient-x">help loved ones find their way back to each other</span>.
     </p>
   </div>
@@ -459,19 +449,6 @@
     <p id="results_section" class="text-center text-red-400 font-semibold mt-6">⚠ No matches found.</p>
   {% endif %}
 
-  <!-- Webcam Modal -->
-  <div id="webcamModal" class="hidden fixed inset-0 flex items-center justify-center bg-black/70 z-[2000]">
-    <div class="bg-gray-900 rounded-2xl p-6 shadow-xl max-w-md w-full text-center relative">
-      <h3 class="text-lg font-semibold text-white mb-4">📷 Capture from Webcam</h3>
-      <video id="webcam" autoplay class="mx-auto rounded-lg border border-gray-600 shadow-md"></video>
-      <div class="flex gap-4 mt-4 justify-center">
-        <button onclick="capturePhoto()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">Capture</button>
-        <button onclick="closeWebcamModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">Cancel</button>
-      </div>
-      <canvas id="webcamCanvas" class="hidden"></canvas>
-    </div>
-  </div>
-
 </div>
 
 <!-- JS -->
@@ -580,65 +557,6 @@
     if (searchText) searchText.textContent = "Search";
   }
 
-  let webcamStream;
-  function openWebcamModal() {
-    const modal = document.getElementById("webcamModal");
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert("Webcam access is not supported in this browser.");
-      return;
-    }
-    if (modal) modal.classList.remove("hidden");
-
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      webcamStream = stream;
-      const v = document.getElementById("webcam");
-      if (v) {
-        v.srcObject = stream;
-        v.play().catch(() => {});
-      }
-    }).catch(() => {
-      alert("Webcam access denied or unavailable.");
-      if (modal) modal.classList.add("hidden");
-    });
-  }
-
-  function closeWebcamModal() {
-    const modal = document.getElementById("webcamModal");
-    if (modal) modal.classList.add("hidden");
-    if (webcamStream) {
-      webcamStream.getTracks().forEach(track => track.stop());
-      webcamStream = null;
-    }
-  }
-
-  function capturePhoto() {
-    const video = document.getElementById("webcam");
-    const canvas = document.getElementById("webcamCanvas");
-    if (!video || !canvas) {
-      closeWebcamModal();
-      return;
-    }
-    canvas.width = video.videoWidth || 640;
-    canvas.height = video.videoHeight || 480;
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob(blob => {
-      const file = new File([blob], "webcam_photo.png", { type: "image/png" });
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      const input = document.getElementById("photo");
-      if (input) {
-        input.files = dataTransfer.files;
-        previewFromInput(input);
-        closeWebcamModal();
-        const previewContainer = document.getElementById("photo_preview_container");
-        if (previewContainer) {
-          previewContainer.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
-      }
-    }, 'image/png');
-  }
-
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.match-bar').forEach(el => {
       const conf = el.dataset.confidence;
@@ -699,13 +617,13 @@
 
 /* Shake for upload label */
 .shake { animation: shake 0.42s ease; }
-@keyframes shake { 
-  0% { transform: translateX(0);} 
-  25% { transform: translateX(-6px);} 
-  50% { transform: translateX(6px);} 
-  75% { transform: translateX(-6px);} 
-  100% { transform: translateX(0);} 
-}
+@keyframes shake {
+   0% { transform: translateX(0);}
+   25% { transform: translateX(-6px);}
+   50% { transform: translateX(6px);}
+   75% { transform: translateX(-6px);}
+   100% { transform: translateX(0);}
+ }
 
 /* Search shimmer (apply dynamically only when searching) */
 .search-shimmer { position: relative; overflow: hidden; color: white; }
@@ -739,11 +657,6 @@
 /* slide-fade utility used for small text segments */
 .slide-fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
 .slide-fade-in.visible { opacity: 1; transform: translateY(0); }
-
-/* small responsive tweaks */
-@media (max-width: 640px) {
-  #use_webcam_btn { display: none; }
-}
 </style>
 {% endraw %}
 
