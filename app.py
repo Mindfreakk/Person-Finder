@@ -1,4 +1,4 @@
-# app.py
+# app.py (top)
 import os
 import io
 import uuid
@@ -109,7 +109,7 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     # Uploads
     UPLOAD_FOLDER=os.path.join(app.root_path, "static", "uploads"),
-    # Accept large uploads — upper bound here; your routes handle specifics
+    # Accepts large uploads — upper bound here; your routes handle specifics
     MAX_CONTENT_LENGTH=int(os.getenv("MAX_CONTENT_LENGTH_BYTES", 32 * 1024 * 1024)),
     MAX_FORM_MEMORY_SIZE=int(os.getenv("MAX_FORM_MEMORY_SIZE_BYTES", 32 * 1024 * 1024)),
     # Flask-Mail
@@ -165,6 +165,9 @@ def _ensure_file(path: str, default_val: str = "1.0.0") -> None:
 def get_app_version() -> str:
     """Return current version string; re-read when file mtime changes."""
     try:
+        pass  # TODO: add code or remove try if not needed
+    except Exception:
+        pass
         st_mtime = os.stat(VERSION_FILE).st_mtime
         if st_mtime != _version_cache["mtime"]:
             with open(VERSION_FILE, "r", encoding="utf-8") as f:
@@ -254,35 +257,35 @@ app.config["APP_VERSION"] = get_app_version()
 # ----------------- Context Processor -----------------
 @app.context_processor
 def inject_globals():
-    return {
-        "app_version": get_app_version(),  # footer & dashboard read live value
-        "current_year": datetime.now().year,
-        "personId": None,
-        "VAPID_PUBLIC_KEY": current_app.config.get("VAPID_PUBLIC_KEY", None),
-        "RECAPTCHA_SITE_KEY": current_app.config.get("RECAPTCHA_SITE_KEY", None),
-    }
-
-
-# Optional endpoint to inspect
-@app.get("/__version")
-def __version():
-    from flask import jsonify
+    user = None
+    is_authenticated = False
+    is_admin = False
 
     try:
-        st = os.stat(VERSION_FILE)
-        meta = {
-            "file": VERSION_FILE,
-            "mtime": int(st.st_mtime),
-            "mtime_iso": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(st.st_mtime)),
-            "value": get_app_version(),
-            "using_ci_version": _USING_CI_VERSION,
-            "local_bump_enabled": _LOCAL_BUMP_ENABLED,
-            "force_local_bump": _FORCE_LOCAL,
-            "werkzeug_run_main": os.environ.get("WERKZEUG_RUN_MAIN"),
-        }
-    except Exception as e:
-        meta = {"file": VERSION_FILE, "error": str(e), "value": get_app_version()}
-    return jsonify(meta)
+        if current_user.is_authenticated:
+            user = {
+                "id": current_user.id,
+                "username": getattr(current_user, "username", ""),
+                "role": getattr(current_user, "role", "user"),
+            }
+            is_authenticated = True
+            is_admin = (user["role"] == "admin")
+    except Exception:
+        pass
+
+    return {
+        # existing
+        "app_version": get_app_version(),
+        "current_year": datetime.now().year,
+        "personId": None,
+        "VAPID_PUBLIC_KEY": app.config.get("VAPID_PUBLIC_KEY"),
+        "RECAPTCHA_SITE_KEY": app.config.get("RECAPTCHA_SITE_KEY"),
+
+        # NEW (for header)
+        "pf_user": user,
+        "pf_is_authenticated": is_authenticated,
+        "pf_is_admin": is_admin,
+    }
 
 
 # ----------------- reCAPTCHA Verification -----------------
@@ -617,6 +620,13 @@ def api_feedback():
         return jsonify({"ok": True})
 
     flash("Thank you! Your feedback has been submitted.", "success")
+    emit_admin_alert(
+    "new_feedback",
+    {
+        "rating": rating,
+        "email": email,
+    },
+)
     return redirect(request.referrer or url_for("home"))
 
 
@@ -677,9 +687,29 @@ def login():
 @login_required
 def logout():
     logout_user()
+    try:
+        socketio.emit(
+            "admin_disconnected",
+            {"user": current_user.id},
+        )
+    except Exception:
+        pass
     flash("Logged out successfully.", "success")
-    return redirect(url_for("login"))
+    result = redirect(url_for("login"))
 
+    # ---- Auto-clear admin alerts when dashboard is visited ----
+    try:
+        socketio.emit(
+            "admin_alert_cleared",
+            {
+                "by": current_user.id,
+                "ts": int(time.time()),
+            },
+            namespace="/",
+        )
+    except Exception:
+        pass
+    return result
 
 # ----------------- Admin Dashboard -----------------
 @app.route("/admin/dashboard", methods=["GET"])
@@ -1107,18 +1137,45 @@ def get_local_ip() -> str:
     return ip
 
 
+from werkzeug.routing import BuildError  # you already import this; keep it
+
 def build_external_url(endpoint: str, **values) -> str:
     """
-    Reset links that open on phone:
-    - Use PUBLIC_BASE_URL if set (e.g. https://your-domain.com)
-    - Else use auto-detected LAN IP + PORT
+    Build an external URL that prefers PUBLIC_BASE_URL, else falls back to LAN IP + PORT.
+    This version tries url_for() but has a robust fallback when url_for cannot build the endpoint
+    (avoids BuildError causing a 500 in production).
     """
     base = (os.getenv("PUBLIC_BASE_URL") or "").strip()
     if not base:
         local_ip = get_local_ip()
         port = os.getenv("PORT", "5001")
         base = f"http://{local_ip}:{port}"
-    rel = url_for(endpoint, _external=False, **values).lstrip("/")
+
+    # Try the normal Flask url_for approach first
+    try:
+        rel = url_for(endpoint, _external=False, **values).lstrip("/")
+    except BuildError:
+        # Fallbacks when url_for can't build the endpoint:
+        # 1) Common reset-password route pattern: "reset-password/<token>"
+        # 2) Try replacing underscores with hyphens and append values as path segments
+        # 3) Last resort: join key/value pairs as path segments
+        token = values.get("token") or values.get("id") or None
+        if token and ("reset" in endpoint or "password" in endpoint or "reset_password" in endpoint):
+            rel = f"reset-password/{token}"
+        else:
+            # convert endpoint name to a path-ish string
+            rel_base = str(endpoint).replace("_", "-").lstrip("/")
+            if values:
+                # append values in order (use only primitives)
+                try:
+                    segs = "/".join(str(v) for v in values.values())
+                    rel = f"{rel_base}/{segs}"
+                except Exception:
+                    rel = rel_base
+            else:
+                rel = rel_base
+        rel = rel.lstrip("/")
+
     return urljoin(base.rstrip("/") + "/", rel)
 
 
@@ -1154,47 +1211,152 @@ def send_mail(
 def forgot_password():
     """
     Renders forgot_password.html with token_valid=False (request-reset form).
-    On POST, sends a real email; on failure shows the concrete error.
+    On POST, sends a reset email; on failure shows a generic message to users
+    while logging useful details for developers when DEV_MODE is true.
     """
     token_valid = False
+
     if request.method == "POST":
-        email = (request.form.get("email", "")).strip().lower()
+        email = (request.form.get("email", "") or "").strip().lower()
         admin_env = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
 
-        # Admin user record (by your convention: username='admin')
-        user = User.query.filter_by(username="admin").first()
-
-        if not user or email != admin_env:
-            # Don’t leak user existence. In DEV, also show explicit hint.
-            if DEV_MODE:
-                flash("No admin account with this email (or ADMIN_EMAIL mismatch).", "error")
+        # Prefer looking up the canonical admin user by configured ADMIN_EMAIL
+        try:
+            user = None
+            if admin_env:
+                # optionally require role="admin" if you want extra safety:
+                # user = User.query.filter_by(email=admin_env, role="admin").first()
+                user = User.query.filter_by(email=admin_env).first()
+            if not user:
+                user = User.query.filter_by(username="admin").first()
+        except Exception as e:
+            app.logger.exception("Error querying admin user for forgot_password: %s", e)
             flash("If that email is registered, a reset link has been sent.", "success")
             return render_template("forgot_password.html", token_valid=token_valid)
 
+        # Don't reveal existence. Log debug info in DEV only.
+        if not user or email != admin_env:
+            if DEV_MODE:
+                app.logger.debug(
+                    "forgot_password: submitted_email=%s, resolved_admin_email=%s, found_user=%s",
+                    email,
+                    admin_env,
+                    getattr(user, "username", None) if user else None,
+                )
+            flash("If that email is registered, a reset link has been sent.", "success")
+            return render_template("forgot_password.html", token_valid=token_valid)
+
+        # Create reset token + expiry, persist to DB
         token = secrets.token_urlsafe(32)
         user.reset_token = token
         user.reset_expiry = datetime.utcnow() + timedelta(minutes=15)
-        db.session.commit()
-
-        # Use LAN-friendly/public base URL so phone can open it
-        reset_link = build_external_url("reset_password", token=token)
-
-        ok, err = send_mail(
-            "Reset Admin Password",
-            [email],
-            body=f"Click to reset password (valid 15 minutes): {reset_link}",
-            html=f"""<p>You requested an admin password reset.</p>
-                     <p><a href="{reset_link}">Reset Password</a></p>
-                     <p>This link expires in 15 minutes.</p>""",
-        )
-        if not ok:
-            # In DEV, print the URL to console to avoid being blocked while testing.
-            if DEV_MODE:
-                print("\n[DEV] Email send failed. Reset URL (copy/paste):\n", reset_link, "\n")
-            flash(f"Could not send reset email: {err}", "error")
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            app.logger.exception("Failed to save reset token for admin: %s", e)
+            # Generic message for users
+            flash("If that email is registered, a reset link has been sent.", "success")
             return render_template("forgot_password.html", token_valid=token_valid)
 
-        flash("Reset link sent successfully.", "success")
+        # Build external reset link (LAN-friendly / PUBLIC_BASE_URL-aware)
+        reset_link = build_external_url("reset_password", token=token)
+
+        # Send email (plain-text + HTML)
+        body = f"""Reset your PersonFinder admin password
+
+You requested a password reset. Click the link below to set a new password (valid for 15 minutes):
+
+{reset_link}
+
+If you did not request this, you can ignore this email.
+"""
+
+        html = f"""
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body style="margin:0;padding:0;background:#f3f6fb;font-family:Helvetica,Arial,sans-serif;">
+
+    <div style="display:none;max-height:0px;overflow:hidden;">
+      Reset your PersonFinder admin password — link valid 15 minutes.
+    </div>
+
+    <table width="100%" style="background:#f3f6fb;padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table width="600"
+                 style="background:#ffffff;border-radius:12px;overflow:hidden;
+                        box-shadow:0 6px 18px rgba(20,30,60,0.08);">
+
+            <tr>
+              <td style="padding:28px 36px;text-align:center;
+                         background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff;">
+                <h1 style="margin:0;font-size:20px;font-weight:700;">
+                  PersonFinder — Password Reset
+                </h1>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding:28px 36px;color:#1f2937;">
+                <p style="font-size:15px;margin:0 0 14px;">Hello,</p>
+                <p style="font-size:15px;margin:0 0 20px;line-height:1.5;">
+                  A password reset was requested for your account.
+                  Click the button below — the link is valid for <strong>15 minutes</strong>.
+                </p>
+
+                <p style="text-align:center;margin:20px 0;">
+                  <a href="{reset_link}"
+                    style="padding:12px 22px;border-radius:8px;
+                           background:linear-gradient(90deg,#2563eb,#d946ef);
+                           color:#fff;text-decoration:none;font-weight:600;">
+                    Reset My Password
+                  </a>
+                </p>
+
+                <p style="font-size:13px;color:#6b7280;margin-top:20px;">
+                  Or paste this link in your browser:<br>
+                  <a href="{reset_link}" style="color:#2563eb;">{reset_link}</a>
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="background:#f8fafc;padding:18px 36px;text-align:center;
+                         color:#9aa4b2;font-size:12px;">
+                PersonFinder — Secure Access • Link expires in 15 minutes
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>
+"""
+
+        ok, err = send_mail("Reset Admin Password", [email], body=body, html=html)
+
+        if not ok:
+            # Log full error and (in DEV) the link for local testing; show generic message to user.
+            app.logger.error("Failed to send reset email to %s: %s", email, err)
+            if DEV_MODE:
+                # Print reset URL for convenience when developing locally
+                print("\n[DEV] Email send failed. Reset URL (copy/paste):\n", reset_link, "\n")
+                app.logger.debug("DEV reset link (admin): %s", reset_link)
+
+            # Generic message to avoid revealing whether the address is valid or whether email failed
+            flash("If that email is registered, a reset link has been sent.", "success")
+            return render_template("forgot_password.html", token_valid=token_valid)
+
+        # On success show the same generic message (prevents enumeration)
+        flash("If that email is registered, a reset link has been sent.", "success")
         return render_template("forgot_password.html", token_valid=token_valid)
 
     return render_template("forgot_password.html", token_valid=token_valid)
@@ -1202,25 +1364,29 @@ def forgot_password():
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
+    # find user by token
     user = User.query.filter_by(reset_token=token).first()
 
-    # If token is invalid or expired → go back to forgot password page
-    if not user or datetime.utcnow() > (user.reset_expiry or datetime.utcnow()):
+    # token must exist and not be expired
+    if (
+        not user
+        or not getattr(user, "reset_expiry", None)
+        or datetime.utcnow() > user.reset_expiry
+    ):
         flash("Invalid or expired link.", "error")
         return render_template("forgot_password.html", token_valid=False)
 
+    # POST → update password
     if request.method == "POST":
         password = (request.form.get("password") or "").strip()
         confirm = (request.form.get("confirm_password") or "").strip()
 
         if len(password) < 6:
             flash("Password must be at least 6 characters.", "error")
-            # SHOW reset_password.html again with errors
             return render_template("reset_password.html", token=token)
 
         if password != confirm:
             flash("Passwords do not match.", "error")
-            # SHOW reset_password.html again with errors
             return render_template("reset_password.html", token=token)
 
         user.password_hash = generate_password_hash(password)
@@ -1231,9 +1397,8 @@ def reset_password(token):
         flash("Password updated! Login now.", "success")
         return redirect(url_for("login"))
 
-    # GET with valid token → show the reset form (THIS uses your template)
+    # GET → Show reset form
     return render_template("reset_password.html", token=token)
-
 
 # Verify User
 @app.route("/verify-user/<token>")
@@ -1335,9 +1500,6 @@ def admin_create_user():
         flash("A user with this username or email already exists.", "error")
         return redirect(url_for("admin_dashboard"))
 
-    # Handle password:
-    # - If admin typed one, validate & require confirm
-    # - If left blank, auto-generate a temporary password
     if raw_password:
         if len(raw_password) < 6:
             flash("Password must be at least 6 characters.", "error")
@@ -1421,6 +1583,14 @@ This link will expire in 2 days.
         flash(f"User created, but failed to send email: {err}", "error")
     else:
         flash("User created and verification email sent.", "success")
+
+        emit_admin_alert(
+    "user_created",
+    {
+        "username": username,
+        "role": role,
+    },
+)
 
     return redirect(url_for("admin_dashboard"))
 
@@ -1734,6 +1904,13 @@ def register():
 
         try:
             register_person_to_db(person_data)
+            emit_admin_alert(
+    "person_registered",
+    {
+        "name": person_data.get("full_name"),
+        "phone": person_data.get("phone_number"),
+    },
+)
             flash("Person registered successfully!", "success")
             return redirect(url_for("home"))
         except Exception as e:
@@ -1771,18 +1948,16 @@ def register():
 @app.route("/search", methods=["GET", "POST"])
 def search():
     # ---------------- Tunables ----------------
-    MATCH_CONFIDENCE_THRESHOLD = 60.0  # only show matches >= this
+    MATCH_CONFIDENCE_THRESHOLD = 60.0
     MAX_RESULTS = 10
 
-    # Post-face-match re-ranking / filtering (applies only if user provided fields)
     USE_NAME_FILTER = True
     USE_GENDER_FILTER = True
 
-    # Soft vs strict behavior
     REQUIRE_NAME_AGREEMENT = False
     REQUIRE_GENDER_AGREEMENT = False
 
-    NAME_SIM_THRESHOLD = 0.62  # similarity threshold when strict or to get strong bonus
+    NAME_SIM_THRESHOLD = 0.62
     NAME_SOFT_BONUS = 10.0
     GENDER_SOFT_BONUS = 7.0
     # -----------------------------------------
@@ -1851,9 +2026,7 @@ def search():
         if not q or not c:
             return False
         mapping = {"m": "male", "f": "female", "o": "other"}
-        q = mapping.get(q, q)
-        c = mapping.get(c, c)
-        return q == c
+        return mapping.get(q, q) == mapping.get(c, c)
 
     if request.method == "POST":
         searched = True
@@ -1874,11 +2047,12 @@ def search():
         try:
             img = auto_orient_image(tmp_abs_path)
 
-            max_dim_for_runtime = 1600
-            if max(img.width, img.height) > max_dim_for_runtime:
-                scale = max_dim_for_runtime / max(img.width, img.height)
-                new_size = (int(img.width * scale), int(img.height * scale))
-                img = img.resize(new_size, Image.Resampling.LANCZOS)
+            if max(img.width, img.height) > 1600:
+                scale = 1600 / max(img.width, img.height)
+                img = img.resize(
+                    (int(img.width * scale), int(img.height * scale)),
+                    Image.Resampling.LANCZOS,
+                )
 
             temp_jpg_path = tmp_abs_path + "_compressed.jpg"
             img.convert("RGB").save(temp_jpg_path, format="JPEG", quality=85, optimize=True)
@@ -1886,21 +2060,9 @@ def search():
 
             image_np = np.array(img)
             face_locations = face_recognition.face_locations(image_np, model="hog")
+
             if not face_locations:
-                try:
-                    log_best_match_search(os.path.basename(tmp_abs_path), [])
-                except Exception:
-                    logger.exception("Failed to record/log search")
-                if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                    return jsonify(
-                        {
-                            "success": True,
-                            "results": [],
-                            "searched": True,
-                            "uploaded_photo": uploaded_photo,
-                            "face_locations": [],
-                        }
-                    )
+                log_best_match_search(os.path.basename(tmp_abs_path), [])
                 return render_template(
                     "search.html",
                     results=[],
@@ -1910,136 +2072,56 @@ def search():
                 )
 
             idx, chosen_box = pick_largest_face(face_locations)
-            chosen_locs = [chosen_box] if (idx is not None and chosen_box) else []
-            encodings = face_recognition.face_encodings(image_np, chosen_locs)
+            encodings = face_recognition.face_encodings(image_np, [chosen_box])
 
-            all_matches = []
             if encodings:
-                face_encoding = encodings[0]
+                candidates = find_person_by_face(encodings[0], tolerance=0.6, max_results=50) or []
 
-                candidates = find_person_by_face(
-                    face_encoding, tolerance=0.6, max_results=50, debug=False
-                ) or []
-
+                enriched = []
                 seen_ids = set()
                 for cand in candidates:
                     cand = dict(cand)
-                    cand["detected_face_index"] = 1
-                    if chosen_box:
-                        cand["matched_face_location"] = [int(v) for v in chosen_box]
-
-                    try:
-                        cand["match_confidence"] = float(cand.get("match_confidence", 0))
-                    except Exception:
-                        cand["match_confidence"] = 0.0
-
                     pid = cand.get("id")
                     if pid in seen_ids:
                         continue
                     seen_ids.add(pid)
 
-                    if cand["match_confidence"] >= MATCH_CONFIDENCE_THRESHOLD:
-                        all_matches.append(cand)
-
-                enriched = []
-                for cand in all_matches:
-                    pid = cand.get("id")
-                    if pid:
-                        try:
-                            person_obj = get_person_by_id(int(pid))
-                            pdata = serialize_person_obj(person_obj)
-                            cand.update(pdata)
-                        except Exception:
-                            app.logger.exception("Failed to enrich candidate (id=%s)", pid)
-                    try:
+                    if float(cand.get("match_confidence", 0)) >= MATCH_CONFIDENCE_THRESHOLD:
+                        person = get_person_by_id(pid)
+                        cand.update(serialize_person_obj(person))
                         cand = fix_photo_path(cand)
-                    except Exception:
-                        cand.setdefault("photo_path", "images/no-photo.png")
-                    enriched.append(cand)
+                        enriched.append(cand)
 
-                filtered = []
-                for cand in enriched:
-                    keep = True
-                    bonus = 0.0
+                results = sorted(
+                    enriched,
+                    key=lambda x: x.get("match_confidence", 0),
+                    reverse=True,
+                )[:MAX_RESULTS]
 
-                    if USE_GENDER_FILTER and query_gender:
-                        gm = gender_matches(query_gender, cand.get("gender"))
-                        if REQUIRE_GENDER_AGREEMENT and not gm:
-                            keep = False
-                        elif gm:
-                            bonus += GENDER_SOFT_BONUS
+            # ---- LOG + ADMIN ALERT (POST ONLY) ----
+            uploaded_name_for_log = os.path.basename(tmp_abs_path)
+            log_best_match_search(uploaded_name_for_log, results)
 
-                    if USE_NAME_FILTER and query_name and cand.get("full_name"):
-                        sim = name_similarity(query_name, cand.get("full_name"))
-                        cand["_name_similarity"] = sim
-                        if REQUIRE_NAME_AGREEMENT and sim < NAME_SIM_THRESHOLD:
-                            keep = False
-                        elif sim >= NAME_SIM_THRESHOLD:
-                            bonus += NAME_SOFT_BONUS
-                    else:
-                        cand["_name_similarity"] = None
-
-                    if keep:
-                        cand["_rank_score"] = float(cand["match_confidence"]) + bonus
-                        filtered.append(cand)
-
-                if not filtered:
-                    results = []
-                else:
-                    results = sorted(
-                        filtered,
-                        key=lambda x: (
-                            x.get("_rank_score", 0.0),
-                            x.get("match_confidence", 0.0),
-                        ),
-                        reverse=True,
-                    )[:MAX_RESULTS]
-            else:
-                results = []
-
-            try:
-                uploaded_name_for_log = (
-                    os.path.basename(tmp_abs_path) if tmp_abs_path else uploaded_photo
+            if results:
+                emit_admin_alert(
+                    "person_traced",
+                    {
+                        "count": len(results),
+                        "top_match": results[0].get("full_name"),
+                    },
                 )
-            except Exception:
-                uploaded_name_for_log = uploaded_photo
-            try:
-                log_best_match_search(uploaded_name_for_log, results)
-            except Exception:
-                logger.exception("Failed to record/log search")
 
         except Exception:
-            app.logger.exception("Error searching photo")
-            try:
-                uploaded_name_for_log = (
-                    os.path.basename(tmp_abs_path) if tmp_abs_path else None
-                )
-                log_best_match_search(uploaded_name_for_log, [])
-            except Exception:
-                pass
+            logger.exception("Error searching photo")
             flash("Error processing uploaded photo.", "error")
-            try:
-                os.remove(tmp_abs_path)
-            except Exception:
-                pass
-            if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-                return jsonify(
-                    {"success": False, "error": "Error processing uploaded photo."}
-                ), 500
             return redirect(url_for("search"))
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
-            scrubbed = []
-            for c in results:
-                c2 = dict(c)
-                c2.pop("_rank_score", None)
-                c2.pop("_name_similarity", None)
-                scrubbed.append(c2)
             return jsonify(
                 {
                     "success": True,
-                    "results": scrubbed,
-                    "searched": searched,
+                    "results": results,
+                    "searched": True,
                     "uploaded_photo": uploaded_photo,
                     "face_locations": [list(chosen_box)] if face_locations else [],
                 }
@@ -2114,6 +2196,31 @@ def delete_person(person_id):
 
     # Preserve pagination if 'page' was posted
     return _redirect_back_to_dashboard()
+
+    # ----------------- Admin Alerts API -----------------
+from flask import jsonify
+
+@app.get("/api/admin/alerts/unread-count")
+@login_required
+@require_role("admin")
+def api_admin_unread_count():
+    """
+    Return unread admin-alert count for the currently authenticated admin.
+    Safe / defensive: if you have an `AdminAlert` model/table, replace the lookup logic.
+    """
+    try:
+        # If you have a model named AdminAlert with `read` boolean column:
+        AdminAlert = globals().get("AdminAlert")
+        if AdminAlert is not None:
+            unread = int(AdminAlert.query.filter_by(read=False).count())
+            return jsonify({"ok": True, "unread": unread})
+
+        # Fallback: if you track alerts some other way, adapt here.
+        # Default behavior: return 0 if no model configured.
+        return jsonify({"ok": True, "unread": 0})
+    except Exception as e:
+        logger.exception("Failed to compute unread admin alerts: %s", e)
+        return jsonify({"ok": False, "unread": 0}), 500
 
 @app.route("/admin/persons/delete-multiple", methods=["POST"])
 @login_required
@@ -2492,40 +2599,66 @@ def admin_debug_match():
             pass
 
 
-import os
-import socket
-from flask_socketio import SocketIO
-# from your_app import app, DEV_MODE  # whatever you already have
-
-
-# ----------------- Helper: Get local LAN IP -----------------
-def get_local_ip() -> str:
-    """
-    Best-effort detection of the LAN IP (e.g. 192.168.x.x).
-    Falls back to 127.0.0.1 if it can't determine one.
-    """
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        # This doesn't actually send traffic; it's just to pick the right interface
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-    except OSError:
-        ip = "127.0.0.1"
-    finally:
-        s.close()
-    return ip
-
-
 # ----------------- SocketIO Integration -----------------
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
-    async_mode="threading",
+    async_mode="threading",  # Windows-safe
     logger=False,
     engineio_logger=os.getenv("ENGINEIO_LOG", "0") in ("1", "true", "yes", "on"),
     ping_interval=25,
     ping_timeout=60,
 )
+
+# ----------------- SocketIO Auth Guard -----------------
+@socketio.on("connect")
+def socket_connect():
+    """
+    Allow socket connection ONLY for authenticated admins.
+    Prevents public / anonymous socket usage.
+    """
+    try:
+        if not current_user.is_authenticated:
+            return False
+
+        # Only admin gets live alerts
+        role = (getattr(current_user, "role", "") or "").lower()
+        if role != "admin":
+            return False
+
+    except Exception:
+        return False
+
+@socketio.on("request_admin_unread_count")
+def handle_request_unread():
+    # compute unread count for admin session (example: query DB / cache)
+    count = 0
+    try:
+        # compute actual count...
+        socketio.emit("admin_unread_count", {"count": count}, to=request.sid)
+    except Exception:
+        pass
+
+
+# ----------------- Admin Alert Emitter -----------------
+from typing import Optional, Dict
+
+def emit_admin_alert(event: str, payload: Optional[Dict] = None):
+    try:
+        # increment unread count
+        session["admin_unread_alerts"] = session.get("admin_unread_alerts", 0) + 1
+
+        socketio.emit(
+            "admin_alert",
+            {
+                "event": event,
+                "payload": payload or {},
+                "ts": int(time.time()),
+            },
+            namespace="/",
+        )
+    except Exception:
+        logger.exception("Failed to emit admin alert")
 
 
 # ----------------- Run Flask + SocketIO -----------------

@@ -167,65 +167,7 @@
           alert("You must accept the Privacy Policy & Terms to use this site.");
         });
       }
-
-      // Mobile menu
-      var menuBtn = document.getElementById('menu-btn');
-      var mobileMenuContainer = document.getElementById('mobile-menu-container');
-      var openIcon = document.getElementById('menu-open-icon');
-      var closeIcon = document.getElementById('menu-close-icon');
-      var menuLinks = document.querySelectorAll('.menu-link');
-
-      function closeMenu(){
-        if(!mobileMenuContainer) return;
-        mobileMenuContainer.classList.remove('open','pointer-events-auto');
-        mobileMenuContainer.classList.add('pointer-events-none');
-        if (openIcon) openIcon.classList.remove('hidden');
-        if (closeIcon) closeIcon.classList.add('hidden');
-        menuLinks.forEach(function(l){ l.classList.remove('show'); });
-        if (menuBtn) menuBtn.setAttribute('aria-expanded','false');
-      }
-
-      if (menuBtn && mobileMenuContainer) {
-        menuBtn.addEventListener('click', function (){
-          var isOpen = mobileMenuContainer.classList.toggle('open');
-          if (openIcon) openIcon.classList.toggle('hidden');
-          if (closeIcon) closeIcon.classList.toggle('hidden');
-
-          if(isOpen){
-            mobileMenuContainer.classList.remove('pointer-events-none');
-            mobileMenuContainer.classList.add('pointer-events-auto');
-            menuBtn.setAttribute('aria-expanded','true');
-            menuLinks.forEach(function (link, index){
-              link.classList.remove('show');
-              setTimeout(function(){ link.classList.add('show'); }, index * 150);
-              link.addEventListener('click', closeMenu, { once:true });
-            });
-          } else {
-            closeMenu();
-          }
-        });
-      }
-
-      document.addEventListener('click', function (e){
-        if(mobileMenuContainer &&
-           mobileMenuContainer.classList.contains('open') &&
-           !mobileMenuContainer.contains(e.target) &&
-           e.target !== menuBtn && (!menuBtn || !menuBtn.contains(e.target))){
-          closeMenu();
-        }
-      });
-
-      // Highlight current nav link
-      var currentPath = window.location.pathname.replace(/\/$/,'');
-      document.querySelectorAll('nav a').forEach(function (link){
-        var href = link.getAttribute('href');
-        if (!href) return;
-        var linkPath = href.replace(/\/$/,'');
-        if (linkPath && currentPath.endsWith(linkPath)) {
-          link.classList.add('active-link');
-        }
-      });
-
+      
       // Push notifications
       var PERSON_ID = "{{ person_id|default('') }}";
       if (PERSON_ID && 'serviceWorker' in navigator && navigator.serviceWorker) {
