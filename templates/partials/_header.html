@@ -1,6 +1,7 @@
-<!-- partials/_header.html - PersonFinder polished header (paste this file) -->
+<!-- partials/_header.html - PersonFinder polished header (mobile dropdown cleaned) -->
 <header id="pf-header"
   class="fixed top-0 inset-x-0 z-[1300] bg-indigo-900/95 border-b border-white/10 backface-visible">
+  {% set ep = request.endpoint %}
   <div class="mx-auto max-w-7xl px-4 sm:px-6">
     <div class="h-16 md:h-20 flex items-center justify-between gap-3">
 
@@ -21,7 +22,6 @@
 
       <!-- DESKTOP NAV (stable: no JS hide) -->
       <nav id="pf-desktop-nav" class="hidden md:flex items-center gap-2 ml-6" aria-label="Primary navigation">
-        {% set ep = request.endpoint %}
         <a href="{{ url_for('home') }}" class="pf-link {% if ep=='home' %}is-active{% endif %}">Home</a>
         <a href="{{ url_for('register') }}" class="pf-link {% if ep=='register' %}is-active{% endif %}">Register</a>
         <a href="{{ url_for('search') }}" class="pf-link {% if ep=='search' %}is-active{% endif %}">Search</a>
@@ -62,7 +62,12 @@
 
         <!-- SQUARE hamburger (mobile only) -->
         <button id="pf-menu-btn" aria-controls="pf-mobile-drawer" aria-expanded="false"
-                class="md:hidden relative inline-grid place-items-center w-11 h-11 rounded-lg bg-white/6 border border-white/12 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                class="md:hidden relative inline-grid place-items-center w-11 h-11 rounded-lg
+       bg-white/[0.04] border border-white/[0.10]
+       backdrop-blur-sm
+       transition-colors transition-transform duration-200 ease-out
+       active:scale-[0.97]
+       focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                 title="Open menu">
           <span class="sr-only">Open menu</span>
           <!-- square hamburger lines that morph to X -->
@@ -89,29 +94,16 @@
   <!-- drawer background (glass) -->
   <div class="absolute inset-0 bg-gradient-to-b from-indigo-800/88 to-indigo-900/98 backdrop-blur-md"></div>
 
-  <div class="relative px-4 pt-6 pb-8">
-    <h2 id="pf-mobile-title" class="sr-only">Main menu</h2>
-
-    <nav class="space-y-2" aria-label="Mobile primary">
-      <a href="{{ url_for('home') }}" class="block pf-mobile-link">Home</a>
-      <a href="{{ url_for('register') }}" class="block pf-mobile-link">Register</a>
-      <a href="{{ url_for('search') }}" class="block pf-mobile-link">Search</a>
-      <a href="{{ url_for('donate_page') }}" class="block pf-mobile-link">Donate</a>
-      <a href="{{ url_for('about') }}" class="block pf-mobile-link">About</a>
-      <a href="{{ url_for('developers') }}" class="block pf-mobile-link">Developers</a>
-    </nav>
-
-    <!-- admin CTA separated -->
-    <div class="mt-5 pt-4 border-t border-white/8">
+  <div class="relative px-4 pt-4 pb-6">
+    <!-- drawer top bar (admin only, no title/brand) -->
+    <div class="flex items-center justify-end mb-3">
       <a id="pf-admin-mobile"
          href="{% if current_user.is_authenticated and (current_user.role|default('')|lower) == 'admin' %}{{ url_for('admin_dashboard') }}{% else %}{{ url_for('login') }}{% endif %}"
-         class="mt-2 w-full inline-flex items-center justify-center gap-3 rounded-lg px-4 py-3 bg-white/6 border border-white/12 font-semibold shadow-sm">
-        <!-- icon -->
-        <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+         class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 bg-white/8 border border-white/15 font-semibold shadow-none">
+        <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
           <path d="M12 12c2.5 0 4-2 4-4s-1.5-4-4-4-4 2-4 4 1.5 4 4 4z"/>
           <path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>
         </svg>
-
         <span id="pf-admin-mobile-label">
           {% if current_user.is_authenticated %}
             {{ current_user.username|default('User')|truncate(18) }}
@@ -119,11 +111,21 @@
             Admin
           {% endif %}
         </span>
-
-        <span id="pf-admin-badge-mobile" class="pf-badge hidden">0</span>
       </a>
+    </div>
 
-      <!-- If logged in show logout / dashboard options inside drawer -->
+
+    <nav class="space-y-2" aria-label="Mobile primary">
+      <a href="{{ url_for('home') }}" class="block pf-mobile-link {% if ep=='home' %}is-active{% endif %}">Home</a>
+      <a href="{{ url_for('register') }}" class="block pf-mobile-link {% if ep=='register' %}is-active{% endif %}">Register</a>
+      <a href="{{ url_for('search') }}" class="block pf-mobile-link {% if ep=='search' %}is-active{% endif %}">Search</a>
+      <a href="{{ url_for('donate_page') }}" class="block pf-mobile-link {% if ep=='donate_page' %}is-active{% endif %}">Donate</a>
+      <a href="{{ url_for('about') }}" class="block pf-mobile-link {% if ep=='about' %}is-active{% endif %}">About</a>
+      <a href="{{ url_for('developers') }}" class="block pf-mobile-link {% if ep=='developers' %}is-active{% endif %}">Developers</a>
+    </nav>
+
+    <!-- admin quick actions / footer inside drawer -->
+    <div class="mt-5 pt-4 border-t border-white/6">
       {% if current_user.is_authenticated %}
       <div class="mt-3 grid gap-2">
         {% if (current_user.role|default('')|lower) == 'admin' %}
@@ -132,8 +134,7 @@
         <a href="{{ url_for('logout') }}" class="block text-center px-3 py-2 rounded-lg bg-white/4">Logout</a>
       </div>
       {% else %}
-      <!-- quick login hint -->
-      <p class="mt-3 text-xs text-white/70">Admin access enables real-time alerts and dashboard controls.Admin access enables real-time alerts and dashboard controls.Admin access enables real-time alerts and dashboard controls.Admin access enables real-time alerts and dashboard controls.Admin access enables real-time alerts and dashboard controls.</p>
+      <p class="mt-3 text-xs text-white/70">Admin access enables real-time alerts and dashboard controls.</p>
       {% endif %}
     </div>
   </div>
@@ -142,69 +143,266 @@
 <!-- TOASTS (small notification) -->
 <div id="pf-toasts" aria-live="polite" class="fixed bottom-6 right-6 z-[1400] space-y-2"></div>
 
-<!-- ================= STYLES: header + drawer + controls ================= -->
+<!-- ================= STYLES: header + drawer + controls (mobile dropdown optimized) ================= -->
 <style>
-  :root { --pf-badge-bg: #ef4444; --pf-glass: rgba(255,255,255,0.06); }
-  @keyframes gradientMove { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
-  .animate-gradient{ background-size:200% 200%; animation:gradientMove 6s ease infinite; }
+  :root {
+    --pf-badge-bg: #ef4444;
+    --pf-glass: rgba(255,255,255,0.05);
+    --pf-glass-strong: rgba(255,255,255,0.08);
+  }
 
+  /* ---------- Brand gradient ---------- */
+  @keyframes gradientMove {
+    0% { background-position:0% 50% }
+    50% { background-position:100% 50% }
+    100% { background-position:0% 50% }
+  }
+  .animate-gradient {
+    background-size:200% 200%;
+    animation:gradientMove 6s ease infinite;
+  }
+
+  /* ---------- Desktop nav links ---------- */
   .pf-link{
-    display:inline-flex; align-items:center; gap:.5rem;
-    padding:.5rem .9rem; border-radius:.65rem; color:rgba(255,255,255,.95);
-    font-weight:600; text-decoration:none; transition: transform .18s ease, background .18s ease, color .18s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    padding:.5rem .9rem;
+    border-radius:.65rem;
+    color:rgba(255,255,255,.95);
+    font-weight:600;
+    text-decoration:none;
+    transition:
+      transform .18s ease,
+      background .18s ease,
+      color .18s ease;
   }
-  .pf-link:hover{ transform: translateY(-2px); background: rgba(255,255,255,0.06); color:#fff; }
-  .pf-link.is-active{ background: rgba(255,255,255,0.04); }
+  .pf-link:hover{
+    transform: translateY(-1.5px);
+    background: rgba(255,255,255,0.06);
+    color:#fff;
+  }
+  .pf-link.is-active{
+    background: rgba(255,255,255,0.05);
+  }
   .pf-link.is-active::after{
-    content:""; display:block; width:6px; height:6px; margin-top:4px; background:#fff; border-radius:9999px;
+    content:"";
+    display:block;
+    width:6px;
+    height:6px;
+    margin-top:4px;
+    background:#fff;
+    border-radius:9999px;
   }
 
+  /* ---------- Admin CTA ---------- */
   .pf-admin-cta{
-    background: var(--pf-glass); border:1px solid rgba(255,255,255,0.12); padding:.45rem .7rem; border-radius:.75rem;
-    color: #fff; text-decoration:none;
+    background: var(--pf-glass);
+    border:1px solid rgba(255,255,255,0.12);
+    padding:.45rem .7rem;
+    border-radius:.75rem;
+    color:#fff;
+    text-decoration:none;
+    transition: background .18s ease, transform .12s ease;
   }
-  .pf-admin-cta:focus{ outline:none; box-shadow: 0 6px 24px rgba(2,6,23,0.6), 0 0 0 3px rgba(99,102,241,0.12); }
+  .pf-admin-cta:hover{
+    background: var(--pf-glass-strong);
+    transform: translateY(-1px);
+  }
+  .pf-admin-cta:focus{
+    outline:none;
+    box-shadow:
+      0 8px 28px rgba(2,6,23,0.6),
+      0 0 0 3px rgba(99,102,241,0.14);
+  }
 
+  /* ---------- Badge ---------- */
   .pf-badge{
-    min-width:18px; height:18px; padding:0 6px; border-radius:9999px; background:var(--pf-badge-bg);
-    font-size:11px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; color:white;
+    min-width:18px;
+    height:18px;
+    padding:0 6px;
+    border-radius:9999px;
+    background:var(--pf-badge-bg);
+    font-size:11px;
+    font-weight:700;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
     box-shadow: 0 4px 12px rgba(14,28,38,0.35);
   }
   .pf-badge.hidden{ display:none !important; }
 
-  #pf-mobile-drawer{ width:100%; left:0; right:0; }
+  /* ---------- Mobile drawer (optimized) ---------- */
+  #pf-mobile-drawer{
+    width:100%;
+    left:0;
+    right:0;
+  }
+  /* Mobile links: remove separation shadows, make compact and clean */
   #pf-mobile-drawer .pf-mobile-link{
-    display:block; padding:.95rem 1rem; border-radius:12px; background: rgba(255,255,255,0.03); color: #fff; font-weight:600;
-    text-decoration:none; transition: transform .18s ease, background .18s ease;
+    display:block;
+    padding:.85rem .95rem;
+    border-radius:12px;
+    background: transparent; /* remove shadow/backplate */
+    color:#fff;
+    font-weight:700;
+    text-decoration:none;
+    transition: transform .14s ease, background .14s ease;
+    box-shadow: none; /* explicit removal */
+    border: 1px solid transparent;
   }
-  #pf-mobile-drawer .pf-mobile-link:hover{ background: rgba(255,255,255,0.06); transform: translateY(-4px); }
-
-  #pf-overlay.open{ opacity:1; pointer-events:auto; }
-  #pf-mobile-drawer.open{ transform:none; opacity:1; pointer-events:auto; top:64px; }
-
-  #pf-menu-btn svg { transition: transform .32s cubic-bezier(.2,.9,.3,1); }
-  #pf-menu-btn.open { background: rgba(255,255,255,0.12); transform: translateY(-1px); }
-  #pf-menu-btn.open .pf-line-1 { transform-origin:center; transform: translateY(5px) rotate(45deg); }
-  #pf-menu-btn.open .pf-line-2 { opacity:0; transform: scaleX(0.6); }
-  #pf-menu-btn.open .pf-line-3 { transform-origin:center; transform: translateY(-5px) rotate(-45deg); }
-
-  /* Toast style */
-  .pf-toast {
-    min-width: 240px; max-width: 380px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
-    border: 1px solid rgba(255,255,255,0.08);
-    color: #fff; padding: 12px 14px; border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(2,6,23,0.6); display:flex; gap:8px; align-items:flex-start;
-    transform: translateY(12px); opacity:0; transition: transform .28s ease, opacity .28s ease;
+  #pf-mobile-drawer .pf-mobile-link:hover{
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.03);
   }
-  .pf-toast.show { transform: translateY(0); opacity:1; }
-  .pf-toast .pf-toast-title{ font-weight:700; font-size:.95rem; }
-  .pf-toast .pf-toast-body{ font-size:.87rem; color: rgba(255,255,255,0.88); }
 
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation:none !important; } }
+  /* Only the active mobile link gets the premium animation / gradient */
+  #pf-mobile-drawer .pf-mobile-link.is-active{
+    background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(124,58,237,0.12));
+    border: 1px solid rgba(124,58,237,0.18);
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(99,102,241,0.08);
+    position: relative;
+    overflow: hidden;
+    border-radius:12px;
+    animation: premiumFloat 2200ms ease-in-out infinite;
+  }
+
+  /* subtle float for "premium" active state */
+  @keyframes premiumFloat {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+    100% { transform: translateY(0); }
+  }
+
+  /* make the active link show the gradient shimmer on its text */
+  #pf-mobile-drawer .pf-mobile-link.is-active {
+    background-image: linear-gradient(90deg, #7c3aed 0%, #06b6d4 50%, #f472b6 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* fallback */
+    animation: mobileActiveGradient 3.5s linear infinite;
+  }
+  @keyframes mobileActiveGradient{
+    0%{ background-position:0% 50%; }
+    50%{ background-position:100% 50%; }
+    100%{ background-position:0% 50%; }
+  }
+
+  /* ensure readability for the active link when gradient is applied */
+  #pf-mobile-drawer .pf-mobile-link.is-active::after{
+    content: attr(data-label);
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: transparent;
+  }
+
+  #pf-overlay.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  #pf-mobile-drawer.open{
+    transform:none;
+    opacity:1;
+    pointer-events:auto;
+    top:64px;
+  }
+
+  /* ---------- Hamburger (calm & smooth) ---------- */
+  #pf-menu-btn{
+    background: rgba(255,255,255,0.04);
+    border:1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 6px 20px rgba(2,6,23,0.35);
+    transition:
+      background .18s ease,
+      transform .12s ease,
+      box-shadow .18s ease;
+  }
+  #pf-menu-btn:hover{
+    background: rgba(255,255,255,0.07);
+  }
+  #pf-menu-btn:active{
+    transform: scale(0.97);
+  }
+  #pf-menu-btn.open{
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-1px);
+  }
+
+  #pf-menu-btn svg{
+    transition:
+      transform 280ms cubic-bezier(.2,.7,.3,1),
+      opacity 200ms ease;
+  }
+  #pf-menu-btn .pf-line-1,
+  #pf-menu-btn .pf-line-2,
+  #pf-menu-btn .pf-line-3{
+    stroke: rgba(255,255,255,0.85);
+    transition:
+      transform 260ms cubic-bezier(.2,.8,.3,1),
+      opacity 180ms ease;
+  }
+
+  /* Morph to X (gentle) */
+  #pf-menu-btn.open .pf-line-1{
+    transform: translateY(4px) rotate(40deg);
+  }
+  #pf-menu-btn.open .pf-line-2{
+    opacity:0;
+  }
+  #pf-menu-btn.open .pf-line-3{
+    transform: translateY(-4px) rotate(-40deg);
+  }
+
+  /* ---------- Toast ---------- */
+  .pf-toast{
+    min-width:240px;
+    max-width:380px;
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,0.06),
+      rgba(255,255,255,0.04)
+    );
+    border:1px solid rgba(255,255,255,0.08);
+    color:#fff;
+    padding:12px 14px;
+    border-radius:14px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    transform: translateY(12px);
+    opacity:0;
+    transition: transform .28s ease, opacity .28s ease;
+  }
+  .pf-toast.show{
+    transform: translateY(0);
+    opacity:1;
+  }
+  .pf-toast .pf-toast-title{
+    font-weight:700;
+    font-size:.95rem;
+  }
+  .pf-toast .pf-toast-body{
+    font-size:.87rem;
+    color: rgba(255,255,255,0.88);
+  }
+
+  /* ---------- Reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce){
+    *{
+      transition:none !important;
+      animation:none !important;
+    }
+  }
 </style>
 
-<!-- ================= SCRIPTS: drawer, badge, Socket.IO hookup and toasts ================= -->
+<!-- ================= SCRIPTS: drawer, badge, Socket.IO hookup and toasts (minor mobile focus improvements) ================= -->
 <script>
 document.addEventListener('DOMContentLoaded', function(){
   const btn = document.getElementById('pf-menu-btn');
@@ -223,7 +421,9 @@ document.addEventListener('DOMContentLoaded', function(){
     drawer.classList.add('open');
     overlay.classList.add('open');
     document.documentElement.style.overflow = 'hidden';
-    const first = drawer.querySelector('a') || drawer;
+    // focus the active mobile link if present, else first link
+    const active = drawer.querySelector('.pf-mobile-link.is-active');
+    const first = active || drawer.querySelector('a.pf-mobile-link') || drawer;
     first && first.focus();
   }
   function closeDrawer(){

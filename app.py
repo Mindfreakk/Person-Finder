@@ -69,6 +69,8 @@ from database import (
     debug_find_person_by_image,
     clear_people_encodings_cache,
 )
+ENV: str = os.getenv("FLASK_ENV", "development").lower()
+IS_PROD: bool = ENV == "production"
 
 # ----------------- Load environment -----------------
 load_dotenv()
@@ -154,35 +156,59 @@ else:
 
 _version_cache = {"mtime": None, "val": "1.0.0"}
 
-
 def _ensure_file(path: str, default_val: str = "1.0.0") -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    # Ensure parent dir exists and file exists (with default content if needed)
+    parent = os.path.dirname(path) or basedir
+    os.makedirs(parent, exist_ok=True)
     if not os.path.exists(path):
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(default_val + "\n")
-
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(default_val + "\n")
+            # update mtime/val cache
+            st = os.stat(path)
+            _version_cache["mtime"] = st.st_mtime
+            _version_cache["val"] = default_val
+        except Exception:
+            # best-effort; ignore errors here
+            pass
 
 def get_app_version() -> str:
-    """Return current version string; re-read when file mtime changes."""
+    """
+    Return current version string.
+    Re-reads the version file only if the mtime has changed.
+    """
     try:
-        pass  # TODO: add code or remove try if not needed
-    except Exception:
-        pass
-        st_mtime = os.stat(VERSION_FILE).st_mtime
-        if st_mtime != _version_cache["mtime"]:
+        st = os.stat(VERSION_FILE)
+        st_mtime = st.st_mtime
+
+        if _version_cache["mtime"] != st_mtime:
             with open(VERSION_FILE, "r", encoding="utf-8") as f:
                 val = (f.read() or "").strip() or "1.0.0"
-            _version_cache.update({"mtime": st_mtime, "val": val})
-    except Exception:
-        pass
+            _version_cache["mtime"] = st_mtime
+            _version_cache["val"] = val
+
+    except Exception as e:
+        # Fail safe: never crash app due to version
+        print(f"[version] read failed: {e}")
+
     return _version_cache["val"]
 
-
 def _write_version(new_val: str) -> None:
-    with open(VERSION_FILE, "w", encoding="utf-8") as f:
-        f.write(new_val + "\n")
-    _version_cache["mtime"] = None  # force re-read on next request
-
+    """
+    Overwrite the version file and update cache immediately.
+    """
+    try:
+        _ensure_file(VERSION_FILE, default_val=new_val)
+        with open(VERSION_FILE, "w", encoding="utf-8") as f:
+            f.write(new_val.rstrip() + "\n")
+        try:
+            st = os.stat(VERSION_FILE)
+            _version_cache["mtime"] = st.st_mtime
+        except Exception:
+            _version_cache["mtime"] = None
+        _version_cache["val"] = new_val
+    except Exception:
+        logger.exception("Failed to write version file.")
 
 def bump_version(which: str = "patch") -> str:
     """
@@ -192,7 +218,7 @@ def bump_version(which: str = "patch") -> str:
     _ensure_file(VERSION_FILE, default_val="1.0.0")
     cur = get_app_version()
     try:
-        major, minor, patch = [int(x) for x in cur.split(".")[:3]]
+        major, minor, patch = [int(x) for x in (cur.split(".")[:3] + ["0", "0"])[:3]]
     except Exception:
         major, minor, patch = 1, 0, 0
 
@@ -218,7 +244,6 @@ def bump_version(which: str = "patch") -> str:
     _write_version(newv)
     return newv
 
-
 # ---- Auto-bump on real app start (works with or without reloader & SocketIO) ----
 # Modes:
 #  - Default: If CI's version.txt exists, we DO NOT bump locally. If not, we bump patch once on start.
@@ -227,7 +252,6 @@ def bump_version(which: str = "patch") -> str:
 _FORCE_LOCAL = str(os.getenv("PF_FORCE_LOCAL_BUMP", "false")).lower() in ("1", "true", "yes", "on")
 _LOCAL_BUMP_ENABLED = str(os.getenv("PF_LOCAL_BUMP_ON_START", "true")).lower() in ("1", "true", "yes", "on")
 _USING_CI_VERSION = os.path.basename(VERSION_FILE).lower() == "version.txt"
-
 
 def _should_bump_now() -> bool:
     # If local bumping disabled, no.
@@ -242,7 +266,6 @@ def _should_bump_now() -> bool:
     flag = os.environ.get("WERKZEUG_RUN_MAIN")
     return (flag == "true") or (flag is None)
 
-
 try:
     _ensure_file(VERSION_FILE, default_val="1.0.0")
     if _should_bump_now():
@@ -254,38 +277,101 @@ except Exception as _e:
 # Optionally store it in config for convenience
 app.config["APP_VERSION"] = get_app_version()
 
-# ----------------- Context Processor -----------------
+# ----------------- Context Processor (smart role-based header rendering) -----------------
 @app.context_processor
 def inject_globals():
+    """
+    Inject safe globals for templates:
+      - app_version, current_year, VAPID/RECAPTCHA keys (existing)
+      - pf_user: simplified dict of current_user (id, username, role) or None
+      - pf_is_authenticated, pf_is_admin
+    This avoids using fragile exprs like getattr(...) in templates and keeps logic small.
+    """
     user = None
     is_authenticated = False
     is_admin = False
 
     try:
-        if current_user.is_authenticated:
-            user = {
-                "id": current_user.id,
-                "username": getattr(current_user, "username", ""),
-                "role": getattr(current_user, "role", "user"),
-            }
+        if getattr(current_user, "is_authenticated", False):
             is_authenticated = True
-            is_admin = (user["role"] == "admin")
+            uname = getattr(current_user, "username", "") or ""
+            role = getattr(current_user, "role", "") or "user"
+            # normalize role to string
+            role = str(role)
+            is_admin = role.lower() == "admin"
+            user = {"id": getattr(current_user, "id", None), "username": uname, "role": role}
     except Exception:
-        pass
+        # Fail-safe: leave values as False/None
+        logger.exception("Error while preparing pf_user context.")
 
     return {
-        # existing
         "app_version": get_app_version(),
         "current_year": datetime.now().year,
         "personId": None,
         "VAPID_PUBLIC_KEY": app.config.get("VAPID_PUBLIC_KEY"),
         "RECAPTCHA_SITE_KEY": app.config.get("RECAPTCHA_SITE_KEY"),
 
-        # NEW (for header)
+        # NEW (for header + role based templates)
         "pf_user": user,
         "pf_is_authenticated": is_authenticated,
         "pf_is_admin": is_admin,
     }
+
+# ----------------- Admin unread-count API used by header JS -----------------
+from typing import Callable, TypeVar
+from functools import wraps
+from flask import redirect, url_for, flash
+from flask_login import current_user
+
+F = TypeVar("F", bound=Callable[..., object])
+
+def require_role(*roles: str) -> Callable[[F], F]:
+    def decorator(fn: F) -> F:
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return redirect(url_for("login"))
+
+            if roles and getattr(current_user, "role", None) not in roles:
+                flash("Unauthorized access!", "error")
+                return redirect(url_for("home"))
+
+            return fn(*args, **kwargs)
+
+        return wrapper  # type: ignore[return-value]
+
+    return decorator
+
+@app.get("/api/admin/alerts/unread-count")
+@login_required
+@require_role("admin")
+def api_admin_unread_count():
+    """
+    Return JSON { "unread": N } for initial polling by the header.
+    If your app has a helper to compute the real unread count, expose it as
+      def get_unread_admin_alerts_count() -> int
+    in your module (e.g. in database.py or helpers), otherwise this endpoint returns 0.
+    """
+    try:
+        fn = globals().get("get_unread_admin_alerts_count")
+        if callable(fn):
+            cnt = int(fn() or 0)
+        else:
+            # Optional: try to look up SearchLog or an Alerts model (if present)
+            try:
+                # Example: if you have a SearchLog model and store 'notified' flags, adapt as needed.
+                SearchLog_model = globals().get("SearchLog")
+                if SearchLog_model is not None:
+                    # fallback: 0 for now (implement real logic if you track alert rows)
+                    cnt = 0
+                else:
+                    cnt = 0
+            except Exception:
+                cnt = 0
+        return jsonify({"unread": cnt})
+    except Exception as e:
+        logger.exception("Error computing unread alerts count")
+        return jsonify({"unread": 0})
 
 
 # ----------------- reCAPTCHA Verification -----------------
@@ -420,21 +506,29 @@ def load_user(user_id):
     return UserLogin(user) if user else None
 
 
-def require_role(*roles):
-    def wrapper(fn):
+from typing import Callable, TypeVar
+from functools import wraps
+from flask import redirect, url_for, flash
+from flask_login import current_user
+
+F = TypeVar("F", bound=Callable[..., object])
+
+def require_role(*roles: str) -> Callable[[F], F]:
+    def decorator(fn: F) -> F:
         @wraps(fn)
-        def inner(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             if not current_user.is_authenticated:
                 return redirect(url_for("login"))
+
             if roles and getattr(current_user, "role", None) not in roles:
                 flash("Unauthorized access!", "error")
                 return redirect(url_for("home"))
+
             return fn(*args, **kwargs)
 
-        return inner
+        return wrapper  # type: ignore[return-value]
 
-    return wrapper
-
+    return decorator
 
 # ----------------- Helpers -----------------
 def save_uploaded_file(storage_file) -> str:
@@ -522,12 +616,12 @@ def api_stats():
 
 
 # ----------------- Feedback API -----------------
-@app.post("/api/feedback")
+@app.route("/api/feedback", methods=["POST"])
 def api_feedback():
     """
-    Accept feedback from either:
+    Accept feedback from:
       - JSON (AJAX / fetch)  -> returns JSON
-      - HTML form POST       -> redirects with flash messages
+      - HTML form POST      -> redirects with flash messages
 
     Expected fields:
       name    (optional)
@@ -535,23 +629,21 @@ def api_feedback():
       rating  (required, 1–5)
       message (required)
     """
+
     is_json = request.is_json or (
-        request.content_type and "application/json" in request.content_type.lower()
+        request.content_type
+        and "application/json" in request.content_type.lower()
     )
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
-    # --------- Parse input (JSON or form) ---------
+    # --------- Parse input ---------
     if is_json:
-        try:
-            data = request.get_json(silent=True) or {}
-        except Exception:
-            data = {}
+        data = request.get_json(silent=True) or {}
         name = (data.get("name") or "").strip()
         email = (data.get("email") or "").strip()
         rating_raw = data.get("rating")
         message = (data.get("message") or "").strip()
     else:
-        # Standard HTML form POST: make sure your form uses these names
         name = (request.form.get("name") or "").strip()
         email = (request.form.get("email") or "").strip()
         rating_raw = request.form.get("rating")
@@ -559,43 +651,51 @@ def api_feedback():
 
     errors = {}
 
-    # --- Email (required + basic format) ---
+    # --------- Validation ---------
     if not email:
         errors["email"] = "Email is required."
-    else:
-        if "@" not in email or "." not in email.split("@")[-1]:
-            errors["email"] = "Please provide a valid email address."
+    elif "@" not in email or "." not in email.split("@")[-1]:
+        errors["email"] = "Please provide a valid email address."
 
-    # --- Rating (required, 1–5) ---
     try:
         rating = int(rating_raw)
-    except Exception:
+    except (TypeError, ValueError):
         rating = None
 
     if rating is None:
         errors["rating"] = "Rating is required."
-    elif rating < 1 or rating > 5:
+    elif not 1 <= rating <= 5:
         errors["rating"] = "Rating must be between 1 and 5."
 
-    # --- Message (required, minimal length) ---
     if not message or len(message) < 5:
         errors["message"] = "Please describe your experience (at least 5 characters)."
 
-    # ---- If there are validation errors ----
+    # --------- Validation failure ---------
     if errors:
         if is_json or is_ajax:
             return jsonify({"ok": False, "errors": errors}), 400
 
-        # HTML form: use flash + redirect
         for msg in errors.values():
             flash(msg, "error")
         return redirect(request.referrer or url_for("home"))
 
-    # --------- Save to DB ---------
-    page_url = request.headers.get("X-Feedback-Page") or request.referrer or ""
-    user_agent = request.user_agent.string if request.user_agent else ""
-    ip_address = request.headers.get("X-Forwarded-For", "").split(",")[0].strip() or request.remote_addr
+    # --------- Metadata ---------
+    page_url = (
+        request.headers.get("X-Feedback-Page")
+        or request.referrer
+        or ""
+    )
 
+    user_agent = request.user_agent.string if request.user_agent else None
+
+    ip_address = (
+        request.headers.get("X-Forwarded-For", "")
+        .split(",")[0]
+        .strip()
+        or request.remote_addr
+    )
+
+    # --------- Save to DB ---------
     try:
         fb = Feedback(
             name=name or None,
@@ -608,25 +708,36 @@ def api_feedback():
         )
         db.session.add(fb)
         db.session.commit()
-    except Exception as e:
+
+    except Exception:
         db.session.rollback()
+
         if is_json or is_ajax:
-            return jsonify({"ok": False, "errors": {"server": "Could not save feedback"}}), 500
+            return jsonify({
+                "ok": False,
+                "errors": {"server": "Could not save feedback. Please try again."}
+            }), 500
+
         flash("Could not save feedback. Please try again later.", "error")
         return redirect(request.referrer or url_for("home"))
 
-    # --------- Success responses ---------
+    # --------- Admin Notification ---------
+    try:
+        emit_admin_alert(
+            "new_feedback",
+            {
+                "rating": rating,
+                "email": email,
+            },
+        )
+    except Exception:
+        pass  # non-fatal
+
+    # --------- Success ---------
     if is_json or is_ajax:
         return jsonify({"ok": True})
 
     flash("Thank you! Your feedback has been submitted.", "success")
-    emit_admin_alert(
-    "new_feedback",
-    {
-        "rating": rating,
-        "email": email,
-    },
-)
     return redirect(request.referrer or url_for("home"))
 
 
@@ -2197,31 +2308,6 @@ def delete_person(person_id):
     # Preserve pagination if 'page' was posted
     return _redirect_back_to_dashboard()
 
-    # ----------------- Admin Alerts API -----------------
-from flask import jsonify
-
-@app.get("/api/admin/alerts/unread-count")
-@login_required
-@require_role("admin")
-def api_admin_unread_count():
-    """
-    Return unread admin-alert count for the currently authenticated admin.
-    Safe / defensive: if you have an `AdminAlert` model/table, replace the lookup logic.
-    """
-    try:
-        # If you have a model named AdminAlert with `read` boolean column:
-        AdminAlert = globals().get("AdminAlert")
-        if AdminAlert is not None:
-            unread = int(AdminAlert.query.filter_by(read=False).count())
-            return jsonify({"ok": True, "unread": unread})
-
-        # Fallback: if you track alerts some other way, adapt here.
-        # Default behavior: return 0 if no model configured.
-        return jsonify({"ok": True, "unread": 0})
-    except Exception as e:
-        logger.exception("Failed to compute unread admin alerts: %s", e)
-        return jsonify({"ok": False, "unread": 0}), 500
-
 @app.route("/admin/persons/delete-multiple", methods=["POST"])
 @login_required
 @require_role("admin")
@@ -2661,21 +2747,23 @@ def emit_admin_alert(event: str, payload: Optional[Dict] = None):
         logger.exception("Failed to emit admin alert")
 
 
-# ----------------- Run Flask + SocketIO -----------------
+# ------------------------------------------------------------
+# RUN SERVER (PRODUCTION SAFE)
+# ------------------------------------------------------------
 if __name__ == "__main__":
     host_ip = get_local_ip()
-    port = int(os.getenv("PORT", "5001"))
+    port = int(os.getenv("PORT", 5001))
 
-    print("🚀 Server starting!")
-    print(f"  Desktop: http://127.0.0.1:{port}")
-    print(f"  Mobile (same Wi-Fi): http://{host_ip}:{port}")
+    print("\n🚀 PersonFinder Server Started")
+    print(f"   ENV     : {'PRODUCTION' if IS_PROD else 'DEVELOPMENT'}")
+    print(f"   Desktop : http://127.0.0.1:{port}")
+    print(f"   Mobile  : http://{host_ip}:{port}\n")
 
     socketio.run(
         app,
         host="0.0.0.0",
         port=port,
-        debug=DEV_MODE,
-        use_reloader=False,  # avoid double-start/version bump
-        allow_unsafe_werkzeug=True,
-        # ssl_context="adhoc",  # optional if you want HTTPS locally
+        debug=False,
+        use_reloader=False
     )
+# End of app.py

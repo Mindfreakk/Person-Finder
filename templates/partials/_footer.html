@@ -1,37 +1,404 @@
-<!-- ================= PERSONFINDER PREMIUM FOOTER (FIXED) ================= -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PersonFinder — Footer</title>
 
-<!-- ===== FEEDBACK SECTION ===== -->
-<section class="pf-feedback-section">
-  <div class="pf-feedback-bg" aria-hidden="true"></div>
+  <style>
+    :root{
+      --pf-bg:#020617;
+      --pf-surface: rgba(255,255,255,.045);
+      --pf-border: rgba(255,255,255,.12);
+      --pf-muted: rgba(255,255,255,.72);
+      --pf-accent: #22d3ee;
+      --pf-accent-strong: #38bdf8;
+      --pf-max: 80rem;
+      --pf-radius: 1.25rem;
+      --pf-font: system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial;
+    }
 
+    *{ box-sizing:border-box }
+    body{ margin:0; font-family:var(--pf-font); background:var(--pf-bg); color:#fff }
+
+    /* ================= FEEDBACK SECTION ================= */
+    .pf-feedback-section{
+      background:
+        radial-gradient(circle at 15% 10%, rgba(56,189,248,.10), transparent 45%),
+        radial-gradient(circle at 85% 0%, rgba(192,132,252,.10), transparent 40%),
+        var(--pf-bg);
+      padding:3.5rem 1rem;
+    }
+
+    .pf-feedback-container{ max-width:56rem; margin:auto }
+
+    .pf-feedback-header{text-align:center; margin-bottom:2rem }
+    .pf-feedback-header h2{
+      margin:0;
+      font-size:clamp(1.5rem,3vw,2.1rem);
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+    .pf-feedback-header p{
+      margin:.6rem 0 0;
+      color:var(--pf-muted);
+      font-size:.95rem;
+    }
+
+    .pf-feedback-card{
+      background:var(--pf-surface);
+      border:1px solid var(--pf-border);
+      border-radius:calc(var(--pf-radius) + .75rem);
+      padding:2rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .pf-feedback-form{ display:flex; flex-direction:column; gap:1rem }
+
+    .pf-feedback-grid{
+      display:grid;
+      gap:1rem;
+    }
+    @media(min-width:640px){
+      .pf-feedback-grid{ grid-template-columns:1fr 1fr }
+    }
+
+    .pf-input{
+      width:100%;
+      padding:.85rem 1rem;
+      border-radius:.9rem;
+      border:1px solid rgba(255,255,255,.15);
+      background:rgba(2,6,23,.75);
+      color:#fff;
+      font-size:.95rem;
+    }
+    .pf-input::placeholder{ color:rgba(255,255,255,.45) }
+    .pf-input:focus{
+      outline:none;
+      border-color:var(--pf-accent-strong);
+      box-shadow:0 0 0 2px rgba(56,189,248,.25);
+    }
+
+    .pf-textarea{ resize:vertical; min-height:120px }
+
+    .pf-feedback-actions{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:1rem;
+    }
+
+    .pf-feedback-submit{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.75rem 1.6rem;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      font-weight:800;
+      background:linear-gradient(135deg,#22d3ee,#38bdf8);
+      color:#021022;
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .pf-feedback-submit:hover{ box-shadow:0 10px 30px rgba(56,189,248,.25) }
+    .pf-feedback-submit:active{ transform:translateY(1px) }
+
+    .pf-feedback-success{ color:#6ee7b7; font-weight:700 }
+    .pf-feedback-error{ color:#fca5a5; font-weight:700 }
+
+    .pf-hidden{ display:none !important }
+
+    /* ================= PROFESSIONAL DIVIDER ================= */
+    .pf-footer-divider{
+      height:1px;
+      max-width:var(--pf-max);
+      margin:0 auto;
+      background:linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255,255,255,.08) 20%,
+        rgba(255,255,255,.18) 50%,
+        rgba(255,255,255,.08) 80%,
+        transparent 100%
+      );
+      position:relative;
+    }
+    .pf-footer-divider::after{
+      content:"";
+      position:absolute;
+      left:10%; right:10%; top:-6px;
+      height:6px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+      pointer-events:none;
+    }
+
+    /* ================= FOOTER ================= */
+    .pf-footer{
+      background:linear-gradient(to bottom, var(--pf-bg), #000);
+      color:rgba(255,255,255,.88);
+      padding:3rem 1rem 1.5rem;
+    }
+
+    .pf-footer-container{
+      max-width:var(--pf-max);
+      margin:auto;
+      display:grid;
+      gap:2.5rem;
+    }
+    @media(min-width:768px){
+      .pf-footer-container{ grid-template-columns:1.3fr 1fr 1fr }
+    }
+
+    .pf-footer-logo{
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+      text-decoration:none;
+      color:inherit;
+    }
+    .pf-footer-logo img{
+      width:46px; height:46px;
+      border-radius:.7rem;
+      object-fit:cover;
+    }
+    .pf-footer-title{
+      font-weight:900;
+      font-size:1.2rem;
+      background:linear-gradient(90deg,#60a5fa,#c084fc,#f472b6);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .pf-footer-tagline{
+      display:block;
+      font-size:.78rem;
+      opacity:.75;
+    }
+
+    .pf-footer-description {
+  margin-top: .5rem;
+  font-size: clamp(0.78rem, 1.6vw, 0.88rem);
+  line-height: 1.55;
+  color: var(--pf-muted);
+}
+
+    .pf-footer-nav{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:2rem;
+    }
+    .pf-footer-nav h4{
+      font-size:.75rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin-bottom:.8rem;
+    }
+    .pf-footer-nav a{
+      display:block;
+      margin-bottom:.45rem;
+      font-size:.95rem;
+      color:rgba(255,255,255,.85);
+      text-decoration:none;
+    }
+    .pf-footer-nav a:hover{ color:#fff; text-decoration:underline }
+
+    .pf-footer-mission h4{ font-size:1rem; font-weight:800 }
+    .pf-footer-mission p{
+      margin-top:.6rem;
+      font-size:.9rem;
+      color:var(--pf-muted);
+    }
+
+    .pf-footer-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+      margin-top:.8rem;
+    }
+    .pf-footer-badges span{
+      font-size:.7rem;
+      padding:.35rem .7rem;
+      border-radius:999px;
+      background:rgba(255,255,255,.08);
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+    }
+
+    .pf-footer-bottom{
+      border-top:1px solid rgba(255,255,255,.12);
+      margin-top:2rem;
+      padding-top:1.3rem;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      gap:.75rem;
+      font-size:.8rem;
+    }
+
+    .pf-footer-bottom a{ color:rgba(255,255,255,.7); text-decoration:none }
+    .pf-footer-bottom a:hover{ color:#fff; text-decoration:underline }
+
+    .pf-footer-hashtag{ opacity:.65 }
+
+    @media(max-width:767px){
+      .pf-footer-bottom{ flex-direction:column; align-items:flex-start }
+    }
+
+    @media(prefers-reduced-motion:reduce){ *{ transition:none !important } }
+
+    @media (max-width: 640px) {
+
+  /* Stack footer sections cleanly */
+  .pf-footer-container {
+    gap: 2rem;
+  }
+
+  /* Brand section */
+  .pf-footer-logo {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .pf-footer-brand {
+    text-align: center;
+    align-items: center;
+  }
+
+  .pf-footer-description {
+    max-width: 28rem;       /* prevents wide text block */
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Navigation becomes compact grid */
+  .pf-footer-nav {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .pf-footer-nav h4 {
+    margin-bottom: .6rem;
+  }
+
+  .pf-footer-nav a {
+    font-size: .9rem;
+  }
+
+  /* Mission section */
+  .pf-footer-mission {
+    text-align: center;
+  }
+
+  .pf-footer-mission p {
+    max-width: 30rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Badges centered */
+  .pf-footer-badges {
+    justify-content: center;
+  }
+
+  /* Bottom bar stacking */
+  .pf-footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: .6rem;
+  }
+}
+
+@media (max-width: 640px) {
+
+  /* Keep bottom bar layout horizontal */
+  .pf-footer-bottom {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /* Center the left block (copyright + legal) */
+  .pf-footer-bottom-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .35rem;
+    text-align: center;
+  }
+
+  /* Push hashtag to the right */
+  .pf-footer-hashtag {
+    flex-shrink: 0;
+    margin-left: auto;
+    text-align: right;
+    opacity: .55;
+    font-size: .75rem;
+  }
+}
+/* ================= MOBILE BADGE PILLS (FOOTER) ================= */
+@media (max-width: 640px) {
+
+  .pf-footer-badges {
+    justify-content: center;
+    gap: .6rem;
+  }
+
+  .pf-footer-badges span {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+
+    padding: .45rem .85rem;
+    border-radius: 999px;
+
+    background: linear-gradient(
+      180deg,
+      rgba(255,255,255,.10),
+      rgba(255,255,255,.04)
+    );
+
+    border: 1px solid rgba(255,255,255,.14);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    font-size: .72rem;
+    font-weight: 700;
+    color: #fff;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.15),
+      0 6px 20px rgba(2,6,23,.45);
+  }
+
+  .pf-footer-badges span i {
+    width: 14px;
+    height: 14px;
+    opacity: .95;
+  }
+}
+  </style>
+</head>
+<body>
+
+<!-- ================= FEEDBACK ================= -->
+<section class="pf-feedback-section" aria-labelledby="feedback-heading">
   <div class="pf-feedback-container">
+
     <header class="pf-feedback-header">
-      <h2>Help Us Improve PersonFinder</h2>
-      <p>
-        Your feedback helps us improve accuracy, usability, and the impact of our AI-driven search system.
-      </p>
+      <h2 id="feedback-heading">Help Us Improve PersonFinder</h2>
+      <p>Your feedback helps us improve accuracy, usability, and the impact of our AI-driven search system.</p>
     </header>
 
-    <div class="pf-feedback-card" role="region" aria-labelledby="feedback-heading">
+    <div class="pf-feedback-card">
       <form id="feedbackForm" class="pf-feedback-form" novalidate>
+
         <div class="pf-feedback-grid">
-          <input
-            id="feedbackName"
-            name="name"
-            type="text"
-            placeholder="Your name (optional)"
-            class="pf-input"
-            autocomplete="name"
-          />
-          <input
-            id="feedbackEmail"
-            name="email"
-            type="email"
-            required
-            placeholder="Email address *"
-            class="pf-input"
-            autocomplete="email"
-          />
+          <input id="feedbackName" name="name" type="text" placeholder="Your name (optional)" class="pf-input" />
+          <input id="feedbackEmail" name="email" type="email" required placeholder="Email address *" class="pf-input" />
         </div>
 
         <select id="feedbackRating" name="rating" required class="pf-input">
@@ -43,349 +410,141 @@
           <option value="1">⭐ Very Poor</option>
         </select>
 
-        <textarea
-          id="feedbackMessage"
-          name="message"
-          rows="4"
-          required
-          placeholder="Tell us what worked well and what could be improved…"
-          class="pf-input pf-textarea"
-        ></textarea>
+        <textarea id="feedbackMessage" name="message" required class="pf-input pf-textarea" placeholder="Tell us what worked well and what could be improved…"></textarea>
 
         <div class="pf-feedback-actions">
-          <button type="submit" class="pf-feedback-submit">
+          <button type="submit" class="pf-feedback-submit" id="feedbackSubmit">
             Submit Feedback
-            <i data-lucide="send" aria-hidden="true"></i>
           </button>
-
-          <p id="feedbackSuccess" class="pf-feedback-success pf-hidden" role="status" aria-live="polite">
-            ✅ Thank you! Your feedback has been submitted.
-          </p>
-          <p id="feedbackError" class="pf-feedback-error pf-hidden" role="alert" aria-live="assertive">
-            ❌ Something went wrong. Please try again.
-          </p>
+          <p id="feedbackSuccess" class="pf-feedback-success pf-hidden" role="status">✅ Thank you! Your feedback has been submitted.</p>
+          <p id="feedbackError" class="pf-feedback-error pf-hidden" role="alert">❌ Something went wrong. Please try again.</p>
         </div>
+
       </form>
     </div>
   </div>
 </section>
 
-<!-- Divider -->
 <div class="pf-footer-divider" aria-hidden="true"></div>
 
-<!-- ===== MAIN FOOTER ===== -->
+<!-- ================= FOOTER ================= -->
 <footer class="pf-footer" role="contentinfo">
   <div class="pf-footer-container">
 
-    <!-- Brand -->
-    <div class="pf-footer-brand">
-      <a href="{{ url_for('home') }}" class="pf-footer-logo" aria-label="PersonFinder home">
-        <img
-          src="{{ url_for('static', filename='images/elderly.jpeg') }}"
-          alt="PersonFinder logo"
-        />
+    <div>
+      <a href="{{ url_for('home') }}" class="pf-footer-logo">
+        <img src="{{ url_for('static', filename='images/elderly.jpeg') }}" alt="PersonFinder logo" />
         <div>
           <span class="pf-footer-title">PersonFinder</span>
           <span class="pf-footer-tagline">Reuniting Loved Ones</span>
         </div>
       </a>
+
       <p class="pf-footer-description">
-        An AI-powered platform designed to help communities locate and reunite missing persons
-        with dignity, speed, and ethical responsibility.
-      </p>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="pf-footer-nav" aria-label="Footer navigation">
-      <div>
-        <h4>Explore</h4>
-        <ul>
-          <li><a href="{{ url_for('home') }}">Home</a></li>
-          <li><a href="{{ url_for('register') }}">Register</a></li>
-          <li><a href="{{ url_for('search') }}">Search</a></li>
-        </ul>
-      </div>
-
-      <div>
-        <h4>Project</h4>
-        <ul>
-          <li><a href="{{ url_for('developers') }}">Developers</a></li>
-          <li><a href="{{ url_for('donate_page') }}">Donate</a></li>
-          <li><a href="{{ url_for('about') }}">About</a></li>
-        </ul>
-      </div>
-    </nav>
-
-    <!-- Mission -->
-    <div class="pf-footer-mission">
-      <h4>Our Mission</h4>
-      <p>
-        Every search matters. We design systems that prioritize privacy,
-        fairness, and timely results — because one match can change a life.
+        An AI-powered platform designed to help communities locate and reunite missing persons with dignity, speed, and ethical responsibility.
       </p>
 
       <div class="pf-footer-badges" aria-hidden="true">
         <span><i data-lucide="shield-check"></i> Secure</span>
         <span><i data-lucide="cpu"></i> AI Verified</span>
-        <span><i data-lucide="heart-handshake"></i> Human-First</span>
+        <span><i data-lucide="heart-handshake"></i> Human‑First</span>
       </div>
     </div>
+
+    <nav class="pf-footer-nav" aria-label="Footer navigation">
+  <div>
+    <h4 style="font-weight:800;">Explore</h4>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('register') }}">Register</a>
+    <a href="{{ url_for('search') }}">Search</a>
+  </div>
+  <div>
+    <h4 style="font-weight:800;">Project</h4>
+    <a href="{{ url_for('developers') }}">Developers</a>
+    <a href="{{ url_for('donate_page') }}">Donate</a>
+    <a href="{{ url_for('about') }}">About</a>
+  </div>
+</nav>
+
+    <div class="pf-footer-mission">
+      <h4>Our Mission</h4>
+      <p>Every search matters. We design systems that prioritize privacy, fairness, and timely results — because one match can change a life.</p>
+    </div>
+
   </div>
 
-  <!-- Bottom Bar -->
   <div class="pf-footer-bottom">
     <div>
-      <p>
-        © {{ current_year }} PersonFinder • v{{ app_version }}
-      </p>
+      © {{ current_year }} PersonFinder • v{{ app_version }}
       <nav aria-label="Legal">
-        <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
-        <span>•</span>
+        <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a> •
         <a href="{{ url_for('terms') }}">Terms of Service</a>
       </nav>
     </div>
-
-    <p class="pf-footer-hashtag">#HumanFirstAI</p>
+    <div class="pf-footer-hashtag">#HumanFirstAI</div>
   </div>
 </footer>
 
-<!-- ===== ICONS (deferred + idle-safe) ===== -->
+<!-- ================= SCRIPTS ================= -->
+<script>
+  const FEEDBACK_ENDPOINT = "{{ url_for('api_feedback') }}";
+</script>
+
 <script defer src="https://unpkg.com/lucide@latest/dist/lucide.umd.js"></script>
 <script>
-  (function () {
-    // Use requestIdleCallback when available, otherwise fall back to load event
-    function attachIcons() {
-      try {
-        if (window.lucide) window.lucide.createIcons();
-      } catch (e) {
-        // non-fatal: log in DEV only
-        if (typeof console !== 'undefined') console.debug('lucide failed', e);
-      }
-    }
+  window.addEventListener('load', () => {
+    if (window.lucide) lucide.createIcons();
+  });
+</script>
 
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(attachIcons, { timeout: 1000 });
-    } else {
-      // If lucide script is deferred, it should be available by 'load' time
-      window.addEventListener('load', attachIcons, { passive: true });
-    }
+<script>
+  (function(){
+    const form = document.getElementById('feedbackForm');
+    const btn = document.getElementById('feedbackSubmit');
+    const ok = document.getElementById('feedbackSuccess');
+    const err = document.getElementById('feedbackError');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ok.classList.add('pf-hidden');
+      err.classList.add('pf-hidden');
+
+      if (!form.email.value || !form.message.value) {
+        err.textContent = '❌ Please fill all required fields.';
+        err.classList.remove('pf-hidden');
+        return;
+      }
+
+      btn.disabled = true;
+
+      try{
+        const res = await fetch(FEEDBACK_ENDPOINT, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'same-origin',
+          body:JSON.stringify({
+            name:form.name.value.trim(),
+            email:form.email.value.trim(),
+            rating:form.rating.value,
+            message:form.message.value.trim(),
+            source:'footer'
+          })
+        });
+
+        if (!res.ok) throw new Error();
+
+        ok.classList.remove('pf-hidden');
+        form.reset();
+      }catch(e){
+        err.classList.remove('pf-hidden');
+      }finally{
+        btn.disabled = false;
+      }
+    });
   })();
 </script>
 
-<!-- ================= STYLES (namespaced + safe) ================= -->
-<style>
-/* ---------- Safety: ensure footer never overlays header ---------- */
-.pf-footer { position: relative; z-index: 0; }
-
-/* ---------- Divider CSS ---------- */
-.pf-footer-divider {
-  height: 1px;
-  margin: 0 auto;
-  max-width: 80rem;
-  background: rgba(255,255,255,0.18);
-  filter: blur(0.6px);
-}
-
-/* ---------- Feedback ---------- */
-.pf-feedback-section {
-  position: relative;
-  background: radial-gradient(circle at top, rgba(56,189,248,.12), transparent 55%),
-              linear-gradient(to bottom, #020617, #020617);
-  color: #fff;
-}
-.pf-feedback-container {
-  max-width: 56rem;
-  margin: auto;
-  padding: 4rem 1rem;
-}
-.pf-feedback-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-.pf-feedback-header h2 {
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: 800;
-}
-.pf-feedback-header p {
-  margin-top: .5rem;
-  color: rgba(255,255,255,.7);
-}
-.pf-feedback-card {
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 1.75rem;
-  padding: 2rem;
-  /* reduced blur to avoid heavy painting */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* Grid */
-.pf-feedback-grid {
-  display: grid;
-  gap: 1rem;
-}
-@media (min-width: 640px) {
-  .pf-feedback-grid { grid-template-columns: 1fr 1fr; }
-}
-
-/* Inputs */
-.pf-input {
-  width: 100%;
-  padding: .8rem 1rem;
-  border-radius: .9rem;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(2,6,23,.7);
-  color: #fff;
-}
-.pf-input::placeholder { color: rgba(255,255,255,.45); }
-.pf-input:focus {
-  outline: none;
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 1.5px rgba(56,189,248,.25);
-}
-.pf-textarea { resize: vertical; }
-
-/* Feedback Actions */
-.pf-feedback-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-}
-.pf-feedback-submit {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  padding: .75rem 1.5rem;
-  border-radius: 999px;
-  background: #22d3ee;
-  color: #020617;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-}
-.pf-feedback-submit:hover { background: #67e8f9; }
-.pf-feedback-success { color: #6ee7b7; }
-.pf-feedback-error { color: #fca5a5; }
-
-/* Footer hidden utility (namespaced) */
-.pf-hidden { display: none !important; }
-
-/* ---------- Footer ---------- */
-.pf-footer {
-  background: linear-gradient(to bottom, #020617, #020617);
-  color: rgba(255,255,255,.85);
-}
-.pf-footer-container {
-  max-width: 80rem;
-  margin: auto;
-  padding: 3.5rem 1rem;
-  display: grid;
-  gap: 2.5rem;
-}
-@media (min-width: 768px) {
-  .pf-footer-container {
-    grid-template-columns: 1.3fr 1fr 1fr;
-  }
-}
-
-/* Brand */
-.pf-footer-logo {
-  display: flex;
-  gap: .75rem;
-  align-items: center;
-}
-.pf-footer-logo img {
-  width: 42px;
-  height: 42px;
-  border-radius: .75rem;
-}
-.pf-footer-title {
-  font-weight: 800;
-  font-size: 1.2rem;
-  background: linear-gradient(
-    90deg,
-    rgba(96,165,250,0.85),
-    rgba(192,132,252,0.85),
-    rgba(244,114,182,0.85)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.pf-footer-tagline {
-  display: block;
-  font-size: .75rem;
-  opacity: .7;
-}
-.pf-footer-description {
-  margin-top: .75rem;
-  font-size: .85rem;
-  color: rgba(255,255,255,.7);
-}
-
-/* Nav */
-.pf-footer-nav {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-.pf-footer-nav h4 {
-  font-size: .75rem;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: .75rem;
-}
-.pf-footer-nav a {
-  display: block;
-  font-size: .9rem;
-  margin-bottom: .4rem;
-  color: rgba(255,255,255,.8);
-}
-.pf-footer-nav a:hover { color: #fff; }
-
-/* Mission */
-.pf-footer-mission h4 {
-  font-size: .95rem;
-  font-weight: 700;
-}
-.pf-footer-mission p {
-  font-size: .85rem;
-  margin-top: .5rem;
-  color: rgba(255,255,255,.7);
-}
-.pf-footer-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .5rem;
-  margin-top: .75rem;
-}
-.pf-footer-badges span {
-  font-size: .7rem;
-  padding: .3rem .6rem;
-  border-radius: 999px;
-  background: rgba(255,255,255,.08);
-  display: inline-flex;
-  align-items: center;
-  gap: .3rem;
-}
-
-/* Bottom */
-.pf-footer-bottom {
-  border-top: 1px solid rgba(255,255,255,.1);
-  padding: 1.25rem 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: .75rem;
-  font-size: .75rem;
-}
-.pf-footer-bottom nav a {
-  margin-right: .5rem;
-  color: rgba(255,255,255,.7);
-}
-.pf-footer-hashtag {
-  color: rgba(255,255,255,.6);
-}
-</style>
+</body>
+</html>
